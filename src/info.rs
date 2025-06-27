@@ -31,11 +31,11 @@ pub struct InfoV2 {
     #[serde(rename = "_coverImageFilename")]
     pub cover_image_file: String,
     #[serde(rename = "_environmentName")]
-    pub environment: String,
+    pub environment: Environment,
     #[serde(rename = "_allDirectionsEnvironmentName")]
-    pub all_directions_environment: String,
+    pub all_directions_environment: AllDirectionEnvironment,
     #[serde(rename = "_environmentNames")]
-    pub environments: Vec<Value>,
+    pub environments: Vec<Environment>,
     #[serde(rename = "_colorSchemes")]
     pub color_schemes: Vec<Value>, // Todo
     #[serde(rename = "_difficultyBeatmapSets")]
