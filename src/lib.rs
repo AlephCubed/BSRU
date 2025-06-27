@@ -1,9 +1,12 @@
+pub mod difficulty;
+pub mod info;
+
 pub fn add(left: u64, right: u64) -> u64 {
     left + right
 }
 
 #[cfg(test)]
-mod tests {
+pub mod tests {
     use super::*;
 
     #[test]
