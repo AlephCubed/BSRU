@@ -2,7 +2,7 @@
 macro_rules! loose_enum {
     (
         $(#[$outer:meta])*
-        $name:ident,
+        $name:ident
         {
             $(
                 $(#[$meta:meta])*
@@ -20,10 +20,10 @@ macro_rules! loose_enum {
             Unknown(i32),
         }
 
-        impl<'de> Deserialize<'de> for $name {
+        impl<'de> serde::Deserialize<'de> for $name {
             fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
             where
-                D: Deserializer<'de>,
+                D: serde::Deserializer<'de>,
             {
                 let val = i32::deserialize(deserializer)?;
                 Ok(match val {
@@ -33,7 +33,7 @@ macro_rules! loose_enum {
             }
         }
 
-        impl Serialize for $name {
+        impl serde::Serialize for $name {
             fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
             where
                 S: serde::Serializer,
@@ -47,4 +47,13 @@ macro_rules! loose_enum {
             }
         }
     };
+}
+
+loose_enum! {
+    #[derive(Default)]
+    LooseBool {
+        #[default]
+        False = 0,
+        True = 1,
+    }
 }

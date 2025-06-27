@@ -1,4 +1,7 @@
-use crate::difficulty::lightshow::Filter;
+use crate::difficulty::lightshow::easing::Easing;
+use crate::difficulty::lightshow::{DistributionType, Filter};
+use crate::loose_enum;
+use crate::macros::LooseBool;
 use serde::{Deserialize, Serialize};
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -15,18 +18,36 @@ pub struct RotationEventBoxGroup {
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct RotationEventGroup {
-    pub f: Filter,
-    pub w: f32,
-    pub d: i32,
-    pub s: i32,
-    pub t: i32,
+    #[serde(rename = "f")]
+    pub filter: Filter,
+    #[serde(rename = "d")]
+    pub beat_dist_type: DistributionType,
+    #[serde(rename = "w")]
+    pub beat_dist_value: f32,
+    #[serde(rename = "t")]
+    pub rotation_dist_type: DistributionType,
+    #[serde(rename = "s")]
+    pub rotation_dist_value: i32,
     #[serde(rename = "b")]
-    pub beat: i32,
-    pub a: i32,
-    pub r: i32,
-    pub i: i32,
+    pub rotation_dist_effect_first: LooseBool,
+    #[serde(rename = "i")]
+    pub rotation_dist_easing: Easing,
+    #[serde(rename = "a")]
+    pub axis: i32,
+    #[serde(rename = "r")]
+    pub invert_axis: LooseBool,
     #[serde(rename = "l")]
     pub data: Vec<RotationEventData>,
+}
+
+loose_enum! {
+    #[derive(Default)]
+    Axis {
+        #[default]
+        X = 0,
+        Y = 1,
+        Z = 2,
+    }
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -34,9 +55,41 @@ pub struct RotationEventGroup {
 pub struct RotationEventData {
     #[serde(rename = "b")]
     pub beat: f32,
-    pub p: i32,
-    pub e: i32,
-    pub l: i32,
-    pub r: i32,
-    pub o: i32,
+    #[serde(rename = "p")]
+    pub transition_type: RotationTransitionType,
+    #[serde(rename = "e")]
+    pub easing: Easing,
+    #[serde(rename = "l")]
+    pub degrees: i32,
+    #[serde(rename = "r")]
+    pub direction: RotationDirection,
+    #[serde(rename = "o")]
+    pub loops: i32,
+}
+
+loose_enum! {
+    /// Controls how the angle is changed from the previous event.
+    /// - Transition: The angle will slowly move from the previous events angle, using the easing.
+    /// - Extend: The events rotation will be ignored,
+    /// and the values from the previous event will be used instead.
+    ///
+    /// More info [here](https://bsmg.wiki/mapping/map-format/lightshow.html#light-rotation-events-type).
+    #[derive(Default)]
+    RotationTransitionType {
+        #[default]
+        Transition = 0,
+        Extend = 1,
+    }
+}
+
+loose_enum! {
+    /// Determines the direction that the rotation event will rotate.
+    /// Automatic will choose the shortest distance.
+    #[derive(Default)]
+    RotationDirection {
+        #[default]
+        Automatic = 0,
+        Clockwise = 1,
+        CounterClockwise = 2,
+    }
 }

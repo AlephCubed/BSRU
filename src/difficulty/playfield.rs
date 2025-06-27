@@ -1,5 +1,5 @@
 use crate::loose_enum;
-use serde::{Deserialize, Deserializer, Serialize};
+use serde::{Deserialize, Serialize};
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -20,7 +20,7 @@ pub struct Note {
 
 loose_enum! {
     #[derive(Default)]
-    NoteColor, {
+    NoteColor {
         #[default]
         Left = 0,
         Right = 1,
@@ -29,7 +29,7 @@ loose_enum! {
 
 loose_enum! {
     #[derive(Default)]
-    CutDirection, {
+    CutDirection {
         #[default]
         Up = 0,
         Down = 1,
