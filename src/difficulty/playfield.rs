@@ -13,7 +13,7 @@ pub struct Note {
     #[serde(rename = "c")]
     pub color: NoteColor,
     #[serde(rename = "d")]
-    pub direction: i32,
+    pub direction: CutDirection,
     #[serde(rename = "a")]
     pub angle_offset: i32,
 }
@@ -95,20 +95,40 @@ pub struct Wall {
 pub struct Arc {
     #[serde(rename = "b")]
     pub beat: f32,
-    #[serde(rename = "c")]
-    pub color: i32,
     #[serde(rename = "x")]
     pub row: i32,
     #[serde(rename = "y")]
     pub col: i32,
-    pub d: i32,
-    pub tb: f32,
-    pub tx: i32,
-    pub ty: i32,
-    pub mu: i32,
-    pub tmu: i32,
-    pub tc: i32,
-    pub m: i32,
+    #[serde(rename = "c")]
+    pub color: i32,
+    #[serde(rename = "d")]
+    pub direction: CutDirection,
+    #[serde(rename = "mu")]
+    pub control_point: f32,
+
+    #[serde(rename = "tb")]
+    pub tail_beat: f32,
+    #[serde(rename = "tx")]
+    pub tail_row: i32,
+    #[serde(rename = "ty")]
+    pub tail_col: i32,
+    #[serde(rename = "tc")]
+    pub tail_direction: CutDirection,
+    #[serde(rename = "tmu")]
+    pub tail_control_point: f32,
+
+    #[serde(rename = "m")]
+    pub mid_anchor_mode: MidAnchorMode,
+}
+
+loose_enum! {
+    #[derive(Default)]
+    MidAnchorMode {
+        #[default]
+        Straight = 0,
+        Clockwise = 1,
+        CounterClockwise = 2,
+    }
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -116,16 +136,24 @@ pub struct Arc {
 pub struct Chain {
     #[serde(rename = "b")]
     pub beat: f32,
-    #[serde(rename = "c")]
-    pub color: i32,
     #[serde(rename = "x")]
     pub row: i32,
     #[serde(rename = "y")]
     pub col: i32,
-    pub d: i32,
-    pub tb: f32,
-    pub tx: i32,
-    pub ty: i32,
-    pub sc: i32,
-    pub s: i32,
+    #[serde(rename = "c")]
+    pub color: i32,
+    #[serde(rename = "d")]
+    pub direction: CutDirection,
+
+    #[serde(rename = "tb")]
+    pub tail_beat: f32,
+    #[serde(rename = "tx")]
+    pub tail_row: i32,
+    #[serde(rename = "ty")]
+    pub tail_col: i32,
+
+    #[serde(rename = "sc")]
+    pub link_count: i32,
+    #[serde(rename = "s")]
+    pub link_squish: i32,
 }
