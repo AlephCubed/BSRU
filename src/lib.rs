@@ -1,6 +1,6 @@
 pub mod difficulty;
 pub mod info;
-mod macros;
+pub mod macros;
 
 pub fn add(left: u64, right: u64) -> u64 {
     left + right

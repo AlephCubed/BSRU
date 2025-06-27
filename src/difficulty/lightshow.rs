@@ -1,8 +1,9 @@
 use crate::loose_enum;
 use serde::{Deserialize, Serialize};
 
+pub mod basic;
 pub mod color;
-mod easing;
+pub mod easing;
 pub mod rotation;
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
