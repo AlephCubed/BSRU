@@ -149,3 +149,12 @@ impl LooseBool {
         }
     }
 }
+
+impl From<bool> for LooseBool {
+    fn from(value: bool) -> Self {
+        match value {
+            true => Self::True,
+            false => Self::False,
+        }
+    }
+}
