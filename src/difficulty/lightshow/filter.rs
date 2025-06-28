@@ -1,5 +1,5 @@
 use crate::loose_enum;
-use crate::macros::LooseBool;
+use crate::utils::LooseBool;
 use serde::{Deserialize, Serialize};
 
 /// Controls which light indices are affected by event boxes.

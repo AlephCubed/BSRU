@@ -2,7 +2,7 @@ use crate::difficulty::lightshow::easing::Easing;
 use crate::difficulty::lightshow::filter::Filter;
 use crate::difficulty::lightshow::{Axis, DistributionType, TransitionType};
 use crate::impl_timed;
-use crate::macros::LooseBool;
+use crate::utils::LooseBool;
 use serde::{Deserialize, Serialize};
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]

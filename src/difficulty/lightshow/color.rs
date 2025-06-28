@@ -1,7 +1,7 @@
 use crate::difficulty::lightshow::DistributionType;
 use crate::difficulty::lightshow::easing::Easing;
 use crate::difficulty::lightshow::filter::Filter;
-use crate::macros::LooseBool;
+use crate::utils::LooseBool;
 use crate::{impl_timed, loose_enum};
 use serde::{Deserialize, Serialize};
 
