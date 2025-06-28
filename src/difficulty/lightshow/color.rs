@@ -56,8 +56,9 @@ pub struct ColorEventData {
 loose_enum! {
     #[derive(Default, Copy)]
     ColorTransitionType: i32 {
-        #[default]
+        /// Replaced with `Transition` and [`Easing::None`] in difficulty file V3.2 or higher.
         Instant = 0,
+        #[default]
         Transition = 1,
         Extend = 2,
     }

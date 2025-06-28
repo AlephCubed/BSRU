@@ -5,10 +5,10 @@ pub mod playfield;
 use crate::difficulty::gameplay_event::{BpmEvent, LaneRotationEvent};
 use crate::difficulty::lightshow::basic::{BasicEvent, ColorBoostEvent, SpecialEvent, Waypoints};
 use crate::difficulty::lightshow::color::ColorEventBox;
-use crate::difficulty::lightshow::rotation::RotationEventBoxGroup;
+use crate::difficulty::lightshow::rotation::RotationEventBox;
+use crate::difficulty::lightshow::translation::TranslationEventBox;
 use crate::difficulty::playfield::{Arc, Bomb, Chain, Note, Wall};
 use serde::{Deserialize, Serialize};
-use serde_json::Value;
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -35,10 +35,10 @@ pub struct Difficulty {
     #[serde(rename = "lightColorEventBoxGroups")]
     pub color_event_boxes: Vec<ColorEventBox>,
     #[serde(rename = "lightRotationEventBoxGroups")]
-    pub rotation_event_boxes: Vec<RotationEventBoxGroup>,
+    pub rotation_event_boxes: Vec<RotationEventBox>,
     /// Only present in difficulty file V3.2 or higher.
     #[serde(rename = "lightTranslationEventBoxGroups")]
-    pub translation_event_boxes: Option<Vec<Value>>, // Todo
+    pub translation_event_boxes: Option<Vec<TranslationEventBox>>, // Todo
     #[doc(alias = "keyword_events")]
     #[serde(rename = "basicEventTypesWithKeywords")]
     pub special_events: SpecialEvent,
