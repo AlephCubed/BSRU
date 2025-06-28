@@ -99,7 +99,7 @@ loose_enum! {
 
 loose_enum! {
     #[derive(Default, Copy)]
-    Axis: i32 {
+    EventAxis: i32 {
         #[default]
         X = 0,
         Y = 1,

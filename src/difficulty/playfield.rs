@@ -10,16 +10,16 @@ use serde::{Deserialize, Serialize};
 pub struct Note {
     #[serde(rename = "b")]
     pub beat: f32,
-    #[serde(rename = "x")]
-    pub row: i32,
     #[serde(rename = "y")]
+    pub row: i32,
+    #[serde(rename = "x")]
     pub col: i32,
     #[serde(rename = "c")]
     pub color: NoteColor,
     #[serde(rename = "d")]
     pub direction: CutDirection,
     #[serde(rename = "a")]
-    pub angle_offset: i32,
+    pub angle_offset: f32,
 }
 
 impl_timed!(Note::beat);
@@ -51,19 +51,19 @@ loose_enum! {
 
 impl CutDirection {
     /// Returns the number of degrees a note is rotated, with zero degrees being downward note.
-    /// Returns `None` if the cut direction is unknown.
-    pub fn get_degrees(&self) -> Option<f32> {
+    /// Returns zero if the cut direction is unknown.
+    pub fn get_degrees(&self) -> f32 {
         match self {
-            CutDirection::Up => Some(180.0),
-            CutDirection::Down => Some(0.0),
-            CutDirection::Left => Some(-90.0),
-            CutDirection::Right => Some(90.0),
-            CutDirection::UpLeft => Some(-135.0),
-            CutDirection::UpRight => Some(135.0),
-            CutDirection::DownLeft => Some(-45.0),
-            CutDirection::DownRight => Some(45.0),
-            CutDirection::Any => Some(0.0),
-            CutDirection::Unknown(_) => None,
+            CutDirection::Up => 180.0,
+            CutDirection::Down => 0.0,
+            CutDirection::Left => -90.0,
+            CutDirection::Right => 90.0,
+            CutDirection::UpLeft => -135.0,
+            CutDirection::UpRight => 135.0,
+            CutDirection::DownLeft => -45.0,
+            CutDirection::DownRight => 45.0,
+            CutDirection::Any => 0.0,
+            CutDirection::Unknown(_) => 0.0,
         }
     }
 }
@@ -77,9 +77,9 @@ impl CutDirection {
 pub struct Bomb {
     #[serde(rename = "b")]
     pub beat: f32,
-    #[serde(rename = "x")]
-    pub row: i32,
     #[serde(rename = "y")]
+    pub row: i32,
+    #[serde(rename = "x")]
     pub col: i32,
 }
 
@@ -96,9 +96,9 @@ pub struct Wall {
     pub beat: f32,
     #[serde(rename = "d")]
     pub duration: f32,
-    #[serde(rename = "x")]
-    pub row: i32,
     #[serde(rename = "y")]
+    pub row: i32,
+    #[serde(rename = "x")]
     pub col: i32,
     #[serde(rename = "w")]
     pub width: i32,
@@ -117,12 +117,12 @@ impl_duration!(Wall::beat, duration: duration);
 pub struct Arc {
     #[serde(rename = "b")]
     pub beat: f32,
-    #[serde(rename = "x")]
-    pub row: i32,
     #[serde(rename = "y")]
+    pub row: i32,
+    #[serde(rename = "x")]
     pub col: i32,
     #[serde(rename = "c")]
-    pub color: i32,
+    pub color: NoteColor,
     #[serde(rename = "d")]
     pub direction: CutDirection,
     #[serde(rename = "mu")]
@@ -130,9 +130,9 @@ pub struct Arc {
 
     #[serde(rename = "tb")]
     pub tail_beat: f32,
-    #[serde(rename = "tx")]
-    pub tail_row: i32,
     #[serde(rename = "ty")]
+    pub tail_row: i32,
+    #[serde(rename = "tx")]
     pub tail_col: i32,
     #[serde(rename = "tc")]
     pub tail_direction: CutDirection,
@@ -164,20 +164,20 @@ loose_enum! {
 pub struct Chain {
     #[serde(rename = "b")]
     pub beat: f32,
-    #[serde(rename = "x")]
-    pub row: i32,
     #[serde(rename = "y")]
+    pub row: i32,
+    #[serde(rename = "x")]
     pub col: i32,
     #[serde(rename = "c")]
-    pub color: i32,
+    pub color: NoteColor,
     #[serde(rename = "d")]
     pub direction: CutDirection,
 
     #[serde(rename = "tb")]
     pub tail_beat: f32,
-    #[serde(rename = "tx")]
-    pub tail_row: i32,
     #[serde(rename = "ty")]
+    pub tail_row: i32,
+    #[serde(rename = "tx")]
     pub tail_col: i32,
 
     #[serde(rename = "sc")]

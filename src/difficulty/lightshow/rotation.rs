@@ -1,6 +1,6 @@
 use crate::difficulty::lightshow::easing::Easing;
 use crate::difficulty::lightshow::filter::Filter;
-use crate::difficulty::lightshow::{Axis, DistributionType, TransitionType};
+use crate::difficulty::lightshow::{DistributionType, EventAxis, TransitionType};
 use crate::utils::LooseBool;
 use crate::{impl_get_beat_offset, impl_timed, loose_enum};
 use serde::{Deserialize, Serialize};
@@ -45,7 +45,7 @@ pub struct RotationEventGroup {
     #[serde(rename = "i")]
     pub rotation_dist_easing: Option<Easing>,
     #[serde(rename = "a")]
-    pub axis: Axis,
+    pub axis: EventAxis,
     #[serde(rename = "r")]
     pub invert_axis: LooseBool,
     #[serde(rename = "l")]

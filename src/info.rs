@@ -19,7 +19,7 @@ pub struct Beatmap {
     #[serde(rename = "_levelAuthorName")]
     pub mapper: String,
     #[serde(rename = "_beatsPerMinute")]
-    pub bpm: i32,
+    pub bpm: f32,
     #[serde(rename = "_songTimeOffset")]
     pub time_offset: i32,
     #[serde(rename = "_shuffle")]
@@ -162,7 +162,7 @@ pub struct DifficultyInfo {
 }
 
 loose_enum! {
-    #[derive(Default)]
+    #[derive(Default, Copy)]
     DifficultyRank: i32 {
         Easy = 1,
         Normal = 3,

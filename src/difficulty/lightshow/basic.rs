@@ -31,10 +31,10 @@ impl_timed!(BasicEvent::beat);
 pub struct Waypoint {
     #[serde(rename = "b")]
     pub beat: f32,
-    #[serde(rename = "x")]
-    pub col: u8,
     #[serde(rename = "y")]
     pub row: u8,
+    #[serde(rename = "x")]
+    pub col: u8,
     #[serde(rename = "d")]
     pub direction: CutDirection,
 }
