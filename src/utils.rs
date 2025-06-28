@@ -124,3 +124,14 @@ loose_enum! {
         True = 1,
     }
 }
+
+impl LooseBool {
+    /// Returns as a bool, with unknown values counting as `false`.
+    pub fn as_bool(&self) -> bool {
+        match self {
+            LooseBool::False => false,
+            LooseBool::True => true,
+            LooseBool::Unknown(_) => false,
+        }
+    }
+}

@@ -56,8 +56,13 @@ impl Filter {
     /// If the [`FilterType`] is `Unknown` then the result will be `true`.
     /// # Panics
     /// Will panic if the light id is greater than or equal to the group size.
-    pub fn is_in_filter(&self, light_id: i32, group_size: i32) -> bool {
+    pub fn is_in_filter(&self, mut light_id: i32, group_size: i32) -> bool {
         assert!(light_id < group_size);
+
+        if self.reverse.as_bool() {
+            light_id = group_size - light_id - 1;
+        }
+
         match self.filter_type {
             FilterType::Division => {
                 let start = self.parameter2 * group_size / self.parameter1.max(1);
@@ -69,6 +74,23 @@ impl Filter {
                 offset_light_id % self.parameter2.max(1) == 0
             }
             FilterType::Unknown(_) => true,
+        }
+    }
+
+    /// Returns the number of lights effected by the filter.
+    /// # Unknown
+    /// If the [`FilterType`] is `Unknown` then the result will be the same as `group_size`.
+    pub fn count_filtered(&self, group_size: i32) -> i32 {
+        match self.filter_type {
+            FilterType::Division => {
+                let start = self.parameter2 * group_size / self.parameter1.max(1);
+                let end = (self.parameter2 + 1) * group_size / self.parameter1.max(1);
+                end - start
+            }
+            FilterType::StepAndOffset => {
+                group_size / self.parameter2.max(1) - self.parameter1 / self.parameter2.max(1)
+            }
+            FilterType::Unknown(_) => group_size,
         }
     }
 }
@@ -100,7 +122,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn is_in_filter_division_first_half() {
+    fn division_first_half() {
         let filter = Filter {
             filter_type: FilterType::Division,
             parameter1: 2,
@@ -110,10 +132,11 @@ mod tests {
 
         assert!((0..6).all(|i| filter.is_in_filter(i, 12)));
         assert!((6..12).all(|i| !filter.is_in_filter(i, 12)));
+        assert_eq!(filter.count_filtered(12), 6);
     }
 
     #[test]
-    fn is_in_filter_division_second_half() {
+    fn division_second_half() {
         let filter = Filter {
             filter_type: FilterType::Division,
             parameter1: 2,
@@ -123,10 +146,41 @@ mod tests {
 
         assert!((0..6).all(|i| !filter.is_in_filter(i, 12)));
         assert!((6..12).all(|i| filter.is_in_filter(i, 12)));
+        assert_eq!(filter.count_filtered(12), 6);
     }
 
     #[test]
-    fn is_in_filter_division_all() {
+    fn division_first_half_rev() {
+        let filter = Filter {
+            filter_type: FilterType::Division,
+            parameter1: 2,
+            parameter2: 0,
+            reverse: LooseBool::True,
+            ..Default::default()
+        };
+
+        assert!((0..6).all(|i| !filter.is_in_filter(i, 12)));
+        assert!((6..12).all(|i| filter.is_in_filter(i, 12)));
+        assert_eq!(filter.count_filtered(12), 6);
+    }
+
+    #[test]
+    fn division_second_half_rev() {
+        let filter = Filter {
+            filter_type: FilterType::Division,
+            parameter1: 2,
+            parameter2: 1,
+            reverse: LooseBool::True,
+            ..Default::default()
+        };
+
+        assert!((0..6).all(|i| filter.is_in_filter(i, 12)));
+        assert!((6..12).all(|i| !filter.is_in_filter(i, 12)));
+        assert_eq!(filter.count_filtered(12), 6);
+    }
+
+    #[test]
+    fn division_select_all() {
         let filter = Filter {
             filter_type: FilterType::Division,
             parameter1: 1,
@@ -134,13 +188,12 @@ mod tests {
             ..Default::default()
         };
 
-        for i in 0..12 {
-            assert_eq!(filter.is_in_filter(i, 12), true,);
-        }
+        assert!((0..12).all(|i| filter.is_in_filter(i, 12)));
+        assert_eq!(filter.count_filtered(12), 12);
     }
 
     #[test]
-    fn is_in_filter_step_all() {
+    fn step_select_all() {
         let filter = Filter {
             filter_type: FilterType::StepAndOffset,
             parameter1: 0,
@@ -148,13 +201,12 @@ mod tests {
             ..Default::default()
         };
 
-        for i in 0..12 {
-            assert_eq!(filter.is_in_filter(i, 12), true);
-        }
+        assert!((0..12).all(|i| filter.is_in_filter(i, 12)));
+        assert_eq!(filter.count_filtered(12), 12);
     }
 
     #[test]
-    fn is_in_filter_step_start_index() {
+    fn step_start_index() {
         for i in 0..12 {
             let filter = Filter {
                 filter_type: FilterType::StepAndOffset,
@@ -163,11 +215,12 @@ mod tests {
                 ..Default::default()
             };
             assert!((i..12).all(|i| filter.is_in_filter(i, 12)));
+            assert_eq!(filter.count_filtered(12), 12 - i);
         }
     }
 
     #[test]
-    fn is_in_filter_step_every_other() {
+    fn step_every_other() {
         let filter = Filter {
             filter_type: FilterType::StepAndOffset,
             parameter1: 0,
@@ -178,10 +231,11 @@ mod tests {
         for i in 0..12 {
             assert_eq!(filter.is_in_filter(i, 12), i % 2 == 0);
         }
+        assert_eq!(filter.count_filtered(12), 6);
     }
 
     #[test]
-    fn is_in_filter_step_every_other_offset() {
+    fn step_every_other_offset() {
         let filter = Filter {
             filter_type: FilterType::StepAndOffset,
             parameter1: 1,
@@ -192,5 +246,6 @@ mod tests {
         for i in 0..12 {
             assert_eq!(filter.is_in_filter(i, 12), i % 2 != 0);
         }
+        assert_eq!(filter.count_filtered(12), 6);
     }
 }
