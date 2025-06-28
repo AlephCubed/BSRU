@@ -1,8 +1,12 @@
 use crate::loose_enum;
 use serde::{Deserialize, Serialize};
-use serde_json::Value;
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(
+    feature = "bevy_reflect",
+    derive(bevy_reflect::Reflect),
+    reflect(Debug, Clone, PartialEq)
+)]
 pub struct Beatmap {
     #[serde(rename = "_version")]
     pub version: String,
@@ -37,9 +41,10 @@ pub struct Beatmap {
     /// Only present in info file V2.1 or higher.
     #[serde(rename = "_environmentNames")]
     pub environments: Option<Vec<Environment>>,
-    #[serde(rename = "_colorSchemes")]
-    /// Only present in info file V2.1 or higher.
-    pub color_schemes: Option<Vec<Value>>, // Todo
+    // Todo
+    // #[serde(rename = "_colorSchemes")]
+    // /// Only present in info file V2.1 or higher.
+    // pub color_schemes: Option<Vec<Value>>,
     #[serde(rename = "_difficultyBeatmapSets")]
     pub difficulty_sets: Vec<DifficultySet>,
 }
@@ -107,6 +112,11 @@ loose_enum! {
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(
+    feature = "bevy_reflect",
+    derive(bevy_reflect::Reflect),
+    reflect(Debug, Clone, PartialEq)
+)]
 pub struct DifficultySet {
     #[serde(rename = "_beatmapCharacteristicName")]
     pub characteristic: Characteristic,
@@ -131,6 +141,11 @@ loose_enum! {
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(
+    feature = "bevy_reflect",
+    derive(bevy_reflect::Reflect),
+    reflect(Debug, Clone, PartialEq)
+)]
 pub struct DifficultyInfo {
     #[serde(rename = "_difficulty")]
     pub name: String,

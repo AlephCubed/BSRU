@@ -4,6 +4,11 @@ use serde::{Deserialize, Serialize};
 
 /// Controls which light indices are affected by event boxes.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(
+    feature = "bevy_reflect",
+    derive(bevy_reflect::Reflect),
+    reflect(Debug, Clone, PartialEq)
+)]
 pub struct Filter {
     // V3.0:
     #[serde(rename = "f")]

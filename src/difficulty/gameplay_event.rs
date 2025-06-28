@@ -2,6 +2,11 @@ use crate::impl_timed;
 use serde::{Deserialize, Serialize};
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(
+    feature = "bevy_reflect",
+    derive(bevy_reflect::Reflect),
+    reflect(Debug, Clone, PartialEq)
+)]
 pub struct LaneRotationEvent {
     #[serde(rename = "b")]
     pub beat: f32,
@@ -14,6 +19,11 @@ pub struct LaneRotationEvent {
 impl_timed!(LaneRotationEvent::beat);
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(
+    feature = "bevy_reflect",
+    derive(bevy_reflect::Reflect),
+    reflect(Debug, Clone, PartialEq)
+)]
 pub struct BpmEvent {
     #[serde(rename = "b")]
     pub beat: f32,

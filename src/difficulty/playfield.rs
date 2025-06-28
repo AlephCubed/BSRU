@@ -2,6 +2,11 @@ use crate::{impl_duration, impl_timed, loose_enum};
 use serde::{Deserialize, Serialize};
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(
+    feature = "bevy_reflect",
+    derive(bevy_reflect::Reflect),
+    reflect(Debug, Clone, PartialEq)
+)]
 pub struct Note {
     #[serde(rename = "b")]
     pub beat: f32,
@@ -64,6 +69,11 @@ impl CutDirection {
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(
+    feature = "bevy_reflect",
+    derive(bevy_reflect::Reflect),
+    reflect(Debug, Clone, PartialEq)
+)]
 pub struct Bomb {
     #[serde(rename = "b")]
     pub beat: f32,
@@ -76,6 +86,11 @@ pub struct Bomb {
 impl_timed!(Bomb::beat);
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(
+    feature = "bevy_reflect",
+    derive(bevy_reflect::Reflect),
+    reflect(Debug, Clone, PartialEq)
+)]
 pub struct Wall {
     #[serde(rename = "b")]
     pub beat: f32,
@@ -94,6 +109,11 @@ pub struct Wall {
 impl_duration!(Wall::beat, duration: duration);
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(
+    feature = "bevy_reflect",
+    derive(bevy_reflect::Reflect),
+    reflect(Debug, Clone, PartialEq)
+)]
 pub struct Arc {
     #[serde(rename = "b")]
     pub beat: f32,
@@ -136,6 +156,11 @@ loose_enum! {
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(
+    feature = "bevy_reflect",
+    derive(bevy_reflect::Reflect),
+    reflect(Debug, Clone, PartialEq)
+)]
 pub struct Chain {
     #[serde(rename = "b")]
     pub beat: f32,

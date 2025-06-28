@@ -6,6 +6,11 @@ use crate::{impl_get_beat_offset, impl_timed};
 use serde::{Deserialize, Serialize};
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(
+    feature = "bevy_reflect",
+    derive(bevy_reflect::Reflect),
+    reflect(Debug, Clone, PartialEq)
+)]
 pub struct TranslationEventBox {
     #[serde(rename = "b")]
     pub beat: f32,
@@ -18,6 +23,11 @@ pub struct TranslationEventBox {
 impl_timed!(TranslationEventBox::beat);
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(
+    feature = "bevy_reflect",
+    derive(bevy_reflect::Reflect),
+    reflect(Debug, Clone, PartialEq)
+)]
 pub struct TranslationEventGroup {
     #[serde(rename = "f")]
     pub filter: Filter,
@@ -57,6 +67,11 @@ impl TranslationEventGroup {
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(
+    feature = "bevy_reflect",
+    derive(bevy_reflect::Reflect),
+    reflect(Debug, Clone, PartialEq)
+)]
 pub struct TranslationEventData {
     #[serde(rename = "b")]
     pub beat_offset: f32,

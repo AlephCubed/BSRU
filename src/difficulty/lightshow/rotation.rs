@@ -6,6 +6,11 @@ use crate::{impl_get_beat_offset, impl_timed, loose_enum};
 use serde::{Deserialize, Serialize};
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(
+    feature = "bevy_reflect",
+    derive(bevy_reflect::Reflect),
+    reflect(Debug, Clone, PartialEq)
+)]
 pub struct RotationEventBox {
     #[serde(rename = "b")]
     pub beat: f32,
@@ -18,6 +23,11 @@ pub struct RotationEventBox {
 impl_timed!(RotationEventBox::beat);
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(
+    feature = "bevy_reflect",
+    derive(bevy_reflect::Reflect),
+    reflect(Debug, Clone, PartialEq)
+)]
 pub struct RotationEventGroup {
     #[serde(rename = "f")]
     pub filter: Filter,
@@ -58,6 +68,11 @@ impl RotationEventGroup {
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(
+    feature = "bevy_reflect",
+    derive(bevy_reflect::Reflect),
+    reflect(Debug, Clone, PartialEq)
+)]
 pub struct RotationEventData {
     #[serde(rename = "b")]
     pub beat_offset: f32,

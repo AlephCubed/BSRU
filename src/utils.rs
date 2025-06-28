@@ -12,6 +12,11 @@ macro_rules! loose_enum {
         }
     ) => {
         #[derive(Debug, Clone, Eq, PartialEq)]
+        #[cfg_attr(
+            feature = "bevy_reflect",
+            derive(bevy_reflect::Reflect),
+            reflect(Debug, Clone, PartialEq)
+        )]
         $(#[$outer])*
         pub enum $name {
             $(
@@ -76,6 +81,11 @@ macro_rules! loose_enum {
         }
     ) => {
         #[derive(Debug, Clone, Eq, PartialEq)]
+        #[cfg_attr(
+            feature = "bevy_reflect",
+            derive(bevy_reflect::Reflect),
+            reflect(Debug, Clone, PartialEq)
+        )]
         $(#[$outer])*
         pub enum $name {
             $(

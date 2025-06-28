@@ -6,6 +6,11 @@ use crate::{impl_get_beat_offset, impl_timed, loose_enum};
 use serde::{Deserialize, Serialize};
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(
+    feature = "bevy_reflect",
+    derive(bevy_reflect::Reflect),
+    reflect(Debug, Clone, PartialEq)
+)]
 pub struct ColorEventBox {
     #[serde(rename = "b")]
     pub beat: f32,
@@ -18,6 +23,11 @@ pub struct ColorEventBox {
 impl_timed!(ColorEventBox::beat);
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(
+    feature = "bevy_reflect",
+    derive(bevy_reflect::Reflect),
+    reflect(Debug, Clone, PartialEq)
+)]
 pub struct ColorEventGroup {
     #[serde(rename = "f")]
     pub filter: Filter,
@@ -54,6 +64,11 @@ impl ColorEventGroup {
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(
+    feature = "bevy_reflect",
+    derive(bevy_reflect::Reflect),
+    reflect(Debug, Clone, PartialEq)
+)]
 pub struct ColorEventData {
     #[serde(rename = "b")]
     pub beat_offset: f32,
