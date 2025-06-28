@@ -40,9 +40,7 @@ macro_rules! loose_enum {
                 S: serde::Serializer,
             {
                 match self {
-                    $(
-                        $name::$variant => str::serialize($value, serializer),
-                    )+
+                    $( $name::$variant => str::serialize($value, serializer), )+
                     $name::Unknown(val) => str::serialize(val, serializer),
                 }
             }
@@ -53,6 +51,15 @@ macro_rules! loose_enum {
                 match value.as_str() {
                     $( $value => $name::$variant, )+
                     other => $name::Unknown(other.to_string()),
+                }
+            }
+        }
+
+        impl From<$name> for String {
+            fn from(value: $name) -> Self {
+                match value {
+                    $( $name::$variant => $value, )+
+                    $name::Unknown(val) => val,
                 }
             }
         }
@@ -97,9 +104,7 @@ macro_rules! loose_enum {
                 S: serde::Serializer,
             {
                 match self {
-                    $(
-                        $name::$variant => $ty::serialize(&$value, serializer),
-                    )+
+                    $( $name::$variant => $ty::serialize(&$value, serializer), )+
                     $name::Unknown(val) => $ty::serialize(val, serializer),
                 }
             }
@@ -110,6 +115,15 @@ macro_rules! loose_enum {
                 match value {
                     $( $value => $name::$variant, )+
                     other => $name::Unknown(other),
+                }
+            }
+        }
+
+        impl From<$name> for $ty {
+            fn from(value: $name) -> Self {
+                match value {
+                    $( $name::$variant => $value, )+
+                    $name::Unknown(val) => val,
                 }
             }
         }
