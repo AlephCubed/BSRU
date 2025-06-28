@@ -1,8 +1,8 @@
 use crate::difficulty::lightshow::easing::Easing;
 use crate::difficulty::lightshow::filter::Filter;
 use crate::difficulty::lightshow::{Axis, DistributionType, TransitionType};
-use crate::impl_timed;
 use crate::utils::LooseBool;
+use crate::{impl_get_beat_offset, impl_timed};
 use serde::{Deserialize, Serialize};
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -39,6 +39,21 @@ pub struct TranslationEventGroup {
     pub invert_axis: LooseBool,
     #[serde(rename = "l")]
     pub data: Vec<TranslationEventData>,
+}
+
+impl_get_beat_offset!(TranslationEventGroup);
+
+impl TranslationEventGroup {
+    pub fn get_translation_offset(&self, light_id: i32, group_size: i32) -> f32 {
+        self.translation_dist_type.compute_offset(
+            light_id,
+            group_size,
+            &self.filter,
+            self.translation_dist_value,
+            self.data.last().map(|data| data.beat_offset),
+            Some(self.translation_dist_easing),
+        )
+    }
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]

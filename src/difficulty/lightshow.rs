@@ -5,6 +5,8 @@ pub mod filter;
 pub mod rotation;
 pub mod translation;
 
+use crate::difficulty::lightshow::easing::Easing;
+use crate::difficulty::lightshow::filter::Filter;
 use crate::loose_enum;
 
 loose_enum! {
@@ -29,10 +31,61 @@ loose_enum! {
     }
 }
 
+impl DistributionType {
+    fn compute_offset(
+        &self,
+        light_id: i32,
+        group_size: i32,
+        filter: &Filter,
+        dist_value: f32,
+        last_data_offset: Option<f32>,
+        easing: Option<Easing>,
+    ) -> f32 {
+        let filtered_size = filter.count_filtered(group_size) as f32;
+        let filtered_id = filter.get_relative_index(light_id, group_size) as f32;
+
+        match self {
+            DistributionType::Wave => {
+                let mut modified_value = dist_value;
+                if let Some(offset) = last_data_offset {
+                    modified_value -= offset;
+                }
+
+                let mut fraction = filtered_id / filtered_size;
+                if let Some(easing) = easing {
+                    fraction = easing.ease(fraction);
+                }
+
+                fraction * modified_value.max(0.0)
+            }
+            DistributionType::Step => dist_value * filtered_id,
+            DistributionType::Unknown(_) => 0.0,
+        }
+    }
+}
+
+#[macro_export]
+macro_rules! impl_get_beat_offset {
+    ($ident:ident) => {
+        impl $ident {
+            pub fn get_beat_offset(&self, light_id: i32, group_size: i32) -> f32 {
+                self.beat_dist_type.compute_offset(
+                    light_id,
+                    group_size,
+                    &self.filter,
+                    self.beat_dist_value,
+                    self.data.last().map(|data| data.beat_offset),
+                    None,
+                )
+            }
+        }
+    };
+}
+
 loose_enum! {
     /// Controls how the value is changed from the previous event.
     /// - Transition: The value will blend from the previous event's value, using the
-    /// [easing](easing::Easing) value.
+    /// [easing](Easing) value.
     /// - Extend: The event's value will be ignored, replaced with the values from the previous event.
     ///
     /// More info [here](https://bsmg.wiki/mapping/map-format/lightshow.html#light-rotation-events-type).
@@ -51,5 +104,161 @@ loose_enum! {
         X = 0,
         Y = 1,
         Z = 2,
+    }
+}
+
+// More readable concrete tests are available in the `color` module.
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::difficulty::lightshow::filter::FilterType;
+    use crate::utils::LooseBool;
+
+    #[test]
+    fn wave() {
+        for i in 0..12 {
+            assert_eq!(
+                DistributionType::Wave.compute_offset(i, 12, &Filter::default(), 12.0, None, None),
+                i as f32
+            );
+        }
+    }
+
+    #[test]
+    fn step() {
+        for i in 0..12 {
+            assert_eq!(
+                DistributionType::Step.compute_offset(i, 12, &Filter::default(), 1.0, None, None),
+                i as f32
+            );
+        }
+    }
+
+    #[test]
+    fn wave_with_division_filter() {
+        for i in 0..6 {
+            assert_eq!(
+                DistributionType::Wave.compute_offset(
+                    i + 6,
+                    12,
+                    &Filter {
+                        filter_type: FilterType::Division,
+                        parameter1: 2,
+                        parameter2: 1,
+                        ..Default::default()
+                    },
+                    6.0,
+                    None,
+                    None
+                ),
+                i as f32
+            );
+        }
+    }
+
+    #[test]
+    fn step_with_division_filter() {
+        for i in 0..6 {
+            assert_eq!(
+                DistributionType::Step.compute_offset(
+                    i + 6,
+                    12,
+                    &Filter {
+                        filter_type: FilterType::Division,
+                        parameter1: 2,
+                        parameter2: 1,
+                        ..Default::default()
+                    },
+                    1.0,
+                    None,
+                    None
+                ),
+                i as f32
+            );
+        }
+    }
+
+    #[test]
+    fn wave_with_step_filter() {
+        for i in 0..6 {
+            assert_eq!(
+                DistributionType::Wave.compute_offset(
+                    i * 2,
+                    12,
+                    &Filter {
+                        filter_type: FilterType::StepAndOffset,
+                        parameter1: 0,
+                        parameter2: 2,
+                        ..Default::default()
+                    },
+                    6.0,
+                    None,
+                    None
+                ),
+                i as f32
+            );
+        }
+    }
+
+    #[test]
+    fn step_with_step_filter() {
+        for i in 0..6 {
+            assert_eq!(
+                DistributionType::Step.compute_offset(
+                    i * 2,
+                    12,
+                    &Filter {
+                        filter_type: FilterType::StepAndOffset,
+                        parameter1: 0,
+                        parameter2: 2,
+                        ..Default::default()
+                    },
+                    1.0,
+                    None,
+                    None
+                ),
+                i as f32
+            );
+        }
+    }
+
+    #[test]
+    fn wave_with_reverse_filter() {
+        for i in 0..12 {
+            assert_eq!(
+                DistributionType::Wave.compute_offset(
+                    i,
+                    12,
+                    &Filter {
+                        reverse: LooseBool::True,
+                        ..Default::default()
+                    },
+                    12.0,
+                    None,
+                    None
+                ),
+                12.0 - i as f32
+            );
+        }
+    }
+
+    #[test]
+    fn step_with_reverse_filter() {
+        for i in 0..12 {
+            assert_eq!(
+                DistributionType::Step.compute_offset(
+                    i,
+                    12,
+                    &Filter {
+                        reverse: LooseBool::True,
+                        ..Default::default()
+                    },
+                    1.0,
+                    None,
+                    None
+                ),
+                12.0 - i as f32
+            );
+        }
     }
 }

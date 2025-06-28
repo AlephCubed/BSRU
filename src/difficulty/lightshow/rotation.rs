@@ -2,7 +2,7 @@ use crate::difficulty::lightshow::easing::Easing;
 use crate::difficulty::lightshow::filter::Filter;
 use crate::difficulty::lightshow::{Axis, DistributionType, TransitionType};
 use crate::utils::LooseBool;
-use crate::{impl_timed, loose_enum};
+use crate::{impl_get_beat_offset, impl_timed, loose_enum};
 use serde::{Deserialize, Serialize};
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -40,6 +40,21 @@ pub struct RotationEventGroup {
     pub invert_axis: LooseBool,
     #[serde(rename = "l")]
     pub data: Vec<RotationEventData>,
+}
+
+impl_get_beat_offset!(RotationEventGroup);
+
+impl RotationEventGroup {
+    pub fn get_rotation_offset(&self, light_id: i32, group_size: i32) -> f32 {
+        self.rotation_dist_type.compute_offset(
+            light_id,
+            group_size,
+            &self.filter,
+            self.rotation_dist_value,
+            self.data.last().map(|data| data.beat_offset),
+            self.rotation_dist_easing,
+        )
+    }
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]

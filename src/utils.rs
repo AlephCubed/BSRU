@@ -58,7 +58,7 @@ macro_rules! loose_enum {
         impl From<$name> for String {
             fn from(value: $name) -> Self {
                 match value {
-                    $( $name::$variant => $value, )+
+                    $( $name::$variant => $value.to_string(), )+
                     $name::Unknown(val) => val,
                 }
             }

@@ -2,7 +2,7 @@ use crate::difficulty::lightshow::DistributionType;
 use crate::difficulty::lightshow::easing::Easing;
 use crate::difficulty::lightshow::filter::Filter;
 use crate::utils::LooseBool;
-use crate::{impl_timed, loose_enum};
+use crate::{impl_get_beat_offset, impl_timed, loose_enum};
 use serde::{Deserialize, Serialize};
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -38,49 +38,18 @@ pub struct ColorEventGroup {
     pub data: Vec<ColorEventData>,
 }
 
+impl_get_beat_offset!(ColorEventGroup);
+
 impl ColorEventGroup {
-    pub fn get_beat_offset(&self, light_id: i32, group_size: i32) -> f32 {
-        let filtered_size = self.filter.count_filtered(group_size) as f32;
-        let filtered_id = self.filter.get_relative_index(light_id, group_size) as f32;
-
-        match self.beat_dist_type {
-            DistributionType::Wave => {
-                let mut modified_value = self.beat_dist_value;
-
-                if let Some(data) = self.data.last() {
-                    modified_value -= data.beat_offset;
-                }
-
-                let fraction = filtered_id / filtered_size;
-                fraction * modified_value.max(0.0)
-            }
-            DistributionType::Step => self.beat_dist_value * filtered_id,
-            DistributionType::Unknown(_) => 0.0,
-        }
-    }
-
     pub fn get_brightness_offset(&self, light_id: i32, group_size: i32) -> f32 {
-        let filtered_size = self.filter.count_filtered(group_size) as f32;
-        let filtered_id = self.filter.get_relative_index(light_id, group_size) as f32;
-
-        match self.bright_dist_type {
-            DistributionType::Wave => {
-                let mut modified_value = self.bright_dist_value;
-
-                if let Some(data) = self.data.last() {
-                    modified_value -= data.beat_offset;
-                }
-
-                let fraction = match self.bright_dist_easing {
-                    Some(easing) => easing.ease(filtered_id / filtered_size),
-                    None => filtered_id / filtered_size,
-                };
-
-                fraction * modified_value.max(0.0)
-            }
-            DistributionType::Step => self.bright_dist_value * filtered_id,
-            DistributionType::Unknown(_) => 0.0,
-        }
+        self.bright_dist_type.compute_offset(
+            light_id,
+            group_size,
+            &self.filter,
+            self.bright_dist_value,
+            self.data.last().map(|data| data.beat_offset),
+            self.bright_dist_easing,
+        )
     }
 }
 

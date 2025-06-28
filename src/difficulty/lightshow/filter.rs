@@ -253,7 +253,6 @@ mod tests {
                 ..Default::default()
             };
 
-            println!("{outer}");
             assert!((0..outer).all(|i| !filter.is_in_filter(i, 12)));
             assert!((outer..12).all(|i| filter.is_in_filter(i, 12)));
             assert_eq!(filter.count_filtered(12), 12 - outer);
