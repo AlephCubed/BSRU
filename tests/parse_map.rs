@@ -22,10 +22,10 @@ fn parse_beatmaps() {
         let map: Beatmap = serde_json::from_reader(info_file).expect("Invalid info file");
 
         for set in map.difficulty_sets {
-            println!("\t{}", set.characteristic);
+            println!("\t{:?}", set.characteristic);
 
             for dif in set.difficulties {
-                println!("\t\t{} ({})", dif.name, dif.rank);
+                println!("\t\t{} ({:?})", dif.name, dif.rank);
 
                 let mut dif_path = path.clone();
                 dif_path.push(dif.file);
