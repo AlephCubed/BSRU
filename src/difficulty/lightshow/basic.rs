@@ -5,6 +5,7 @@ use serde::{Deserialize, Serialize};
 pub struct BasicEvent {
     #[serde(rename = "b")]
     pub beat: f32,
+    /// More info [here](https://bsmg.wiki/mapping/map-format/lightshow.html#basic-events-type).
     #[serde(rename = "et")]
     pub event_type: i32,
     #[serde(rename = "i")]

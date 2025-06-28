@@ -47,6 +47,15 @@ macro_rules! loose_enum {
                 }
             }
         }
+
+        impl From<String> for $name {
+            fn from(value: String) -> Self {
+                match value.as_str() {
+                    $( $value => $name::$variant, )+
+                    other => $name::Unknown(other.to_string()),
+                }
+            }
+        }
     };
     // All other types:
     (
@@ -92,6 +101,15 @@ macro_rules! loose_enum {
                         $name::$variant => $ty::serialize(&$value, serializer),
                     )+
                     $name::Unknown(val) => $ty::serialize(val, serializer),
+                }
+            }
+        }
+
+        impl From<$ty> for $name {
+            fn from(value: $ty) -> Self {
+                match value {
+                    $( $value => $name::$variant, )+
+                    other => $name::Unknown(other),
                 }
             }
         }
