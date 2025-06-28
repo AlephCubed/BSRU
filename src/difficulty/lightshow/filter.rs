@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 /// Controls which light indices are affected by event boxes.
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Filter {
-    // V3
+    // V3.0:
     #[serde(rename = "f")]
     pub filter_type: FilterType,
     /// Dependent on the [`FilterType`]
@@ -16,7 +16,7 @@ pub struct Filter {
     pub parameter2: i32,
     #[serde(rename = "r")]
     pub reverse: LooseBool,
-    // V3.1
+    // V3.1:
     /// Only present in difficulty file V3.1 or higher.
     #[serde(rename = "c")]
     pub chunks: Option<i32>,

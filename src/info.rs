@@ -109,7 +109,7 @@ loose_enum! {
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct DifficultySet {
     #[serde(rename = "_beatmapCharacteristicName")]
-    pub characteristic: String,
+    pub characteristic: Characteristic,
     #[serde(rename = "_difficultyBeatmaps")]
     pub difficulties: Vec<DifficultyInfo>,
 }
@@ -135,7 +135,7 @@ pub struct DifficultyInfo {
     #[serde(rename = "_difficulty")]
     pub name: String,
     #[serde(rename = "_difficultyRank")]
-    pub rank: i32,
+    pub rank: DifficultyRank,
     #[serde(rename = "_beatmapFilename")]
     pub file: String,
     #[doc(alias = "node_jump_speed")]
@@ -144,4 +144,16 @@ pub struct DifficultyInfo {
     #[doc(alias = "node_jump_distance")]
     #[serde(rename = "_noteJumpStartBeatOffset")]
     pub njd: f32,
+}
+
+loose_enum! {
+    #[derive(Default)]
+    DifficultyRank: i32 {
+        Easy = 1,
+        Normal = 3,
+        Hard = 5,
+        #[default]
+        Expert = 7,
+        ExpertPlus = 9,
+    }
 }
