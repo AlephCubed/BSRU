@@ -6,7 +6,6 @@ use crate::macros::LooseBool;
 use serde::{Deserialize, Serialize};
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
 pub struct ColorEventBox {
     #[serde(rename = "b")]
     pub beat: f32,
@@ -17,7 +16,6 @@ pub struct ColorEventBox {
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
 pub struct ColorEventGroup {
     #[serde(rename = "f")]
     pub filter: Filter,
@@ -39,7 +37,6 @@ pub struct ColorEventGroup {
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
 pub struct ColorEventData {
     #[serde(rename = "b")]
     pub beat_offset: f32,

@@ -5,7 +5,6 @@ use crate::macros::LooseBool;
 use serde::{Deserialize, Serialize};
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
 pub struct TranslationEventBox {
     #[serde(rename = "b")]
     pub beat: f32,
@@ -16,7 +15,6 @@ pub struct TranslationEventBox {
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
 pub struct TranslationEventGroup {
     #[serde(rename = "f")]
     pub filter: Filter,
@@ -41,7 +39,6 @@ pub struct TranslationEventGroup {
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
 pub struct TranslationEventData {
     #[serde(rename = "b")]
     pub beat_offset: f32,

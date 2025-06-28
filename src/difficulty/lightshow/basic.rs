@@ -26,7 +26,6 @@ pub struct Waypoints {
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
 pub struct ColorBoostEvent {
     #[serde(rename = "b")]
     pub beat: f32,
@@ -38,7 +37,6 @@ pub struct ColorBoostEvent {
 /// More info [here](https://bsmg.wiki/mapping/map-format/lightshow.html#special-event-keywords).
 #[doc(alias = "KeywordEvent")]
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
 pub struct SpecialEvent {
     #[serde(rename = "d")]
     pub keywords: Option<Vec<Keyword>>,

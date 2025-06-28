@@ -2,7 +2,6 @@ use crate::loose_enum;
 use serde::{Deserialize, Serialize};
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
 pub struct Note {
     #[serde(rename = "b")]
     pub beat: f32,
@@ -63,7 +62,6 @@ impl CutDirection {
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
 pub struct Bomb {
     #[serde(rename = "b")]
     pub beat: f32,
@@ -74,7 +72,6 @@ pub struct Bomb {
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
 pub struct Wall {
     #[serde(rename = "b")]
     pub beat: f32,
@@ -91,7 +88,6 @@ pub struct Wall {
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
 pub struct Arc {
     #[serde(rename = "b")]
     pub beat: f32,
@@ -132,7 +128,6 @@ loose_enum! {
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
 pub struct Chain {
     #[serde(rename = "b")]
     pub beat: f32,

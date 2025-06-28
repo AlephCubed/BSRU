@@ -11,7 +11,6 @@ pub struct LaneRotationEvent {
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
 pub struct BpmEvent {
     #[serde(rename = "b")]
     pub beat: f32,

@@ -4,7 +4,6 @@ use serde::{Deserialize, Serialize};
 
 /// Controls which light indices are affected by event boxes.
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
 pub struct Filter {
     // V3
     #[serde(rename = "f")]
