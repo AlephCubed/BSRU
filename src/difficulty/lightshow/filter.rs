@@ -55,7 +55,8 @@ impl Filter {
     /// # Unknown
     /// If the [`FilterType`] is `Unknown` then the result will be `true`.
     /// # Panics
-    /// Will panic if the light id is greater than or equal to the group size.
+    /// Will panic if the light ID is greater than or equal to the group size.
+    #[must_use]
     pub fn is_in_filter(&self, mut light_id: i32, group_size: i32) -> bool {
         assert!(light_id < group_size);
 
@@ -71,7 +72,7 @@ impl Filter {
             }
             FilterType::StepAndOffset => {
                 let offset_light_id = light_id - self.parameter1;
-                offset_light_id % self.parameter2.max(1) == 0
+                offset_light_id % self.parameter2.max(1) == 0 && offset_light_id >= 0
             }
             FilterType::Unknown(_) => true,
         }
@@ -80,6 +81,7 @@ impl Filter {
     /// Returns the number of lights effected by the filter.
     /// # Unknown
     /// If the [`FilterType`] is `Unknown` then the result will be the same as `group_size`.
+    #[must_use]
     pub fn count_filtered(&self, group_size: i32) -> i32 {
         match self.filter_type {
             FilterType::Division => {
@@ -89,6 +91,32 @@ impl Filter {
             }
             FilterType::StepAndOffset => {
                 group_size / self.parameter2.max(1) - self.parameter1 / self.parameter2.max(1)
+            }
+            FilterType::Unknown(_) => group_size,
+        }
+    }
+
+    /// Returns the light ID relative to the filtered count.
+    /// # Unknown
+    /// If the [`FilterType`] is `Unknown` then the result will be the same as `light_id`.
+    /// # Panics
+    /// Will panic if the light ID is greater than or equal to the group size.
+    #[must_use]
+    pub fn get_relative_index(&self, mut light_id: i32, group_size: i32) -> i32 {
+        assert!(light_id < group_size);
+
+        if self.reverse.as_bool() {
+            light_id = group_size - light_id;
+        }
+
+        match self.filter_type {
+            FilterType::Division => {
+                let start = self.parameter2 * group_size / self.parameter1.max(1);
+                light_id - start
+            }
+            FilterType::StepAndOffset => {
+                let offset_light_id = light_id - self.parameter1;
+                offset_light_id / self.parameter2.max(1)
             }
             FilterType::Unknown(_) => group_size,
         }
@@ -133,6 +161,7 @@ mod tests {
         assert!((0..6).all(|i| filter.is_in_filter(i, 12)));
         assert!((6..12).all(|i| !filter.is_in_filter(i, 12)));
         assert_eq!(filter.count_filtered(12), 6);
+        assert!((0..6).all(|i| filter.get_relative_index(i, 12) == i));
     }
 
     #[test]
@@ -147,6 +176,7 @@ mod tests {
         assert!((0..6).all(|i| !filter.is_in_filter(i, 12)));
         assert!((6..12).all(|i| filter.is_in_filter(i, 12)));
         assert_eq!(filter.count_filtered(12), 6);
+        assert!((6..12).all(|i| filter.get_relative_index(i, 12) == i - 6));
     }
 
     #[test]
@@ -162,6 +192,7 @@ mod tests {
         assert!((0..6).all(|i| !filter.is_in_filter(i, 12)));
         assert!((6..12).all(|i| filter.is_in_filter(i, 12)));
         assert_eq!(filter.count_filtered(12), 6);
+        assert!((6..12).all(|i| filter.get_relative_index(i, 12) == 12 - i));
     }
 
     #[test]
@@ -177,6 +208,7 @@ mod tests {
         assert!((0..6).all(|i| filter.is_in_filter(i, 12)));
         assert!((6..12).all(|i| !filter.is_in_filter(i, 12)));
         assert_eq!(filter.count_filtered(12), 6);
+        assert!((0..6).all(|i| filter.get_relative_index(i, 12) == 6 - i));
     }
 
     #[test]
@@ -190,6 +222,7 @@ mod tests {
 
         assert!((0..12).all(|i| filter.is_in_filter(i, 12)));
         assert_eq!(filter.count_filtered(12), 12);
+        assert!((0..12).all(|i| filter.get_relative_index(i, 12) == i));
     }
 
     #[test]
@@ -203,19 +236,23 @@ mod tests {
 
         assert!((0..12).all(|i| filter.is_in_filter(i, 12)));
         assert_eq!(filter.count_filtered(12), 12);
+        assert!((0..12).all(|i| filter.get_relative_index(i, 12) == i));
     }
 
     #[test]
     fn step_start_index() {
-        for i in 0..12 {
+        for outer in 0..12 {
             let filter = Filter {
                 filter_type: FilterType::StepAndOffset,
-                parameter1: i,
+                parameter1: outer,
                 parameter2: 1,
                 ..Default::default()
             };
-            assert!((i..12).all(|i| filter.is_in_filter(i, 12)));
-            assert_eq!(filter.count_filtered(12), 12 - i);
+            println!("{outer}");
+            assert!((0..outer).all(|i| !filter.is_in_filter(i, 12)));
+            assert!((outer..12).all(|i| filter.is_in_filter(i, 12)));
+            assert_eq!(filter.count_filtered(12), 12 - outer);
+            assert!((outer..12).all(|i| filter.get_relative_index(i, 12) == i - outer));
         }
     }
 
@@ -230,6 +267,10 @@ mod tests {
 
         for i in 0..12 {
             assert_eq!(filter.is_in_filter(i, 12), i % 2 == 0);
+
+            if i % 2 == 0 {
+                assert_eq!(filter.get_relative_index(i, 12), i / 2);
+            }
         }
         assert_eq!(filter.count_filtered(12), 6);
     }
@@ -245,6 +286,10 @@ mod tests {
 
         for i in 0..12 {
             assert_eq!(filter.is_in_filter(i, 12), i % 2 != 0);
+
+            if i % 2 != 0 {
+                assert_eq!(filter.get_relative_index(i, 12), i / 2);
+            }
         }
         assert_eq!(filter.count_filtered(12), 6);
     }
