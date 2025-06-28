@@ -44,7 +44,6 @@ pub struct Beatmap {
     pub difficulty_sets: Vec<DifficultySet>,
 }
 
-// Todo: Serde rename is not supported by macro.
 loose_enum! {
     #[derive(Default)]
     Environment: String {
@@ -96,7 +95,6 @@ loose_enum! {
         BritneySpears = "BritneyEnvironment",
         Monstercat2 = "Monstercat2Environment",
         Metallica = "MetallicaEnvironment",
-        // Todo Add more.
     }
 }
 

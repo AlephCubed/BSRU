@@ -38,9 +38,10 @@ pub struct Difficulty {
     pub rotation_event_boxes: Vec<RotationEventBox>,
     /// Only present in difficulty file V3.2 or higher.
     #[serde(rename = "lightTranslationEventBoxGroups")]
-    pub translation_event_boxes: Option<Vec<TranslationEventBox>>, // Todo
+    pub translation_event_boxes: Option<Vec<TranslationEventBox>>,
     #[doc(alias = "keyword_events")]
     #[serde(rename = "basicEventTypesWithKeywords")]
     pub special_events: SpecialEvent,
-    pub use_normal_events_as_compatible_events: bool,
+    #[serde(rename = "useNormalEventsAsCompatibleEvents")]
+    pub use_compatible_events: bool,
 }
