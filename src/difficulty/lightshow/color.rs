@@ -38,6 +38,52 @@ pub struct ColorEventGroup {
     pub data: Vec<ColorEventData>,
 }
 
+impl ColorEventGroup {
+    pub fn get_beat_offset(&self, light_id: i32, group_size: i32) -> f32 {
+        let filtered_size = self.filter.count_filtered(group_size) as f32;
+        let filtered_id = self.filter.get_relative_index(light_id, group_size) as f32;
+
+        match self.beat_dist_type {
+            DistributionType::Wave => {
+                let mut modified_value = self.beat_dist_value;
+
+                if let Some(data) = self.data.last() {
+                    modified_value -= data.beat_offset;
+                }
+
+                let fraction = filtered_id / filtered_size;
+                fraction * modified_value.max(0.0)
+            }
+            DistributionType::Step => self.beat_dist_value * filtered_id,
+            DistributionType::Unknown(_) => 0.0,
+        }
+    }
+
+    pub fn get_brightness_offset(&self, light_id: i32, group_size: i32) -> f32 {
+        let filtered_size = self.filter.count_filtered(group_size) as f32;
+        let filtered_id = self.filter.get_relative_index(light_id, group_size) as f32;
+
+        match self.bright_dist_type {
+            DistributionType::Wave => {
+                let mut modified_value = self.bright_dist_value;
+
+                if let Some(data) = self.data.last() {
+                    modified_value -= data.beat_offset;
+                }
+
+                let fraction = match self.bright_dist_easing {
+                    Some(easing) => easing.ease(filtered_id / filtered_size),
+                    None => filtered_id / filtered_size,
+                };
+
+                fraction * modified_value.max(0.0)
+            }
+            DistributionType::Step => self.bright_dist_value * filtered_id,
+            DistributionType::Unknown(_) => 0.0,
+        }
+    }
+}
+
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ColorEventData {
     #[serde(rename = "b")]
@@ -70,5 +116,229 @@ loose_enum! {
         Primary = 0,
         Secondary = 1,
         White = 2,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::difficulty::lightshow::filter::FilterType;
+
+    #[test]
+    fn beat_wave() {
+        let group = ColorEventGroup {
+            beat_dist_type: DistributionType::Wave,
+            beat_dist_value: 12.0,
+            ..Default::default()
+        };
+
+        assert!((0..12).all(|i| group.get_beat_offset(i, 12) == i as f32));
+    }
+
+    #[test]
+    fn beat_step() {
+        let group = ColorEventGroup {
+            beat_dist_type: DistributionType::Step,
+            beat_dist_value: 1.0,
+            ..Default::default()
+        };
+
+        assert!((0..12).all(|i| group.get_beat_offset(i, 12) == i as f32));
+    }
+
+    #[test]
+    fn beat_wave_with_division_filter() {
+        let group = ColorEventGroup {
+            filter: Filter {
+                filter_type: FilterType::Division,
+                parameter1: 2,
+                parameter2: 1,
+                ..Default::default()
+            },
+            beat_dist_type: DistributionType::Wave,
+            beat_dist_value: 6.0,
+            ..Default::default()
+        };
+
+        assert!((0..6).all(|i| group.get_beat_offset(i + 6, 12) == i as f32));
+    }
+
+    #[test]
+    fn brightness_wave_with_division_filter() {
+        let group = ColorEventGroup {
+            filter: Filter {
+                filter_type: FilterType::Division,
+                parameter1: 2,
+                parameter2: 1,
+                ..Default::default()
+            },
+            bright_dist_type: DistributionType::Wave,
+            bright_dist_value: 6.0,
+            ..Default::default()
+        };
+
+        assert!((0..6).all(|i| group.get_brightness_offset(i + 6, 12) == i as f32));
+    }
+
+    #[test]
+    fn beat_step_with_division_filter() {
+        let group = ColorEventGroup {
+            filter: Filter {
+                filter_type: FilterType::Division,
+                parameter1: 2,
+                parameter2: 1,
+                ..Default::default()
+            },
+            beat_dist_type: DistributionType::Step,
+            beat_dist_value: 1.0,
+            ..Default::default()
+        };
+
+        assert!((0..6).all(|i| group.get_beat_offset(i + 6, 12) == i as f32));
+    }
+
+    #[test]
+    fn brightness_step_with_division_filter() {
+        let group = ColorEventGroup {
+            filter: Filter {
+                filter_type: FilterType::Division,
+                parameter1: 2,
+                parameter2: 1,
+                ..Default::default()
+            },
+            bright_dist_type: DistributionType::Step,
+            bright_dist_value: 1.0,
+            ..Default::default()
+        };
+
+        assert!((0..6).all(|i| group.get_brightness_offset(i + 6, 12) == i as f32));
+    }
+
+    #[test]
+    fn beat_wave_with_step_filter() {
+        let group = ColorEventGroup {
+            filter: Filter {
+                filter_type: FilterType::StepAndOffset,
+                parameter1: 0,
+                parameter2: 2,
+                ..Default::default()
+            },
+            beat_dist_type: DistributionType::Wave,
+            beat_dist_value: 6.0,
+            ..Default::default()
+        };
+
+        assert!((0..6).all(|i| group.get_beat_offset(i * 2, 12) == i as f32));
+    }
+
+    #[test]
+    fn brightness_wave_with_step_filter() {
+        let group = ColorEventGroup {
+            filter: Filter {
+                filter_type: FilterType::StepAndOffset,
+                parameter1: 0,
+                parameter2: 2,
+                ..Default::default()
+            },
+            bright_dist_type: DistributionType::Wave,
+            bright_dist_value: 6.0,
+            ..Default::default()
+        };
+
+        assert!((0..6).all(|i| group.get_brightness_offset(i * 2, 12) == i as f32));
+    }
+
+    #[test]
+    fn beat_step_with_step_filter() {
+        let group = ColorEventGroup {
+            filter: Filter {
+                filter_type: FilterType::StepAndOffset,
+                parameter1: 0,
+                parameter2: 2,
+                ..Default::default()
+            },
+            beat_dist_type: DistributionType::Step,
+            beat_dist_value: 1.0,
+            ..Default::default()
+        };
+
+        assert!((0..6).all(|i| group.get_beat_offset(i * 2, 12) == i as f32));
+    }
+
+    #[test]
+    fn brightness_step_with_step_filter() {
+        let group = ColorEventGroup {
+            filter: Filter {
+                filter_type: FilterType::StepAndOffset,
+                parameter1: 0,
+                parameter2: 2,
+                ..Default::default()
+            },
+            bright_dist_type: DistributionType::Step,
+            bright_dist_value: 1.0,
+            ..Default::default()
+        };
+
+        assert!((0..6).all(|i| group.get_brightness_offset(i * 2, 12) == i as f32));
+    }
+
+    #[test]
+    fn beat_wave_with_reverse_filter() {
+        let group = ColorEventGroup {
+            filter: Filter {
+                reverse: LooseBool::True,
+                ..Default::default()
+            },
+            beat_dist_type: DistributionType::Wave,
+            beat_dist_value: 12.0,
+            ..Default::default()
+        };
+
+        assert!((0..12).all(|i| group.get_beat_offset(i, 12) == 12.0 - i as f32));
+    }
+
+    #[test]
+    fn brightness_wave_with_reverse_filter() {
+        let group = ColorEventGroup {
+            filter: Filter {
+                reverse: LooseBool::True,
+                ..Default::default()
+            },
+            bright_dist_type: DistributionType::Wave,
+            bright_dist_value: 12.0,
+            ..Default::default()
+        };
+
+        assert!((0..12).all(|i| group.get_brightness_offset(i, 12) == 12.0 - i as f32));
+    }
+
+    #[test]
+    fn beat_step_with_reverse_filter() {
+        let group = ColorEventGroup {
+            filter: Filter {
+                reverse: LooseBool::True,
+                ..Default::default()
+            },
+            beat_dist_type: DistributionType::Step,
+            beat_dist_value: 1.0,
+            ..Default::default()
+        };
+
+        assert!((0..12).all(|i| group.get_beat_offset(i, 12) == 12.0 - i as f32));
+    }
+
+    #[test]
+    fn brightness_step_with_reverse_filter() {
+        let group = ColorEventGroup {
+            filter: Filter {
+                reverse: LooseBool::True,
+                ..Default::default()
+            },
+            bright_dist_type: DistributionType::Step,
+            bright_dist_value: 1.0,
+            ..Default::default()
+        };
+
+        assert!((0..12).all(|i| group.get_brightness_offset(i, 12) == 12.0 - i as f32));
     }
 }
