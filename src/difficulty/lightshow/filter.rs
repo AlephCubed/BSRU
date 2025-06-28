@@ -18,16 +18,21 @@ pub struct Filter {
     #[serde(rename = "r")]
     pub reverse: LooseBool,
     // V3.1
+    /// Only present in difficulty file V3.1 or higher.
     #[serde(rename = "c")]
-    pub chunks: i32,
+    pub chunks: Option<i32>,
+    /// Only present in difficulty file V3.1 or higher.
     #[serde(rename = "n")]
-    pub random_behaviour: i32,
+    pub random_behaviour: Option<i32>,
+    /// Only present in difficulty file V3.1 or higher.
     #[serde(rename = "s")]
-    pub random_seed: i32,
+    pub random_seed: Option<i32>,
+    /// Only present in difficulty file V3.1 or higher.
     #[serde(rename = "d")]
-    pub limit_behaviour: i32,
+    pub limit_behaviour: Option<i32>,
+    /// Only present in difficulty file V3.1 or higher.
     #[serde(rename = "l")]
-    pub limit_percent: i32,
+    pub limit_percent: Option<f32>,
 }
 
 loose_enum! {
@@ -43,8 +48,8 @@ loose_enum! {
     /// Alternates selecting and not selecting lights.
     /// - Parameter 1 is the index of the first light that will be selected, starting at 0.
     /// - Parameter 2 determines the number of lights that will be skipped between selections.
-    #[derive(Default)]
-    FilterType {
+    #[derive(Default, Copy)]
+    FilterType: i32 {
         #[default]
         //Todo Doesn't match wiki
         Division = 1,

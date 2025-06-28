@@ -1,8 +1,9 @@
 #[macro_export]
 macro_rules! loose_enum {
+    // Special case for strings:
     (
         $(#[$outer:meta])*
-        $name:ident
+        $name:ident: String
         {
             $(
                 $(#[$meta:meta])*
@@ -10,14 +11,14 @@ macro_rules! loose_enum {
             ),+ $(,)?
         }
     ) => {
-        #[derive(Debug, Clone, Copy, Eq, PartialEq)]
+        #[derive(Debug, Clone, Eq, PartialEq)]
         $(#[$outer])*
         pub enum $name {
             $(
                 $(#[$meta])*
                 $variant
             ),+,
-            Unknown(i32),
+            Unknown(String),
         }
 
         impl<'de> serde::Deserialize<'de> for $name {
@@ -25,7 +26,55 @@ macro_rules! loose_enum {
             where
                 D: serde::Deserializer<'de>,
             {
-                let val = i32::deserialize(deserializer)?;
+                let val = String::deserialize(deserializer)?;
+                Ok(match val.as_str() {
+                    $( $value => $name::$variant, )+
+                    other => $name::Unknown(other.to_string()),
+                })
+            }
+        }
+
+        impl serde::Serialize for $name {
+            fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+            where
+                S: serde::Serializer,
+            {
+                match self {
+                    $(
+                        $name::$variant => str::serialize($value, serializer),
+                    )+
+                    $name::Unknown(val) => str::serialize(val, serializer),
+                }
+            }
+        }
+    };
+    // All other types:
+    (
+        $(#[$outer:meta])*
+        $name:ident: $ty:ident
+        {
+            $(
+                $(#[$meta:meta])*
+                $variant:ident = $value:expr
+            ),+ $(,)?
+        }
+    ) => {
+        #[derive(Debug, Clone, Eq, PartialEq)]
+        $(#[$outer])*
+        pub enum $name {
+            $(
+                $(#[$meta])*
+                $variant
+            ),+,
+            Unknown($ty),
+        }
+
+        impl<'de> serde::Deserialize<'de> for $name {
+            fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+            where
+                D: serde::Deserializer<'de>,
+            {
+                let val = $ty::deserialize(deserializer)?;
                 Ok(match val {
                     $( $value => $name::$variant, )+
                     other => $name::Unknown(other),
@@ -40,9 +89,9 @@ macro_rules! loose_enum {
             {
                 match self {
                     $(
-                        $name::$variant => serializer.serialize_i32($value),
+                        $name::$variant => $ty::serialize(&$value, serializer),
                     )+
-                    $name::Unknown(val) => serializer.serialize_i32(*val),
+                    $name::Unknown(val) => $ty::serialize(val, serializer),
                 }
             }
         }
@@ -50,8 +99,8 @@ macro_rules! loose_enum {
 }
 
 loose_enum! {
-    #[derive(Default)]
-    LooseBool {
+    #[derive(Default, Copy)]
+    LooseBool: i32 {
         #[default]
         False = 0,
         True = 1,

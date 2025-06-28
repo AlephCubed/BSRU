@@ -2,8 +2,8 @@ use crate::loose_enum;
 use simple_easing::*;
 
 loose_enum! {
-    #[derive(Default)]
-    Easing {
+    #[derive(Default, Copy)]
+    Easing: i32 {
         Linear = 0,
         InQuad = 1,
         OutQuad = 2,

@@ -19,8 +19,8 @@ pub struct Note {
 }
 
 loose_enum! {
-    #[derive(Default)]
-    NoteColor {
+    #[derive(Default, Copy)]
+    NoteColor: i32 {
         #[default]
         Left = 0,
         Right = 1,
@@ -28,8 +28,8 @@ loose_enum! {
 }
 
 loose_enum! {
-    #[derive(Default)]
-    CutDirection {
+    #[derive(Default, Copy)]
+    CutDirection: i32 {
         #[default]
         Up = 0,
         Down = 1,
@@ -122,8 +122,8 @@ pub struct Arc {
 }
 
 loose_enum! {
-    #[derive(Default)]
-    MidAnchorMode {
+    #[derive(Default, Copy)]
+    MidAnchorMode: i32 {
         #[default]
         Straight = 0,
         Clockwise = 1,
@@ -155,5 +155,5 @@ pub struct Chain {
     #[serde(rename = "sc")]
     pub link_count: i32,
     #[serde(rename = "s")]
-    pub link_squish: i32,
+    pub link_squish: f32,
 }

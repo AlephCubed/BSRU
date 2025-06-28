@@ -28,11 +28,12 @@ pub struct RotationEventGroup {
     #[serde(rename = "t")]
     pub rotation_dist_type: DistributionType,
     #[serde(rename = "s")]
-    pub rotation_dist_value: i32,
+    pub rotation_dist_value: f32,
     #[serde(rename = "b")]
     pub rotation_dist_effect_first: LooseBool,
+    /// Only present in difficulty file V3.2 or higher.
     #[serde(rename = "i")]
-    pub rotation_dist_easing: Easing,
+    pub rotation_dist_easing: Option<Easing>,
     #[serde(rename = "a")]
     pub axis: i32,
     #[serde(rename = "r")]
@@ -42,8 +43,8 @@ pub struct RotationEventGroup {
 }
 
 loose_enum! {
-    #[derive(Default)]
-    Axis {
+    #[derive(Default, Copy)]
+    Axis: i32 {
         #[default]
         X = 0,
         Y = 1,
@@ -60,11 +61,11 @@ pub struct RotationEventData {
     pub transition_type: RotationTransitionType,
     #[serde(rename = "e")]
     pub easing: Easing,
-    #[serde(rename = "l")]
-    pub degrees: i32,
     #[serde(rename = "r")]
-    pub direction: RotationDirection,
+    pub degrees: f32,
     #[serde(rename = "o")]
+    pub direction: RotationDirection,
+    #[serde(rename = "l")]
     pub loops: i32,
 }
 
@@ -75,8 +76,8 @@ loose_enum! {
     /// and the values from the previous event will be used instead.
     ///
     /// More info [here](https://bsmg.wiki/mapping/map-format/lightshow.html#light-rotation-events-type).
-    #[derive(Default)]
-    RotationTransitionType {
+    #[derive(Default, Copy)]
+    RotationTransitionType: i32 {
         #[default]
         Transition = 0,
         Extend = 1,
@@ -86,8 +87,8 @@ loose_enum! {
 loose_enum! {
     /// Determines the direction that the rotation event will rotate.
     /// Automatic will choose the shortest distance.
-    #[derive(Default)]
-    RotationDirection {
+    #[derive(Default, Copy)]
+    RotationDirection: i32 {
         #[default]
         Automatic = 0,
         Clockwise = 1,

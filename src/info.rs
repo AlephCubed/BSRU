@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct InfoV2 {
+pub struct Beatmap {
     #[serde(rename = "_version")]
     pub version: String,
     #[serde(rename = "_songName")]
@@ -21,7 +21,7 @@ pub struct InfoV2 {
     #[serde(rename = "_shuffle")]
     pub shuffle: i32,
     #[serde(rename = "_shufflePeriod")]
-    pub shuffle_period: i32,
+    pub shuffle_period: f32,
     #[serde(rename = "_previewStartTime")]
     pub preview_start_time: f32,
     #[serde(rename = "_previewDuration")]
@@ -34,10 +34,12 @@ pub struct InfoV2 {
     pub environment: Environment,
     #[serde(rename = "_allDirectionsEnvironmentName")]
     pub all_directions_environment: AllDirectionEnvironment,
+    /// Only present in info file V2.1 or higher.
     #[serde(rename = "_environmentNames")]
-    pub environments: Vec<Environment>,
+    pub environments: Option<Vec<Environment>>,
     #[serde(rename = "_colorSchemes")]
-    pub color_schemes: Vec<Value>, // Todo
+    /// Only present in info file V2.1 or higher.
+    pub color_schemes: Option<Vec<Value>>, // Todo
     #[serde(rename = "_difficultyBeatmapSets")]
     pub difficulty_sets: Vec<DifficultySet>,
 }
@@ -45,57 +47,54 @@ pub struct InfoV2 {
 // Todo: Serde rename is not supported by macro.
 loose_enum! {
     #[derive(Default)]
-    Environment {
-        #[doc(alias = "TheFirst")]
+    Environment: String {
         #[default]
-        DefaultEnvironment = 0,
+        TheFirst = "DefaultEnvironment",
 
-        TriangleEnvironment = 1,
-        NiceEnvironment = 2,
-        BigMirrorEnvironment = 3,
-        KDAEnvironment = 4,
-        MonstercatEnvironment = 5,
-        CrabRaveEnvironment = 6,
-        DragonsEnvironment = 7,
-        OriginsEnvironment = 8,
-        PanicEnvironment = 9,
-        RocketEnvironment = 10,
-        GreenDayEnvironment = 11,
-        GreenDayGrenadeEnvironment = 12,
-        TimbalandEnvironment = 13,
-        FitBeatEnvironment = 14,
-        LinkinParkEnvironment = 15,
-        BTSEnvironment = 16,
-        KaleidoscopeEnvironment = 17,
-        InterscopeEnvironment = 18,
-        SkrillexEnvironment = 19,
-        #[doc(alias = "BillieEilish")]
-        BillieEnvironment = 20,
-        #[doc(alias = "Spooky")]
-        HalloweenEnvironment = 21,
-        #[doc(alias = "LadyGaga")]
-        GagaEnvironment = 22,
+        Triangle = "TriangleEnvironment",
+        Nice = "NiceEnvironment",
+        BigMirror = "BigMirrorEnvironment",
+        KDA = "KDAEnvironment",
+        Monstercat = "MonstercatEnvironment",
+        CrabRave = "CrabRaveEnvironment",
+        Dragons = "DragonsEnvironment",
+        Origins = "OriginsEnvironment",
+        Panic = "PanicEnvironment",
+        Rocket = "RocketEnvironment",
+        GreenDay = "GreenDayEnvironment",
+        GreenDayGrenade = "GreenDayGrenadeEnvironment",
+        Timbaland = "TimbalandEnvironment",
+        FitBeat = "FitBeatEnvironment",
+        LinkinPark = "LinkinParkEnvironment",
+        BTS = "BTSEnvironment",
+        Kaleidoscope = "KaleidoscopeEnvironment",
+        Interscope = "InterscopeEnvironment",
+        Skrillex = "SkrillexEnvironment",
+        BillieEilish = "BillieEnvironment",
+        #[doc(alias = "Halloween")]
+        Spooky = "HalloweenEnvironment",
+        LadyGaga = "GagaEnvironment",
         // V3:
-        WeaveEnvironment = 23,
-        #[doc(alias = "FallOutBoy")]
-        PyroEnvironment = 24,
-        EDMEnvironment = 25,
-        TheSecondEnvironment = 26,
-        LizzoEnvironment = 27,
-        TheWeekndEnvironment = 28,
-        RockMixtapeEnvironment = 29,
-        Dragons2Environment = 30,
-        Panic2Environment = 31,
-        QueenEnvironment = 32,
+        Weave = "WeaveEnvironment",
+        #[doc(alias = "Pyro")]
+        FallOutBoy = "PyroEnvironment",
+        EDM = "EDMEnvironment",
+        TheSecond = "TheSecondEnvironment",
+        Lizzo = "LizzoEnvironment",
+        TheWeeknd = "TheWeekndEnvironment",
+        RockMixtape = "RockMixtapeEnvironment",
+        Dragons2 = "Dragons2Environment",
+        Panic2 = "Panic2Environment",
+        Queen = "QueenEnvironment",
         // Todo Add more.
     }
 }
 
 loose_enum! {
     #[derive(Default)]
-    AllDirectionEnvironment {
+    AllDirectionEnvironment: String {
         #[default]
-        GlassDesertEnvironment = 0,
+        GlassDesert = "GlassDesertEnvironment",
     }
 }
 
@@ -107,58 +106,19 @@ pub struct DifficultySet {
     pub difficulties: Vec<DifficultyInfo>,
 }
 
-#[derive(Default, Debug, Clone, PartialEq)]
-pub enum Characteristic {
-    #[default]
-    Standard,
-    NoArrows,
-    OneSaber,
-    Rotate360,
-    Rotate90,
-    Legacy,
-    //Custom types.
-    Lawless,
-    Lightshow,
-    Unknown(String),
-}
-
-// Todo Replace if macro gets expanded to support more types.
-impl<'de> serde::Deserialize<'de> for Characteristic {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        let val = String::deserialize(deserializer)?;
-        Ok(match val.as_str() {
-            "Standard" => Characteristic::Standard,
-            "NoArrows" => Characteristic::NoArrows,
-            "OneSaber" => Characteristic::OneSaber,
-            "360Degree" => Characteristic::Rotate360,
-            "90Degree" => Characteristic::Rotate90,
-            "Legacy" => Characteristic::Legacy,
-            "Lawless" => Characteristic::Lawless,
-            "Lightshow" => Characteristic::Lightshow,
-            s => Characteristic::Unknown(s.to_string()),
-        })
-    }
-}
-
-impl serde::Serialize for Characteristic {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        match self {
-            Characteristic::Standard => serializer.serialize_str("Standard"),
-            Characteristic::NoArrows => serializer.serialize_str("NoArrows"),
-            Characteristic::OneSaber => serializer.serialize_str("OneSaber"),
-            Characteristic::Rotate360 => serializer.serialize_str("360Degree"),
-            Characteristic::Rotate90 => serializer.serialize_str("90Degree"),
-            Characteristic::Legacy => serializer.serialize_str("Legacy"),
-            Characteristic::Lawless => serializer.serialize_str("Legacy"),
-            Characteristic::Lightshow => serializer.serialize_str("Lawless"),
-            Characteristic::Unknown(s) => serializer.serialize_str(s),
-        }
+loose_enum! {
+    #[derive(Default)]
+    Characteristic: String {
+        #[default]
+        Standard = "Standard",
+        NoArrows = "NoArrows",
+        OneSaber = "OneSaber",
+        Rotate360 = "360Degree",
+        Rotate90 = "90Degree",
+        Legacy = "Legacy",
+        //Custom types.
+        Lawless = "Lawless",
+        Lightshow = "Lightshow",
     }
 }
 

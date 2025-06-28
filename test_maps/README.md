@@ -1,0 +1,1 @@
+Put testing maps in this directory.

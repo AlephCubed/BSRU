@@ -20,8 +20,8 @@ loose_enum! {
     /// The value represents the total difference between the first and last step.
     /// ### Step:
     /// The value represents the different between the current and next step.
-    #[derive(Default)]
-    DistributionType {
+    #[derive(Default, Copy)]
+    DistributionType: i32 {
         #[default]
         Wave = 1,
         Step = 2,

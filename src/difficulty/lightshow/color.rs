@@ -31,8 +31,9 @@ pub struct ColorEventGroup {
     pub bright_dist_value: f32,
     #[serde(rename = "b")]
     pub bright_dist_effect_first: LooseBool,
+    /// Only present in difficulty file V3.2 or higher.
     #[serde(rename = "i")]
-    pub bright_dist_easing: Easing,
+    pub bright_dist_easing: Option<Easing>,
     #[serde(rename = "e")]
     pub data: Vec<ColorEventData>,
 }
@@ -53,8 +54,8 @@ pub struct ColorEventData {
 }
 
 loose_enum! {
-    #[derive(Default)]
-    ColorTransitionType {
+    #[derive(Default, Copy)]
+    ColorTransitionType: i32 {
         #[default]
         Instant = 0,
         Transition = 1,
@@ -63,8 +64,8 @@ loose_enum! {
 }
 
 loose_enum! {
-    #[derive(Default)]
-    LightColor {
+    #[derive(Default, Copy)]
+    LightColor: i32 {
         #[default]
         Primary = 0,
         Secondary = 1,

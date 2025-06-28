@@ -16,5 +16,5 @@ pub struct BpmEvent {
     #[serde(rename = "b")]
     pub beat: f32,
     #[serde(rename = "m")]
-    pub bpm: i32,
+    pub bpm: f32,
 }

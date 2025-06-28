@@ -12,7 +12,7 @@ use serde_json::Value;
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct DifficultyV3_2 {
+pub struct Difficulty {
     pub version: String,
     pub bpm_events: Vec<BpmEvent>,
     #[serde(rename = "rotationEvents")]
@@ -36,8 +36,9 @@ pub struct DifficultyV3_2 {
     pub color_event_boxes: Vec<ColorEventBox>,
     #[serde(rename = "lightRotationEventBoxGroups")]
     pub rotation_event_boxes: Vec<RotationEventBoxGroup>,
+    /// Only present in difficulty file V3.2 or higher.
     #[serde(rename = "lightTranslationEventBoxGroups")]
-    pub translation_event_boxes: Vec<Value>, // Todo
+    pub translation_event_boxes: Option<Vec<Value>>, // Todo
     #[doc(alias = "keyword_events")]
     #[serde(rename = "basicEventTypesWithKeywords")]
     pub special_events: SpecialEvent,

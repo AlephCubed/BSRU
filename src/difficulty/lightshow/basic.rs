@@ -41,7 +41,7 @@ pub struct ColorBoostEvent {
 #[serde(rename_all = "camelCase")]
 pub struct SpecialEvent {
     #[serde(rename = "d")]
-    pub keywords: Vec<Keyword>,
+    pub keywords: Option<Vec<Keyword>>,
 }
 
 /// Allows basic event lanes to be overridden with environment-specific behaviour, using secret keys.
