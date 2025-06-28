@@ -41,6 +41,7 @@ impl Default for Filter {
             parameter1: 1,
             parameter2: 0,
             reverse: LooseBool::False,
+            // Todo
             chunks: None,
             random_behaviour: None,
             random_seed: None,
@@ -57,6 +58,7 @@ impl Filter {
     /// # Panics
     /// Will panic if the light ID is greater than or equal to the group size.
     #[must_use]
+    #[inline]
     pub fn is_in_filter(&self, mut light_id: i32, group_size: i32) -> bool {
         assert!(light_id < group_size);
 
@@ -82,6 +84,7 @@ impl Filter {
     /// # Unknown
     /// If the [`FilterType`] is `Unknown` then the result will be the same as `group_size`.
     #[must_use]
+    #[inline]
     pub fn count_filtered(&self, group_size: i32) -> i32 {
         match self.filter_type {
             FilterType::Division => {
@@ -102,6 +105,7 @@ impl Filter {
     /// # Panics
     /// Will panic if the light ID is greater than or equal to the group size.
     #[must_use]
+    #[inline]
     pub fn get_relative_index(&self, mut light_id: i32, group_size: i32) -> i32 {
         assert!(light_id < group_size);
 
@@ -248,6 +252,7 @@ mod tests {
                 parameter2: 1,
                 ..Default::default()
             };
+
             println!("{outer}");
             assert!((0..outer).all(|i| !filter.is_in_filter(i, 12)));
             assert!((outer..12).all(|i| filter.is_in_filter(i, 12)));
