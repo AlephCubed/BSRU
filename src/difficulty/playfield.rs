@@ -1,4 +1,4 @@
-use crate::loose_enum;
+use crate::{impl_duration, impl_timed, loose_enum};
 use serde::{Deserialize, Serialize};
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -16,6 +16,8 @@ pub struct Note {
     #[serde(rename = "a")]
     pub angle_offset: i32,
 }
+
+impl_timed!(Note::beat);
 
 loose_enum! {
     #[derive(Default, Copy)]
@@ -71,6 +73,8 @@ pub struct Bomb {
     pub col: i32,
 }
 
+impl_timed!(Bomb::beat);
+
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Wall {
     #[serde(rename = "b")]
@@ -86,6 +90,8 @@ pub struct Wall {
     #[serde(rename = "h")]
     pub height: i32,
 }
+
+impl_duration!(Wall::beat, duration: duration);
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Arc {
@@ -116,6 +122,8 @@ pub struct Arc {
     #[serde(rename = "m")]
     pub mid_anchor_mode: MidAnchorMode,
 }
+
+impl_duration!(Arc::beat, end: tail_beat);
 
 loose_enum! {
     #[derive(Default, Copy)]
@@ -152,3 +160,5 @@ pub struct Chain {
     #[serde(rename = "s")]
     pub link_squish: f32,
 }
+
+impl_duration!(Chain::beat, end: tail_beat);

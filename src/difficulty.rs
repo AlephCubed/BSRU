@@ -3,7 +3,7 @@ pub mod lightshow;
 pub mod playfield;
 
 use crate::difficulty::gameplay_event::{BpmEvent, LaneRotationEvent};
-use crate::difficulty::lightshow::basic::{BasicEvent, ColorBoostEvent, SpecialEvent, Waypoints};
+use crate::difficulty::lightshow::basic::{BasicEvent, ColorBoostEvent, SpecialEvent, Waypoint};
 use crate::difficulty::lightshow::color::ColorEventBox;
 use crate::difficulty::lightshow::rotation::RotationEventBox;
 use crate::difficulty::lightshow::translation::TranslationEventBox;
@@ -27,7 +27,7 @@ pub struct Difficulty {
     pub arcs: Vec<Arc>,
     #[serde(rename = "burstSliders")]
     pub chains: Vec<Chain>,
-    pub waypoints: Vec<Waypoints>,
+    pub waypoints: Vec<Waypoint>,
     #[serde(rename = "basicBeatmapEvents")]
     pub basic_events: Vec<BasicEvent>,
     #[serde(rename = "colorBoostBeatmapEvents")]

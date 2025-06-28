@@ -1,8 +1,8 @@
 use crate::difficulty::lightshow::easing::Easing;
 use crate::difficulty::lightshow::filter::Filter;
 use crate::difficulty::lightshow::{Axis, DistributionType, TransitionType};
-use crate::loose_enum;
 use crate::macros::LooseBool;
+use crate::{impl_timed, loose_enum};
 use serde::{Deserialize, Serialize};
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -14,6 +14,8 @@ pub struct RotationEventBox {
     #[serde(rename = "e")]
     pub groups: Vec<RotationEventGroup>,
 }
+
+impl_timed!(RotationEventBox::beat);
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct RotationEventGroup {

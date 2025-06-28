@@ -1,6 +1,7 @@
 use crate::difficulty::lightshow::easing::Easing;
 use crate::difficulty::lightshow::filter::Filter;
 use crate::difficulty::lightshow::{Axis, DistributionType, TransitionType};
+use crate::impl_timed;
 use crate::macros::LooseBool;
 use serde::{Deserialize, Serialize};
 
@@ -13,6 +14,8 @@ pub struct TranslationEventBox {
     #[serde(rename = "e")]
     pub groups: Vec<TranslationEventGroup>,
 }
+
+impl_timed!(TranslationEventBox::beat);
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct TranslationEventGroup {

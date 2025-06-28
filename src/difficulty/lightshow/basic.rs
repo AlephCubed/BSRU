@@ -1,4 +1,5 @@
 use crate::difficulty::playfield::CutDirection;
+use crate::impl_timed;
 use serde::{Deserialize, Serialize};
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -14,8 +15,10 @@ pub struct BasicEvent {
     pub float: f32,
 }
 
+impl_timed!(BasicEvent::beat);
+
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct Waypoints {
+pub struct Waypoint {
     #[serde(rename = "b")]
     pub beat: f32,
     #[serde(rename = "x")]
@@ -26,6 +29,8 @@ pub struct Waypoints {
     pub direction: CutDirection,
 }
 
+impl_timed!(Waypoint::beat);
+
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ColorBoostEvent {
     #[serde(rename = "b")]
@@ -33,6 +38,8 @@ pub struct ColorBoostEvent {
     #[serde(rename = "o")]
     pub boost: bool,
 }
+
+impl_timed!(ColorBoostEvent::beat);
 
 /// An event containing an array of Special Event Keywords.
 /// More info [here](https://bsmg.wiki/mapping/map-format/lightshow.html#special-event-keywords).
