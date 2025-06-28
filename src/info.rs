@@ -49,6 +49,7 @@ loose_enum! {
     #[derive(Default)]
     Environment: String {
         #[default]
+        #[doc(alias = "Default")]
         TheFirst = "DefaultEnvironment",
 
         Triangle = "TriangleEnvironment",
@@ -86,6 +87,15 @@ loose_enum! {
         Dragons2 = "Dragons2Environment",
         Panic2 = "Panic2Environment",
         Queen = "QueenEnvironment",
+        LinkinPark2 = "LinkinPark2Environment",
+        TheRollingStones = "TheRollingStonesEnvironment",
+        Lattice = "LatticeEnvironment",
+        DaftPunk = "DaftPunkEnvironment",
+        HipHop = "HipHopEnvironment",
+        Collider = "ColliderEnvironment",
+        BritneySpears = "BritneyEnvironment",
+        Monstercat2 = "Monstercat2Environment",
+        Metallica = "MetallicaEnvironment",
         // Todo Add more.
     }
 }
