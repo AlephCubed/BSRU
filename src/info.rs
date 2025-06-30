@@ -41,10 +41,9 @@ pub struct Beatmap {
     /// Only present in info file V2.1 or higher.
     #[serde(rename = "_environmentNames")]
     pub environments: Option<Vec<Environment>>,
-    // Todo
-    // #[serde(rename = "_colorSchemes")]
-    // /// Only present in info file V2.1 or higher.
-    // pub color_schemes: Option<Vec<Value>>,
+    /// Only present in info file V2.1 or higher.
+    #[serde(rename = "_colorSchemes")]
+    pub color_schemes: Option<Vec<ColorSchemeOverride>>,
     #[serde(rename = "_difficultyBeatmapSets")]
     pub difficulty_sets: Vec<DifficultySet>,
 }
@@ -117,6 +116,71 @@ loose_enum! {
     derive(bevy_reflect::Reflect),
     reflect(Debug, Clone, PartialEq)
 )]
+#[serde(rename_all = "camelCase")]
+pub struct ColorSchemeOverride {
+    pub use_override: bool,
+    pub color_scheme: ColorScheme,
+}
+
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(
+    feature = "bevy_reflect",
+    derive(bevy_reflect::Reflect),
+    reflect(Debug, Clone, PartialEq)
+)]
+#[serde(rename_all = "camelCase")]
+pub struct ColorScheme {
+    #[serde(rename = "colorSchemeId")]
+    pub id: String,
+    #[doc(alias = "saber_left")]
+    #[serde(rename = "saberAColor")]
+    pub note_left: Color,
+    #[doc(alias = "saber_right")]
+    #[serde(rename = "saberBColor")]
+    pub note_right: Color,
+
+    #[doc(alias = "obstacle")]
+    #[serde(rename = "obstaclesColor")]
+    pub wall: Color,
+
+    #[doc(alias = "environment0")]
+    #[serde(rename = "environmentColor0")]
+    pub light_primary: Color,
+    #[doc(alias = "environment1")]
+    #[serde(rename = "environmentColor1")]
+    pub light_secondary: Color,
+
+    #[doc(alias = "environment_boost_0")]
+    #[serde(rename = "environmentColor0Boost")]
+    pub boost_light_primary: Color,
+    #[doc(alias = "environment_boost_1")]
+    #[serde(rename = "environmentColor1Boost")]
+    pub boost_light_secondary: Color,
+}
+
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(
+    feature = "bevy_reflect",
+    derive(bevy_reflect::Reflect),
+    reflect(Debug, Clone, PartialEq)
+)]
+pub struct Color {
+    #[serde(rename = "r")]
+    red: f32,
+    #[serde(rename = "g")]
+    green: f32,
+    #[serde(rename = "b")]
+    blue: f32,
+    #[serde(rename = "a")]
+    alpha: f32,
+}
+
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(
+    feature = "bevy_reflect",
+    derive(bevy_reflect::Reflect),
+    reflect(Debug, Clone, PartialEq)
+)]
 pub struct DifficultySet {
     #[serde(rename = "_beatmapCharacteristicName")]
     pub characteristic: Characteristic,
@@ -159,6 +223,9 @@ pub struct DifficultyInfo {
     #[doc(alias = "node_jump_distance")]
     #[serde(rename = "_noteJumpStartBeatOffset")]
     pub njd: f32,
+    /// Only present in info file V2.1 or higher.
+    #[serde(rename = "_beatmapColorSchemeIdx")]
+    pub color_scheme_index: Option<i32>,
 }
 
 loose_enum! {

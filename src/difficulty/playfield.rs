@@ -1,6 +1,7 @@
 use crate::{impl_duration, impl_timed, loose_enum};
 use serde::{Deserialize, Serialize};
 
+#[doc(alias = "Block")]
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[cfg_attr(
     feature = "bevy_reflect",
@@ -85,6 +86,7 @@ pub struct Bomb {
 
 impl_timed!(Bomb::beat);
 
+#[doc(alias = "Obstacle")]
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[cfg_attr(
     feature = "bevy_reflect",
@@ -108,6 +110,7 @@ pub struct Wall {
 
 impl_duration!(Wall::beat, duration: duration);
 
+#[doc(alias = "Slider")]
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[cfg_attr(
     feature = "bevy_reflect",
@@ -155,6 +158,7 @@ loose_enum! {
     }
 }
 
+#[doc(alias = "BurstSlider")]
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[cfg_attr(
     feature = "bevy_reflect",
