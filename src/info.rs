@@ -21,15 +21,15 @@ pub struct Beatmap {
     #[serde(rename = "_beatsPerMinute")]
     pub bpm: f32,
     #[serde(rename = "_songTimeOffset")]
-    pub time_offset: i32,
+    pub time_offset: f32,
     #[serde(rename = "_shuffle")]
-    pub shuffle: i32,
+    pub shuffle: f32,
     #[serde(rename = "_shufflePeriod")]
     pub shuffle_period: f32,
     #[serde(rename = "_previewStartTime")]
     pub preview_start_time: f32,
     #[serde(rename = "_previewDuration")]
-    pub preview_duration: i32,
+    pub preview_duration: f32,
     #[serde(rename = "_songFilename")]
     pub audio_file: String,
     #[serde(rename = "_coverImageFilename")]
