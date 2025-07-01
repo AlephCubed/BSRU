@@ -91,7 +91,7 @@ impl Default for ColorScheme {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Copy, Clone, PartialEq, Serialize, Deserialize)]
 #[cfg_attr(
     feature = "bevy_reflect",
     derive(bevy_reflect::Reflect),
@@ -115,6 +115,34 @@ impl Default for Color {
             green: 1.0,
             blue: 1.0,
             alpha: 1.0,
+        }
+    }
+}
+
+#[cfg(feature = "bevy_color")]
+mod color_conversions {
+    use crate::info::color_scheme::Color;
+    use bevy_color::Srgba;
+
+    impl From<Srgba> for Color {
+        fn from(value: Srgba) -> Self {
+            Self {
+                red: value.red,
+                green: value.green,
+                blue: value.blue,
+                alpha: value.alpha,
+            }
+        }
+    }
+
+    impl From<Color> for Srgba {
+        fn from(value: Color) -> Self {
+            Self {
+                red: value.red,
+                green: value.green,
+                blue: value.blue,
+                alpha: value.alpha,
+            }
         }
     }
 }
