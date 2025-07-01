@@ -1,3 +1,6 @@
+pub mod color_scheme;
+
+use crate::info::color_scheme::ColorSchemeOverride;
 use crate::loose_enum;
 use serde::{Deserialize, Serialize};
 
@@ -61,10 +64,10 @@ loose_enum! {
         KDA = "KDAEnvironment",
         Monstercat = "MonstercatEnvironment",
         CrabRave = "CrabRaveEnvironment",
-        Dragons = "DragonsEnvironment",
+        ImagineDragons = "DragonsEnvironment",
         Origins = "OriginsEnvironment",
-        Panic = "PanicEnvironment",
-        Rocket = "RocketEnvironment",
+        PanicAtTheDisco = "PanicEnvironment",
+        RocketLeague = "RocketEnvironment",
         GreenDay = "GreenDayEnvironment",
         GreenDayGrenade = "GreenDayGrenadeEnvironment",
         Timbaland = "TimbalandEnvironment",
@@ -88,7 +91,7 @@ loose_enum! {
         TheWeeknd = "TheWeekndEnvironment",
         RockMixtape = "RockMixtapeEnvironment",
         Dragons2 = "Dragons2Environment",
-        Panic2 = "Panic2Environment",
+        PanicAtTheDisco2 = "Panic2Environment",
         Queen = "QueenEnvironment",
         LinkinPark2 = "LinkinPark2Environment",
         TheRollingStones = "TheRollingStonesEnvironment",
@@ -108,71 +111,6 @@ loose_enum! {
         #[default]
         GlassDesert = "GlassDesertEnvironment",
     }
-}
-
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "bevy_reflect",
-    derive(bevy_reflect::Reflect),
-    reflect(Debug, Clone, PartialEq)
-)]
-#[serde(rename_all = "camelCase")]
-pub struct ColorSchemeOverride {
-    pub use_override: bool,
-    pub color_scheme: ColorScheme,
-}
-
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "bevy_reflect",
-    derive(bevy_reflect::Reflect),
-    reflect(Debug, Clone, PartialEq)
-)]
-#[serde(rename_all = "camelCase")]
-pub struct ColorScheme {
-    #[serde(rename = "colorSchemeId")]
-    pub id: String,
-    #[doc(alias = "saber_left")]
-    #[serde(rename = "saberAColor")]
-    pub note_left: Color,
-    #[doc(alias = "saber_right")]
-    #[serde(rename = "saberBColor")]
-    pub note_right: Color,
-
-    #[doc(alias = "obstacle")]
-    #[serde(rename = "obstaclesColor")]
-    pub wall: Color,
-
-    #[doc(alias = "environment0")]
-    #[serde(rename = "environmentColor0")]
-    pub light_primary: Color,
-    #[doc(alias = "environment1")]
-    #[serde(rename = "environmentColor1")]
-    pub light_secondary: Color,
-
-    #[doc(alias = "environment_boost_0")]
-    #[serde(rename = "environmentColor0Boost")]
-    pub boost_light_primary: Color,
-    #[doc(alias = "environment_boost_1")]
-    #[serde(rename = "environmentColor1Boost")]
-    pub boost_light_secondary: Color,
-}
-
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[cfg_attr(
-    feature = "bevy_reflect",
-    derive(bevy_reflect::Reflect),
-    reflect(Debug, Clone, PartialEq)
-)]
-pub struct Color {
-    #[serde(rename = "r")]
-    red: f32,
-    #[serde(rename = "g")]
-    green: f32,
-    #[serde(rename = "b")]
-    blue: f32,
-    #[serde(rename = "a")]
-    alpha: f32,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
