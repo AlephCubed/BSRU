@@ -75,7 +75,7 @@ impl Filter {
             FilterType::Division => {
                 let start = self.parameter2 * group_size / self.parameter1.max(1);
                 let end = (self.parameter2 + 1) * group_size / self.parameter1.max(1);
-                light_id >= start && light_id < end
+                light_id >= start && light_id < end.max(start + 1)
             }
             FilterType::StepAndOffset => {
                 let offset_light_id = light_id - self.parameter1;
@@ -95,7 +95,7 @@ impl Filter {
             FilterType::Division => {
                 let start = self.parameter2 * group_size / self.parameter1.max(1);
                 let end = (self.parameter2 + 1) * group_size / self.parameter1.max(1);
-                end - start
+                end.max(start + 1) - start
             }
             FilterType::StepAndOffset => {
                 group_size / self.parameter2.max(1) - self.parameter1 / self.parameter2.max(1)
@@ -232,6 +232,43 @@ mod tests {
         assert!((0..12).all(|i| filter.is_in_filter(i, 12)));
         assert_eq!(filter.count_filtered(12), 12);
         assert!((0..12).all(|i| filter.get_relative_index(i, 12) == i));
+    }
+
+    #[test]
+    fn division_larger_than_group_size() {
+        for i in 0..12 {
+            let filter = Filter {
+                filter_type: FilterType::Division,
+                parameter1: 12,
+                parameter2: i,
+                ..Default::default()
+            };
+
+            let expected_id = match i {
+                0 => 0,
+                1 => 0,
+                2 => 1,
+                3 => 2,
+                4 => 2,
+                5 => 3,
+                6 => 4,
+                7 => 4,
+                8 => 5,
+                9 => 6,
+                10 => 6,
+                11 => 7,
+                _ => unreachable!(),
+            };
+
+            assert!(filter.is_in_filter(expected_id, 8));
+            assert!(
+                (0..8)
+                    .filter(|x| *x != expected_id)
+                    .all(|i| !filter.is_in_filter(i, 8))
+            );
+            assert_eq!(filter.count_filtered(8), 1);
+            assert_eq!(filter.get_relative_index(expected_id, 8), 0);
+        }
     }
 
     #[test]
