@@ -22,7 +22,7 @@ pub struct RotationEventBox {
 }
 
 impl_timed!(RotationEventBox::beat);
-impl_event_box!(RotationEventBox::RotationEventGroup::RotationEventData);
+impl_event_box!(RotationEventBox, RotationEventGroup, RotationEventData);
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[cfg_attr(
@@ -54,7 +54,7 @@ pub struct RotationEventGroup {
     pub data: Vec<RotationEventData>,
 }
 
-impl_event_group!(RotationEventGroup::RotationEventData);
+impl_event_group!(RotationEventGroup::get_rotation_offset, RotationEventData);
 
 impl RotationEventGroup {
     pub fn get_rotation_offset(&self, light_id: i32, group_size: i32) -> f32 {

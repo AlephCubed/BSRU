@@ -14,7 +14,7 @@ pub trait EventBox: Timed {
 
 #[macro_export]
 macro_rules! impl_event_box {
-    ($ident:ident::$group:ident::$data:ident) => {
+    ($ident:ident, $group:ident, $data:ident) => {
         impl crate::difficulty::lightshow::boxes::EventBox for $ident {
             type Group = $group;
             type Data = $data;
@@ -33,11 +33,12 @@ pub trait EventGroup {
     fn get_data(&self) -> &Vec<Self::Data>;
 
     fn get_beat_offset(&self, light_id: i32, group_size: i32) -> f32;
+    fn get_value_offset(&self, light_id: i32, group_size: i32) -> f32;
 }
 
 #[macro_export]
 macro_rules! impl_event_group {
-    ($ident:ident::$data:ident) => {
+    ($ident:ident::$value_offset:ident, $data:ident) => {
         impl crate::difficulty::lightshow::boxes::EventGroup for $ident {
             type Data = $data;
 
@@ -59,10 +60,25 @@ macro_rules! impl_event_group {
                     None,
                 )
             }
+
+            fn get_value_offset(&self, light_id: i32, group_size: i32) -> f32 {
+                self.$value_offset(light_id, group_size)
+            }
         }
     };
 }
 
 pub trait EventData {
     fn get_beat_offset(&self) -> f32;
+}
+
+#[macro_export]
+macro_rules! impl_event_data {
+    ($ident:ident) => {
+        impl crate::difficulty::lightshow::boxes::EventData for $ident {
+            fn get_beat_offset(&self) -> f32 {
+                self.beat_offset
+            }
+        }
+    };
 }

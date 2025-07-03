@@ -22,7 +22,11 @@ pub struct TranslationEventBox {
 }
 
 impl_timed!(TranslationEventBox::beat);
-impl_event_box!(TranslationEventBox::TranslationEventGroup::TranslationEventData);
+impl_event_box!(
+    TranslationEventBox,
+    TranslationEventGroup,
+    TranslationEventData
+);
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[cfg_attr(
@@ -53,7 +57,10 @@ pub struct TranslationEventGroup {
     pub data: Vec<TranslationEventData>,
 }
 
-impl_event_group!(TranslationEventGroup::TranslationEventData);
+impl_event_group!(
+    TranslationEventGroup::get_translation_offset,
+    TranslationEventData
+);
 
 impl TranslationEventGroup {
     pub fn get_translation_offset(&self, light_id: i32, group_size: i32) -> f32 {

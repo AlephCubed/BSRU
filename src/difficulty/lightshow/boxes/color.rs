@@ -1,9 +1,8 @@
 use crate::difficulty::lightshow::DistributionType;
-use crate::difficulty::lightshow::boxes::EventData;
 use crate::difficulty::lightshow::easing::Easing;
 use crate::difficulty::lightshow::filter::Filter;
 use crate::utils::LooseBool;
-use crate::{impl_event_box, impl_event_group, impl_timed, loose_enum};
+use crate::{impl_event_box, impl_event_data, impl_event_group, impl_timed, loose_enum};
 use serde::{Deserialize, Serialize};
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -22,7 +21,7 @@ pub struct ColorEventBox {
 }
 
 impl_timed!(ColorEventBox::beat);
-impl_event_box!(ColorEventBox::ColorEventGroup::ColorEventData);
+impl_event_box!(ColorEventBox, ColorEventGroup, ColorEventData);
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[cfg_attr(
@@ -50,7 +49,7 @@ pub struct ColorEventGroup {
     pub data: Vec<ColorEventData>,
 }
 
-impl_event_group!(ColorEventGroup::ColorEventData);
+impl_event_group!(ColorEventGroup::get_brightness_offset, ColorEventData);
 
 impl ColorEventGroup {
     pub fn get_brightness_offset(&self, light_id: i32, group_size: i32) -> f32 {
@@ -84,11 +83,7 @@ pub struct ColorEventData {
     pub strobe_frequency: i32,
 }
 
-impl EventData for ColorEventData {
-    fn get_beat_offset(&self) -> f32 {
-        self.beat_offset
-    }
-}
+impl_event_data!(ColorEventData);
 
 loose_enum! {
     #[derive(Default, Copy)]
