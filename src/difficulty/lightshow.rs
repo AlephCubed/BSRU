@@ -1,9 +1,7 @@
 pub mod basic;
-pub mod color;
+pub mod boxes;
 pub mod easing;
 pub mod filter;
-pub mod rotation;
-pub mod translation;
 
 use crate::difficulty::lightshow::easing::Easing;
 use crate::difficulty::lightshow::filter::Filter;
@@ -62,24 +60,6 @@ impl DistributionType {
             DistributionType::Unknown(_) => 0.0,
         }
     }
-}
-
-#[macro_export]
-macro_rules! impl_get_beat_offset {
-    ($ident:ident) => {
-        impl $ident {
-            pub fn get_beat_offset(&self, light_id: i32, group_size: i32) -> f32 {
-                self.beat_dist_type.compute_offset(
-                    light_id,
-                    group_size,
-                    &self.filter,
-                    self.beat_dist_value,
-                    self.data.last().map(|data| data.beat_offset),
-                    None,
-                )
-            }
-        }
-    };
 }
 
 loose_enum! {
