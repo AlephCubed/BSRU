@@ -39,6 +39,10 @@ impl DistributionType {
         last_data_offset: Option<f32>,
         easing: Option<Easing>,
     ) -> f32 {
+        if dist_value == 0.0 {
+            return 0.0;
+        }
+
         let filtered_size = filter.count_filtered(group_size) as f32;
         let filtered_id = filter.get_relative_index(light_id, group_size) as f32;
 
@@ -54,7 +58,7 @@ impl DistributionType {
                     fraction = easing.ease(fraction);
                 }
 
-                fraction * modified_value.max(0.0)
+                fraction * modified_value
             }
             DistributionType::Step => dist_value * filtered_id,
             DistributionType::Unknown(_) => 0.0,
@@ -105,11 +109,41 @@ mod tests {
     }
 
     #[test]
+    fn wave_negative() {
+        for i in 0..12 {
+            assert_eq!(
+                DistributionType::Wave.compute_offset(i, 12, &Filter::default(), -12.0, None, None),
+                -i as f32
+            );
+        }
+    }
+
+    #[test]
     fn step() {
         for i in 0..12 {
             assert_eq!(
                 DistributionType::Step.compute_offset(i, 12, &Filter::default(), 1.0, None, None),
                 i as f32
+            );
+        }
+    }
+
+    #[test]
+    fn wave_zero() {
+        for i in 0..12 {
+            assert_eq!(
+                DistributionType::Wave.compute_offset(i, 12, &Filter::default(), 0.0, None, None),
+                0.0
+            );
+        }
+    }
+
+    #[test]
+    fn step_zero() {
+        for i in 0..12 {
+            assert_eq!(
+                DistributionType::Step.compute_offset(i, 12, &Filter::default(), 0.0, None, None),
+                0.0
             );
         }
     }
