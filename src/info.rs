@@ -157,7 +157,7 @@ pub struct DifficultyInfo {
     pub file: String,
     #[doc(alias = "node_jump_speed")]
     #[serde(rename = "_noteJumpMovementSpeed")]
-    pub njs: i32,
+    pub njs: f32,
     #[doc(alias = "node_jump_distance")]
     #[serde(rename = "_noteJumpStartBeatOffset")]
     pub njd: f32,
