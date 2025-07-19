@@ -27,13 +27,13 @@ pub struct Filter {
     pub chunks: Option<i32>,
     /// Only present in difficulty file V3.1 or higher.
     #[serde(rename = "n")]
-    pub random_behaviour: Option<i32>,
+    pub random_behaviour: Option<RandomBehaviour>,
     /// Only present in difficulty file V3.1 or higher.
     #[serde(rename = "s")]
     pub random_seed: Option<i32>,
     /// Only present in difficulty file V3.1 or higher.
     #[serde(rename = "d")]
-    pub limit_behaviour: Option<i32>,
+    pub limit_behaviour: Option<LimitBehaviour>,
     /// Only present in difficulty file V3.1 or higher.
     #[serde(rename = "l")]
     pub limit_percent: Option<f32>,
@@ -47,11 +47,11 @@ impl Default for Filter {
             parameter2: 0,
             reverse: LooseBool::False,
             // Todo
-            chunks: None,
-            random_behaviour: None,
-            random_seed: None,
-            limit_behaviour: None,
-            limit_percent: None,
+            chunks: Some(1),
+            random_behaviour: Some(RandomBehaviour::None),
+            random_seed: Some(0),
+            limit_behaviour: Some(LimitBehaviour::None),
+            limit_percent: Some(1.0),
         }
     }
 }
@@ -153,6 +153,26 @@ loose_enum! {
         StepAndOffset = 2,
     }
 }
+
+loose_enum!(
+    #[derive(Default, Copy)]
+    RandomBehaviour: i32 {
+        #[default]
+        None = 0,
+        KeepOrder = 1,
+        RandomElements = 2,
+    }
+);
+
+loose_enum!(
+    #[derive(Default, Copy)]
+    LimitBehaviour: i32 {
+        #[default]
+        None = 0,
+        Duration = 1,
+        Distribution = 2,
+    }
+);
 
 #[cfg(test)]
 mod tests {
