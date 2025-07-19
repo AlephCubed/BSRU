@@ -1,3 +1,4 @@
+/// Defines a repr enum that supports any value. If a value does not match any case, it will be parsed as `Unknown`.
 #[macro_export]
 macro_rules! loose_enum {
     // Special case for strings:
@@ -141,6 +142,7 @@ macro_rules! loose_enum {
 }
 
 loose_enum! {
+    /// An integer repr bool, with 0 being false and 1 being true. Any other value will be saved as `Unknown`.
     #[derive(Default, Copy)]
     LooseBool: i32 {
         #[default]
@@ -150,11 +152,18 @@ loose_enum! {
 }
 
 impl LooseBool {
-    /// Returns as a bool, with unknown values counting as `false`.
-    pub fn as_bool(&self) -> bool {
+    pub fn is_true(&self) -> bool {
         match self {
             LooseBool::False => false,
             LooseBool::True => true,
+            LooseBool::Unknown(_) => false,
+        }
+    }
+
+    pub fn is_false(&self) -> bool {
+        match self {
+            LooseBool::False => true,
+            LooseBool::True => false,
             LooseBool::Unknown(_) => false,
         }
     }

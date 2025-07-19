@@ -77,7 +77,7 @@ impl Filter {
     pub fn is_in_filter(&self, mut light_id: i32, group_size: i32) -> bool {
         assert!(light_id < group_size);
 
-        if self.reverse.as_bool() {
+        if self.reverse.is_true() {
             light_id = group_size - light_id - 1;
         }
 
@@ -124,7 +124,7 @@ impl Filter {
     pub fn get_relative_index(&self, mut light_id: i32, group_size: i32) -> i32 {
         assert!(light_id < group_size);
 
-        if self.reverse.as_bool() {
+        if self.reverse.is_true() {
             light_id = group_size - light_id;
         }
 

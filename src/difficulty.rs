@@ -47,6 +47,7 @@ pub struct Difficulty {
     #[doc(alias = "keyword_events")]
     #[serde(rename = "basicEventTypesWithKeywords")]
     pub special_events: SpecialEvent,
+    /// If false, overriding the environment in game will disable all lightshow events.
     #[serde(rename = "useNormalEventsAsCompatibleEvents")]
     pub use_compatible_events: bool,
 }

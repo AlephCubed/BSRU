@@ -33,12 +33,17 @@ pub struct Beatmap {
     pub preview_start_time: f32,
     #[serde(rename = "_previewDuration")]
     pub preview_duration: f32,
+    /// The path to the audio file, relative to the map's folder.
     #[serde(rename = "_songFilename")]
     pub audio_file: String,
+    /// The path to the cover image file, relative to the map's folder.
     #[serde(rename = "_coverImageFilename")]
     pub cover_image_file: String,
     #[serde(rename = "_environmentName")]
     pub environment: Environment,
+    /// The environment that will be used for 90 and 360 degree difficulties.
+    ///
+    /// Starting in info file V2.1, Individual difficulties can override this using [environment_index](DifficultyInfo::environment_index).
     #[serde(rename = "_allDirectionsEnvironmentName")]
     pub all_directions_environment: AllDirectionEnvironment,
     /// > Only present in info file V2.1 or higher.
@@ -136,8 +141,9 @@ loose_enum! {
         Rotate360 = "360Degree",
         Rotate90 = "90Degree",
         Legacy = "Legacy",
-        //Custom types.
+        /// > Modded characteristic. May cause problems in un-modded versions of the game.
         Lawless = "Lawless",
+        /// > Modded characteristic. May cause problems in un-modded versions of the game.
         Lightshow = "Lightshow",
     }
 }
@@ -153,6 +159,7 @@ pub struct DifficultyInfo {
     pub name: String,
     #[serde(rename = "_difficultyRank")]
     pub rank: DifficultyRank,
+    /// The path to the difficulty file, relative to the map's folder.
     #[serde(rename = "_beatmapFilename")]
     pub file: String,
     #[doc(alias = "node_jump_speed")]
@@ -162,6 +169,13 @@ pub struct DifficultyInfo {
     #[serde(rename = "_noteJumpStartBeatOffset")]
     pub njd: f32,
     /// > Only present in info file V2.1 or higher.
+    ///
+    /// The ID of environment to use from the map's [environment list](Beatmap::environments).
+    #[serde(rename = "_environmentNameIdx")]
+    pub environment_index: Option<i32>,
+    /// > Only present in info file V2.1 or higher.
+    ///
+    /// The ID of color scheme to use from the map's [color schemes list](Beatmap::color_schemes).
     #[serde(rename = "_beatmapColorSchemeIdx")]
     pub color_scheme_index: Option<i32>,
 }
