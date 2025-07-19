@@ -52,7 +52,7 @@ pub struct ColorEventGroup {
     pub bright_dist_value: f32,
     #[serde(rename = "b")]
     pub bright_dist_effect_first: LooseBool,
-    /// Only present in difficulty file V3.2 or higher.
+    /// > Only present in difficulty file V3.2 or higher.
     #[serde(rename = "i")]
     pub bright_dist_easing: Option<Easing>,
     #[serde(rename = "e")]
@@ -77,6 +77,9 @@ impl Default for ColorEventGroup {
 impl_event_group!(ColorEventGroup::get_brightness_offset, ColorEventData);
 
 impl ColorEventGroup {
+    /// Returns the brightness that the event will be offset for a given light ID.
+    /// # Panics
+    /// Will panic if the light ID is greater than or equal to the group size.
     pub fn get_brightness_offset(&self, light_id: i32, group_size: i32) -> f32 {
         self.bright_dist_type.compute_offset(
             light_id,

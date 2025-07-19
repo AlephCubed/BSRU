@@ -32,7 +32,14 @@ pub trait EventGroup {
     fn get_filter(&self) -> &Filter;
     fn get_data(&self) -> &Vec<Self::Data>;
 
+    /// Returns the number of beats that the event will be offset for a given light ID.
+    /// # Panics
+    /// Will panic if the light ID is greater than or equal to the group size.
     fn get_beat_offset(&self, light_id: i32, group_size: i32) -> f32;
+
+    /// Returns the value that the event will be offset for a given light ID (i.e. brightness offset).
+    /// # Panics
+    /// Will panic if the light ID is greater than or equal to the group size.
     fn get_value_offset(&self, light_id: i32, group_size: i32) -> f32;
 }
 

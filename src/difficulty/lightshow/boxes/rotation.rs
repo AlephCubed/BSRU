@@ -53,7 +53,7 @@ pub struct RotationEventGroup {
     pub rotation_dist_value: f32,
     #[serde(rename = "b")]
     pub rotation_dist_effect_first: LooseBool,
-    /// Only present in difficulty file V3.2 or higher.
+    /// > Only present in difficulty file V3.2 or higher.
     #[serde(rename = "i")]
     pub rotation_dist_easing: Option<Easing>,
     #[serde(rename = "a")]
@@ -84,6 +84,9 @@ impl Default for RotationEventGroup {
 impl_event_group!(RotationEventGroup::get_rotation_offset, RotationEventData);
 
 impl RotationEventGroup {
+    /// Returns the number of degrees that the event will be offset for a given light ID.
+    /// # Panics
+    /// Will panic if the light ID is greater than or equal to the group size.
     pub fn get_rotation_offset(&self, light_id: i32, group_size: i32) -> f32 {
         self.rotation_dist_type.compute_offset(
             light_id,

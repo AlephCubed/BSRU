@@ -41,10 +41,10 @@ pub struct Beatmap {
     pub environment: Environment,
     #[serde(rename = "_allDirectionsEnvironmentName")]
     pub all_directions_environment: AllDirectionEnvironment,
-    /// Only present in info file V2.1 or higher.
+    /// > Only present in info file V2.1 or higher.
     #[serde(rename = "_environmentNames")]
     pub environments: Option<Vec<Environment>>,
-    /// Only present in info file V2.1 or higher.
+    /// > Only present in info file V2.1 or higher.
     #[serde(rename = "_colorSchemes")]
     pub color_schemes: Option<Vec<ColorSchemeOverride>>,
     #[serde(rename = "_difficultyBeatmapSets")]
@@ -161,7 +161,7 @@ pub struct DifficultyInfo {
     #[doc(alias = "node_jump_distance")]
     #[serde(rename = "_noteJumpStartBeatOffset")]
     pub njd: f32,
-    /// Only present in info file V2.1 or higher.
+    /// > Only present in info file V2.1 or higher.
     #[serde(rename = "_beatmapColorSchemeIdx")]
     pub color_scheme_index: Option<i32>,
 }

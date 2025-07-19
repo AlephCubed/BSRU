@@ -22,19 +22,30 @@ pub struct Filter {
     #[serde(rename = "r")]
     pub reverse: LooseBool,
     // V3.1:
-    /// Only present in difficulty file V3.1 or higher.
+    /// > Only present in difficulty file V3.1 or higher.
+    ///
+    /// Chunks will divide the group into multiple chunks, which will each behave as a single object.
+    ///
+    /// To see this in practice, check out [this video](https://youtube.com/watch?v=NJPPBvyHJjg&t=197).
     #[serde(rename = "c")]
     pub chunks: Option<i32>,
-    /// Only present in difficulty file V3.1 or higher.
+    /// > Only present in difficulty file V3.1 or higher.
     #[serde(rename = "n")]
     pub random_behaviour: Option<RandomBehaviour>,
-    /// Only present in difficulty file V3.1 or higher.
+    /// > Only present in difficulty file V3.1 or higher.
     #[serde(rename = "s")]
     pub random_seed: Option<i32>,
-    /// Only present in difficulty file V3.1 or higher.
+    /// > Only present in difficulty file V3.1 or higher.
+    ///
+    /// Determines how [the limit](Filter::limit_percent) behaves. This is applied *after* the [`FilterType`] behaviour.
+    ///
+    /// To see this in practice, check out [this video](https://youtube.com/watch?v=NJPPBvyHJjg&t=338).
     #[serde(rename = "d")]
     pub limit_behaviour: Option<LimitBehaviour>,
-    /// Only present in difficulty file V3.1 or higher.
+    /// > Only present in difficulty file V3.1 or higher.
+    ///
+    /// A value from 0.0 to 1.0 which represents the percent of lights that will be effected,
+    /// and the behaviour is dependent on [`LimitBehaviour`].
     #[serde(rename = "l")]
     pub limit_percent: Option<f32>,
 }
@@ -46,7 +57,6 @@ impl Default for Filter {
             parameter1: 1,
             parameter2: 0,
             reverse: LooseBool::False,
-            // Todo
             chunks: Some(1),
             random_behaviour: Some(RandomBehaviour::None),
             random_seed: Some(0),

@@ -46,6 +46,10 @@ loose_enum! {
 }
 
 impl Easing {
+    /// Applies the relevant easing function.
+    ///
+    /// The Beatsaber specific easing use the standard equivalent instead.
+    /// If the easing is [`None`](Self::None) or [`Unknown`](Self::Unknown), then the result will be zero.
     pub fn ease(&self, num: f32) -> f32 {
         match self {
             Easing::None => 0.0,

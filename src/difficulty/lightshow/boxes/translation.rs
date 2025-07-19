@@ -90,6 +90,9 @@ impl_event_group!(
 );
 
 impl TranslationEventGroup {
+    /// Returns the number of units that the event will be offset for a given light ID.
+    /// # Panics
+    /// Will panic if the light ID is greater than or equal to the group size.
     pub fn get_translation_offset(&self, light_id: i32, group_size: i32) -> f32 {
         self.translation_dist_type.compute_offset(
             light_id,
