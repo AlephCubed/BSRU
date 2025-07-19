@@ -4,6 +4,9 @@ use simple_easing::*;
 loose_enum! {
     #[derive(Default, Copy)]
     Easing: i32 {
+        #[default]
+        None = -1,
+
         Linear = 0,
         InQuad = 1,
         OutQuad = 2,
@@ -36,9 +39,6 @@ loose_enum! {
         OutBounce = 29,
         InOutBounce = 30,
 
-        #[default]
-        None = -1,
-
         BeatSaberInOutBack = 100,
         BeatSaberInOutElastic = 101,
         BeatSaberInOutBounce = 102,
@@ -48,6 +48,8 @@ loose_enum! {
 impl Easing {
     pub fn ease(&self, num: f32) -> f32 {
         match self {
+            Easing::None => 0.0,
+
             Easing::Linear => linear(num),
             Easing::InQuad => quad_in(num),
             Easing::OutQuad => quad_out(num),
@@ -79,7 +81,7 @@ impl Easing {
             Easing::InBounce => bounce_in(num),
             Easing::OutBounce => bounce_out(num),
             Easing::InOutBounce => bounce_in_out(num),
-            Easing::None => 0.0,
+
             Easing::BeatSaberInOutBack => back_in_out(num),
             Easing::BeatSaberInOutElastic => elastic_in_out(num),
             Easing::BeatSaberInOutBounce => bounce_in_out(num),

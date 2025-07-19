@@ -87,7 +87,7 @@ pub struct Bomb {
 impl_timed!(Bomb::beat);
 
 #[doc(alias = "Obstacle")]
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[cfg_attr(
     feature = "bevy_reflect",
     derive(bevy_reflect::Reflect),
@@ -108,10 +108,23 @@ pub struct Wall {
     pub height: i32,
 }
 
+impl Default for Wall {
+    fn default() -> Self {
+        Self {
+            beat: 0.0,
+            duration: 1.0,
+            row: 0,
+            col: 0,
+            width: 1,
+            height: 5,
+        }
+    }
+}
+
 impl_duration!(Wall::beat, duration: duration);
 
 #[doc(alias = "Slider")]
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[cfg_attr(
     feature = "bevy_reflect",
     derive(bevy_reflect::Reflect),
@@ -146,6 +159,25 @@ pub struct Arc {
     pub mid_anchor_mode: MidAnchorMode,
 }
 
+impl Default for Arc {
+    fn default() -> Self {
+        Self {
+            beat: 0.0,
+            row: 0,
+            col: 0,
+            color: Default::default(),
+            direction: Default::default(),
+            control_point: 1.0,
+            tail_beat: 1.0,
+            tail_row: 0,
+            tail_col: 0,
+            tail_direction: Default::default(),
+            tail_control_point: 1.0,
+            mid_anchor_mode: Default::default(),
+        }
+    }
+}
+
 impl_duration!(Arc::beat, end: tail_beat);
 
 loose_enum! {
@@ -159,7 +191,7 @@ loose_enum! {
 }
 
 #[doc(alias = "BurstSlider")]
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[cfg_attr(
     feature = "bevy_reflect",
     derive(bevy_reflect::Reflect),
@@ -188,6 +220,23 @@ pub struct Chain {
     pub link_count: i32,
     #[serde(rename = "s")]
     pub link_squish: f32,
+}
+
+impl Default for Chain {
+    fn default() -> Self {
+        Self {
+            beat: 0.0,
+            row: 1,
+            col: 0,
+            color: Default::default(),
+            direction: Default::default(),
+            tail_beat: 0.0,
+            tail_row: 0,
+            tail_col: 0,
+            link_count: 3,
+            link_squish: 1.0,
+        }
+    }
 }
 
 impl_duration!(Chain::beat, end: tail_beat);

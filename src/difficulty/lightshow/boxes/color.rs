@@ -5,7 +5,7 @@ use crate::utils::LooseBool;
 use crate::{impl_event_box, impl_event_data, impl_event_group, impl_timed, loose_enum};
 use serde::{Deserialize, Serialize};
 
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[cfg_attr(
     feature = "bevy_reflect",
     derive(bevy_reflect::Reflect),
@@ -20,10 +20,20 @@ pub struct ColorEventBox {
     pub groups: Vec<ColorEventGroup>,
 }
 
+impl Default for ColorEventBox {
+    fn default() -> Self {
+        Self {
+            beat: 0.0,
+            group_id: 0,
+            groups: vec![ColorEventGroup::default()],
+        }
+    }
+}
+
 impl_timed!(ColorEventBox::beat);
 impl_event_box!(ColorEventBox, ColorEventGroup, ColorEventData);
 
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[cfg_attr(
     feature = "bevy_reflect",
     derive(bevy_reflect::Reflect),
@@ -49,6 +59,21 @@ pub struct ColorEventGroup {
     pub data: Vec<ColorEventData>,
 }
 
+impl Default for ColorEventGroup {
+    fn default() -> Self {
+        Self {
+            filter: Default::default(),
+            beat_dist_type: Default::default(),
+            beat_dist_value: 0.0,
+            bright_dist_type: Default::default(),
+            bright_dist_value: 0.0,
+            bright_dist_effect_first: Default::default(),
+            bright_dist_easing: None,
+            data: vec![ColorEventData::default()],
+        }
+    }
+}
+
 impl_event_group!(ColorEventGroup::get_brightness_offset, ColorEventData);
 
 impl ColorEventGroup {
@@ -64,7 +89,7 @@ impl ColorEventGroup {
     }
 }
 
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[cfg_attr(
     feature = "bevy_reflect",
     derive(bevy_reflect::Reflect),
@@ -81,6 +106,18 @@ pub struct ColorEventData {
     pub brightness: f32,
     #[serde(rename = "f")]
     pub strobe_frequency: i32,
+}
+
+impl Default for ColorEventData {
+    fn default() -> Self {
+        Self {
+            beat_offset: 0.0,
+            transition_type: Default::default(),
+            color: Default::default(),
+            brightness: 1.0,
+            strobe_frequency: 0,
+        }
+    }
 }
 
 impl_event_data!(ColorEventData);

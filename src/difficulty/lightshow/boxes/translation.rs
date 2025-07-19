@@ -6,7 +6,7 @@ use crate::utils::LooseBool;
 use crate::{impl_event_box, impl_event_group, impl_timed};
 use serde::{Deserialize, Serialize};
 
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[cfg_attr(
     feature = "bevy_reflect",
     derive(bevy_reflect::Reflect),
@@ -21,6 +21,16 @@ pub struct TranslationEventBox {
     pub groups: Vec<TranslationEventGroup>,
 }
 
+impl Default for TranslationEventBox {
+    fn default() -> Self {
+        Self {
+            beat: 0.0,
+            group_id: 0,
+            groups: vec![TranslationEventGroup::default()],
+        }
+    }
+}
+
 impl_timed!(TranslationEventBox::beat);
 impl_event_box!(
     TranslationEventBox,
@@ -28,7 +38,7 @@ impl_event_box!(
     TranslationEventData
 );
 
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[cfg_attr(
     feature = "bevy_reflect",
     derive(bevy_reflect::Reflect),
@@ -55,6 +65,23 @@ pub struct TranslationEventGroup {
     pub invert_axis: LooseBool,
     #[serde(rename = "l")]
     pub data: Vec<TranslationEventData>,
+}
+
+impl Default for TranslationEventGroup {
+    fn default() -> Self {
+        Self {
+            filter: Default::default(),
+            beat_dist_type: Default::default(),
+            beat_dist_value: 0.0,
+            translation_dist_type: Default::default(),
+            translation_dist_value: 0.0,
+            translation_dist_effect_first: Default::default(),
+            translation_dist_easing: Default::default(),
+            axis: Default::default(),
+            invert_axis: Default::default(),
+            data: vec![TranslationEventData::default()],
+        }
+    }
 }
 
 impl_event_group!(

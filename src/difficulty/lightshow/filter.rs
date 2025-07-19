@@ -44,7 +44,7 @@ impl Default for Filter {
         Self {
             filter_type: FilterType::default(),
             parameter1: 1,
-            parameter2: 0,
+            parameter2: 1,
             reverse: LooseBool::False,
             // Todo
             chunks: None,

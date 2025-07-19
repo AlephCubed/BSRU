@@ -6,7 +6,7 @@ use crate::utils::LooseBool;
 use crate::{impl_event_box, impl_event_group, impl_timed, loose_enum};
 use serde::{Deserialize, Serialize};
 
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[cfg_attr(
     feature = "bevy_reflect",
     derive(bevy_reflect::Reflect),
@@ -21,10 +21,20 @@ pub struct RotationEventBox {
     pub groups: Vec<RotationEventGroup>,
 }
 
+impl Default for RotationEventBox {
+    fn default() -> Self {
+        Self {
+            beat: 0.0,
+            group_id: 0,
+            groups: vec![RotationEventGroup::default()],
+        }
+    }
+}
+
 impl_timed!(RotationEventBox::beat);
 impl_event_box!(RotationEventBox, RotationEventGroup, RotationEventData);
 
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[cfg_attr(
     feature = "bevy_reflect",
     derive(bevy_reflect::Reflect),
@@ -52,6 +62,23 @@ pub struct RotationEventGroup {
     pub invert_axis: LooseBool,
     #[serde(rename = "l")]
     pub data: Vec<RotationEventData>,
+}
+
+impl Default for RotationEventGroup {
+    fn default() -> Self {
+        Self {
+            filter: Default::default(),
+            beat_dist_type: Default::default(),
+            beat_dist_value: 0.0,
+            rotation_dist_type: Default::default(),
+            rotation_dist_value: 0.0,
+            rotation_dist_effect_first: LooseBool::True,
+            rotation_dist_easing: None,
+            axis: Default::default(),
+            invert_axis: Default::default(),
+            data: vec![RotationEventData::default()],
+        }
+    }
 }
 
 impl_event_group!(RotationEventGroup::get_rotation_offset, RotationEventData);
