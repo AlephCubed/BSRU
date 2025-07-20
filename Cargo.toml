@@ -1,10 +1,10 @@
 [package]
 name = "bsru"
-version = "0.1.0-rc.1"
+version = "0.1.0-rc.2"
 edition = "2024"
 description = "Beatsaber Rust Utilities: A Beatsaber V3 parsing library."
 categories = ["game-development", "data-structures", "parser-implementations"]
-keywords = ["beatsaber"]
+keywords = ["beatsaber", "beatmap"]
 repository = "https://github.com/AlephCubed/bsru"
 license = "MIT OR Apache-2.0"
 authors = ["AlephCubed"]
