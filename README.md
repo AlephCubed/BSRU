@@ -24,3 +24,10 @@ A Beatsaber V3 parsing library.
 | 4.X     | New template-like format.             | No        |
 
 [^1]: Not supported by experimental lighting calculation methods.
+
+## Feature Flags
+
+| Flag           | Description                                                              |
+|----------------|--------------------------------------------------------------------------|
+| `bevy_color`   | Adds `From` implementations for converting color schemes to Bevy colors. |
+| `bevy_reflect` | Adds `Reflect` derives for all types.                                    |
