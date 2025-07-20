@@ -62,7 +62,7 @@ impl Environment {
     ///
     /// ChatGPT was used to help translate between formats, so there could be hallucinations.
     ///
-    /// White light colors are not currently supported, and where therefor ignored.
+    /// White light colors are not currently supported, and are therefor ignored.
     pub fn get_color_scheme(&self) -> ColorScheme {
         match self {
             Environment::Unknown(_)
@@ -404,6 +404,9 @@ impl Environment {
 }
 
 impl AllDirectionEnvironment {
+    /// Value taken from [the wiki](https://bsmg.wiki/mapping/lighting-defaults.html#current-colors).
+    ///
+    /// ChatGPT was used to help translate between formats, so there could be hallucinations.
     pub fn get_color_scheme(&self) -> ColorScheme {
         match self {
             AllDirectionEnvironment::GlassDesert => color_scheme!(

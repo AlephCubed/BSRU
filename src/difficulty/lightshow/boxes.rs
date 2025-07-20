@@ -35,11 +35,17 @@ pub trait EventGroup {
     /// Returns the number of beats that the event will be offset for a given light ID.
     /// # Panics
     /// Will panic if the light ID is greater than or equal to the group size.
+    #[deprecated(
+        note = "Experimental. Does not consider chunks, random, or limit in filter calculations."
+    )]
     fn get_beat_offset(&self, light_id: i32, group_size: i32) -> f32;
 
     /// Returns the value that the event will be offset for a given light ID (i.e. brightness offset).
     /// # Panics
     /// Will panic if the light ID is greater than or equal to the group size.
+    #[deprecated(
+        note = "Experimental. Does not consider chunks, random, or limit in filter calculations."
+    )]
     fn get_value_offset(&self, light_id: i32, group_size: i32) -> f32;
 }
 
@@ -57,6 +63,7 @@ macro_rules! impl_event_group {
                 &self.data
             }
 
+            #[allow(deprecated)]
             fn get_beat_offset(&self, light_id: i32, group_size: i32) -> f32 {
                 self.beat_dist_type.compute_offset(
                     light_id,
@@ -68,6 +75,7 @@ macro_rules! impl_event_group {
                 )
             }
 
+            #[allow(deprecated)]
             fn get_value_offset(&self, light_id: i32, group_size: i32) -> f32 {
                 self.$value_offset(light_id, group_size)
             }

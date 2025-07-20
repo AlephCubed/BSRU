@@ -74,6 +74,9 @@ impl Filter {
     /// Will panic if the light ID is greater than or equal to the group size.
     #[must_use]
     #[inline]
+    #[deprecated(
+        note = "Experimental. Does not consider chunks, random, or limit in calculations."
+    )]
     pub fn is_in_filter(&self, mut light_id: i32, group_size: i32) -> bool {
         assert!(light_id < group_size);
 
@@ -100,6 +103,9 @@ impl Filter {
     /// If the [`FilterType`] is `Unknown` then the result will be the same as `group_size`.
     #[must_use]
     #[inline]
+    #[deprecated(
+        note = "Experimental. Does not consider chunks, random, or limit in calculations."
+    )]
     pub fn count_filtered(&self, group_size: i32) -> i32 {
         match self.filter_type {
             FilterType::Division => {
@@ -121,6 +127,9 @@ impl Filter {
     /// Will panic if the light ID is greater than or equal to the group size.
     #[must_use]
     #[inline]
+    #[deprecated(
+        note = "Experimental. Does not consider chunks, random, or limit in calculations."
+    )]
     pub fn get_relative_index(&self, mut light_id: i32, group_size: i32) -> i32 {
         assert!(light_id < group_size);
 
@@ -184,6 +193,7 @@ loose_enum!(
     }
 );
 
+#[allow(deprecated)]
 #[cfg(test)]
 mod tests {
     use super::*;

@@ -30,6 +30,10 @@ loose_enum! {
 }
 
 impl DistributionType {
+    #[deprecated(
+        note = "Experimental. Does not consider chunks, random, or limit in filter calculations."
+    )]
+    #[allow(deprecated)]
     fn compute_offset(
         &self,
         light_id: i32,
@@ -92,6 +96,7 @@ loose_enum! {
 }
 
 // More readable concrete tests are available in the `color` module.
+#[allow(deprecated)]
 #[cfg(test)]
 mod tests {
     use super::*;
