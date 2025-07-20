@@ -17,6 +17,7 @@ pub trait EventBox: Timed {
 }
 
 #[macro_export]
+#[doc(hidden)]
 macro_rules! impl_event_box {
     ($ident:ident, $group:ident, $data:ident) => {
         impl crate::difficulty::lightshow::boxes::EventBox for $ident {
@@ -54,6 +55,7 @@ pub trait EventGroup {
 }
 
 #[macro_export]
+#[doc(hidden)]
 macro_rules! impl_event_group {
     ($ident:ident::$value_offset:ident, $data:ident) => {
         impl crate::difficulty::lightshow::boxes::EventGroup for $ident {
@@ -92,6 +94,7 @@ pub trait EventData {
 }
 
 #[macro_export]
+#[doc(hidden)]
 macro_rules! impl_event_data {
     ($ident:ident) => {
         impl crate::difficulty::lightshow::boxes::EventData for $ident {

@@ -13,6 +13,7 @@ pub trait Duration: Timed {
 }
 
 #[macro_export]
+#[doc(hidden)]
 macro_rules! impl_timed {
     ($ident:ident::$beat:ident) => {
         impl crate::timing_traits::Timed for $ident {
@@ -24,6 +25,7 @@ macro_rules! impl_timed {
 }
 
 #[macro_export]
+#[doc(hidden)]
 macro_rules! impl_duration {
     ($ident:ident::$beat:ident, end: $end:ident) => {
         impl_timed!($ident::$beat);

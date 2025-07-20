@@ -1,5 +1,6 @@
 /// Defines a repr enum that supports any value. If a value does not match any case, it will be parsed as `Unknown`.
 #[macro_export]
+#[doc(hidden)]
 macro_rules! loose_enum {
     // Special case for strings:
     (
