@@ -2,6 +2,10 @@ pub mod color;
 pub mod rotation;
 pub mod translation;
 
+pub use color::*;
+pub use rotation::*;
+pub use translation::*;
+
 use crate::difficulty::lightshow::filter::Filter;
 use crate::timing_traits::Timed;
 

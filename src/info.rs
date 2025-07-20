@@ -1,6 +1,7 @@
 pub mod color_scheme;
 
-use crate::info::color_scheme::ColorSchemeOverride;
+pub use color_scheme::*;
+
 use crate::loose_enum;
 use serde::{Deserialize, Serialize};
 

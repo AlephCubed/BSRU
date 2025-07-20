@@ -1,5 +1,8 @@
 pub mod presets;
 
+#[allow(unused_imports)]
+pub use presets::*;
+
 use serde::{Deserialize, Serialize};
 use std::string::ToString;
 
