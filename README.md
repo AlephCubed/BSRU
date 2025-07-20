@@ -1,5 +1,9 @@
 # Beatsaber Rust Utilities (BSRU)
 
+[![Version](https://img.shields.io/crates/v/bsru)](https://crates.io/crates/bsru)
+[![Docs](https://img.shields.io/docsrs/bsru)](https://docs.rs/bsru)
+![License](https://img.shields.io/crates/l/bsru)
+
 A Beatsaber V3 parsing library.
 
 ## Version Support
