@@ -2,6 +2,12 @@
 name = "bsru"
 version = "0.1.0"
 edition = "2024"
+description = "Beatsaber Rust Utilities: A Beatsaber V3 parsing library."
+categories = ["game-development", "data-structures", "parser-implementations"]
+keywords = ["beatsaber"]
+repository = "https://github.com/AlephCubed/bsru"
+license = "MIT OR Apache-2.0"
+authors = ["AlephCubed"]
 
 [features]
 bevy_color = ["dep:bevy_color"]
