@@ -57,6 +57,8 @@ macro_rules! rgb {
 }
 
 impl Environment {
+    /// Returns the default color scheme for an environment.
+    ///
     /// Values taken from [the wiki](https://bsmg.wiki/mapping/lighting-defaults.html#current-colors)
     /// and Kival Evan's [Typescript library](https://github.com/KivalEvan/BeatSaber-JSMap/blob/ef8afc42ab90e2f1100f1a163fa810ec56b6a9f8/src/beatmap/shared/colorScheme.ts).
     ///
@@ -404,6 +406,8 @@ impl Environment {
 }
 
 impl AllDirectionEnvironment {
+    /// Returns the default color scheme for a 90/360 degree environment.
+    ///
     /// Value taken from [the wiki](https://bsmg.wiki/mapping/lighting-defaults.html#current-colors).
     ///
     /// ChatGPT was used to help translate between formats, so there could be hallucinations.

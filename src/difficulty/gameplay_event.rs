@@ -1,3 +1,5 @@
+//! Events that effect gameplay and aren't purely visual.
+
 use crate::{impl_timed, loose_enum};
 use serde::{Deserialize, Serialize};
 

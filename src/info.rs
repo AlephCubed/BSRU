@@ -1,3 +1,5 @@
+//! Defines the structure of a map's `Info.dat` file.
+
 pub mod color_scheme;
 
 pub use color_scheme::*;
@@ -14,7 +16,7 @@ use serde::{Deserialize, Serialize};
 pub struct Beatmap {
     /// The info file version, in the form of `2.1.0`.
     ///
-    /// ### Info File
+    /// ### Version Support
     ///
     /// | Version | Description                                   | Supported |
     /// |---------|-----------------------------------------------|-----------|
@@ -67,6 +69,9 @@ pub struct Beatmap {
 }
 
 loose_enum! {
+    /// The world that surrounds the player and defines which lights are available.
+    ///
+    /// For 90/360 degree mode, see [`AllDirectionEnvironment`].
     #[derive(Default)]
     Environment: String {
         #[default]
@@ -121,6 +126,9 @@ loose_enum! {
 }
 
 loose_enum! {
+    /// The world that surrounds the player while playing 90/360 degree mode.
+    ///
+    /// For standard mode, see [`Environment`].
     #[derive(Default)]
     AllDirectionEnvironment: String {
         #[default]
@@ -128,6 +136,7 @@ loose_enum! {
     }
 }
 
+/// Describes a group of difficulties, all with the same [characteristic/mode](Characteristic).
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[cfg_attr(
     feature = "bevy_reflect",
@@ -142,6 +151,10 @@ pub struct DifficultySet {
 }
 
 loose_enum! {
+    /// Describes the type/game mode of a difficulty.
+    ///
+    /// Note that [`Lawless`](Self::Lawless) and [`Lightshow`](Self::Lightshow) are modded characteristics,
+    /// and may cause problems in un-modded versions of the game.
     #[derive(Default)]
     Characteristic: String {
         #[default]
@@ -158,6 +171,9 @@ loose_enum! {
     }
 }
 
+/// Describes the settings for a difficulty.
+///
+/// Note that a difficulties [characteristic](Characteristic) is defined by its [`DifficultySet`].
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[cfg_attr(
     feature = "bevy_reflect",

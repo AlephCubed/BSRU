@@ -1,6 +1,9 @@
+//! The interactable objects of a difficulty.
+
 use crate::{impl_duration, impl_timed, loose_enum};
 use serde::{Deserialize, Serialize};
 
+/// The standard block/note.
 #[doc(alias = "Block")]
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[cfg_attr(
@@ -9,16 +12,22 @@ use serde::{Deserialize, Serialize};
     reflect(Debug, Clone, PartialEq)
 )]
 pub struct Note {
+    /// The position of the object in time.
     #[serde(rename = "b")]
     pub beat: f32,
+    /// A value representing the vertical position of the object.
+    /// In the range 0..2 inclusive, with zero being the bottom and two being the top row.
     #[serde(rename = "y")]
     pub row: i32,
+    /// A value representing the horizontal position of the object.
+    /// In the range 0..3 inclusive, with zero being the far left and three being the far right column.
     #[serde(rename = "x")]
     pub col: i32,
     #[serde(rename = "c")]
     pub color: NoteColor,
     #[serde(rename = "d")]
     pub direction: CutDirection,
+    /// The number of degrees counter-clockwise to offset the object by.
     #[serde(rename = "a")]
     pub angle_offset: f32,
 }
@@ -26,6 +35,7 @@ pub struct Note {
 impl_timed!(Note::beat);
 
 loose_enum! {
+    /// The color of a note, which determines which saber should be used to cut it.
     #[derive(Default, Copy)]
     NoteColor: i32 {
         #[default]
@@ -35,6 +45,7 @@ loose_enum! {
 }
 
 loose_enum! {
+    /// The direction a note should be cut.
     #[derive(Default, Copy)]
     CutDirection: i32 {
         #[default]
@@ -51,8 +62,9 @@ loose_enum! {
 }
 
 impl CutDirection {
-    /// Returns the number of degrees a note is rotated, with zero degrees being downward note.
-    /// Returns zero if the cut direction is unknown.
+    /// Returns the number of degrees a note is rotated, with zero degrees being a downward note.
+    ///
+    /// Returns zero if the cut direction is unknown/any.
     pub fn get_degrees(&self) -> f32 {
         match self {
             CutDirection::Up => 180.0,
@@ -76,10 +88,15 @@ impl CutDirection {
     reflect(Debug, Clone, PartialEq)
 )]
 pub struct Bomb {
+    /// The position of the object in time.
     #[serde(rename = "b")]
     pub beat: f32,
+    /// A value representing the vertical position of the object.
+    /// In the range 0..2 inclusive, with zero being the bottom and two being the top row.
     #[serde(rename = "y")]
     pub row: i32,
+    /// A value representing the horizontal position of the object.
+    /// In the range 0..3 inclusive, with zero being the far left and three being the far right column.
     #[serde(rename = "x")]
     pub col: i32,
 }
@@ -94,12 +111,18 @@ impl_timed!(Bomb::beat);
     reflect(Debug, Clone, PartialEq)
 )]
 pub struct Wall {
+    /// The start position of the object in time.
     #[serde(rename = "b")]
     pub beat: f32,
+    /// The length (in beats) that an object takes place.
     #[serde(rename = "d")]
     pub duration: f32,
+    /// A value representing the vertical position of the object.
+    /// In the range 0..2 inclusive, with zero being the bottom and two being the top row.
     #[serde(rename = "y")]
     pub row: i32,
+    /// A value representing the horizontal position of the object.
+    /// In the range 0..3 inclusive, with zero being the far left and three being the far right column.
     #[serde(rename = "x")]
     pub col: i32,
     #[serde(rename = "w")]
@@ -131,27 +154,39 @@ impl_duration!(Wall::beat, duration: duration);
     reflect(Debug, Clone, PartialEq)
 )]
 pub struct Arc {
+    /// The start position of the object in time.
     #[serde(rename = "b")]
     pub beat: f32,
+    /// A value representing the vertical starting position of the object.
+    /// In the range 0..2 inclusive, with zero being the bottom and two being the top row.
     #[serde(rename = "y")]
     pub row: i32,
+    /// A value representing the horizontal starting position of the object.
+    /// In the range 0..3 inclusive, with zero being the far left and three being the far right column.
     #[serde(rename = "x")]
     pub col: i32,
     #[serde(rename = "c")]
     pub color: NoteColor,
     #[serde(rename = "d")]
     pub direction: CutDirection,
+    /// Controls how far away the starting bezier control point is in [cut direction](Self::direction).
     #[serde(rename = "mu")]
     pub control_point: f32,
 
+    /// The end position of the object in time.
     #[serde(rename = "tb")]
     pub tail_beat: f32,
+    /// A value representing the vertical ending position of the object.
+    /// In the range 0..2 inclusive, with zero being the bottom and two being the top row.
     #[serde(rename = "ty")]
     pub tail_row: i32,
+    /// A value representing the horizontal ending position of the object.
+    /// In the range 0..3 inclusive, with zero being the far left and three being the far right column.
     #[serde(rename = "tx")]
     pub tail_col: i32,
     #[serde(rename = "tc")]
     pub tail_direction: CutDirection,
+    /// Controls how far away the ending bezier control point is in [tail cut direction](Self::tail_direction).
     #[serde(rename = "tmu")]
     pub tail_control_point: f32,
 
@@ -198,10 +233,15 @@ loose_enum! {
     reflect(Debug, Clone, PartialEq)
 )]
 pub struct Chain {
+    /// The start position of the object in time.
     #[serde(rename = "b")]
     pub beat: f32,
+    /// A value representing the vertical starting position of the object.
+    /// In the range 0..2 inclusive, with zero being the bottom and two being the top row.
     #[serde(rename = "y")]
     pub row: i32,
+    /// A value representing the horizontal starting position of the object.
+    /// In the range 0..3 inclusive, with zero being the far left and three being the far right column.
     #[serde(rename = "x")]
     pub col: i32,
     #[serde(rename = "c")]
@@ -209,13 +249,19 @@ pub struct Chain {
     #[serde(rename = "d")]
     pub direction: CutDirection,
 
+    /// The end position of the object in time.
     #[serde(rename = "tb")]
     pub tail_beat: f32,
+    /// A value representing the vertical ending position of the object.
+    /// In the range 0..2 inclusive, with zero being the bottom and two being the top row.
     #[serde(rename = "ty")]
     pub tail_row: i32,
+    /// A value representing the horizontal ending position of the object.
+    /// In the range 0..3 inclusive, with zero being the far left and three being the far right column.
     #[serde(rename = "tx")]
     pub tail_col: i32,
 
+    /// The number of links the chain has, including the connected [`Note`].
     #[serde(rename = "sc")]
     pub link_count: i32,
     #[serde(rename = "s")]

@@ -1,3 +1,5 @@
+//! Defines the structure of a map's difficulty file(s) (i.e. `ExpertStandard.dat`).
+
 pub mod gameplay_event;
 pub mod lightshow;
 pub mod playfield;
@@ -28,6 +30,8 @@ pub struct Difficulty {
     /// | 3.2     | Translation events.                   | Yes       |
     /// | 3.3     | More strobe functionality.            | No        |
     /// | 4.X     | New template-like format.             | No        |
+    ///
+    /// [^1]: Not supported by experimental lighting calculation methods.
     pub version: String,
     pub bpm_events: Vec<BpmEvent>,
     #[serde(rename = "rotationEvents")]

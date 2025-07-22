@@ -1,3 +1,5 @@
+//! Events that have no effect on gameplay.
+
 pub mod basic;
 pub mod boxes;
 pub mod easing;
