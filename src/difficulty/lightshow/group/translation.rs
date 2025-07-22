@@ -90,7 +90,7 @@ impl Default for TranslationEventGroup {
             translation_dist_type: Default::default(),
             translation_dist_value: 0.0,
             translation_dist_effect_first: Default::default(),
-            translation_dist_easing: Default::default(),
+            translation_dist_easing: Easing::Linear,
             axis: Default::default(),
             invert_axis: Default::default(),
             data: vec![TranslationEventData::default()],

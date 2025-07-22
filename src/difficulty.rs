@@ -20,19 +20,6 @@ use serde::{Deserialize, Serialize};
 )]
 pub struct Difficulty {
     /// The difficulty file version, in the form of `3.2.0`.
-    ///
-    /// ### Version Support
-    ///
-    /// | Version | Description                           | Supported |
-    /// |---------|---------------------------------------|-----------|
-    /// | 2.X     | Old un-abbreviated format.            | No        |
-    /// | 3.0     | Group lighting system.                | Yes       |
-    /// | 3.1     | Chunk, limit, and randomized filters. | Yes [^1]  |
-    /// | 3.2     | Translation events.                   | Yes       |
-    /// | 3.3     | More strobe functionality.            | No        |
-    /// | 4.X     | New template-like format.             | No        |
-    ///
-    /// [^1]: Not supported by experimental lighting calculation methods.
     pub version: String,
     pub bpm_events: Vec<BpmEvent>,
     #[serde(rename = "rotationEvents")]
