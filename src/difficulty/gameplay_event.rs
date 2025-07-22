@@ -3,6 +3,7 @@
 use crate::{impl_timed, loose_enum};
 use serde::{Deserialize, Serialize};
 
+/// Controls the rotation that interactable objects spawn in 90/360 degree difficulties.
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[cfg_attr(
     feature = "bevy_reflect",
@@ -21,13 +22,13 @@ pub struct LaneRotationEvent {
 impl_timed!(LaneRotationEvent::beat);
 
 loose_enum!(
-    /// Determines when a [`LaneRotationEvent`] will be applied to objects placed on the same beat as this event.
+    /// Determines when a [`LaneRotationEvent`] will be applied to objects.
     #[derive(Default, Copy)]
     ExecutionTime: i32 {
-        /// The [`LaneRotationEvent`] will affect objects with a beat greater than or equal to the event's beat.
+        /// The [`LaneRotationEvent`] will affect objects with a beat *greater than or equal to* the event's beat.
         #[default]
         Early = 0,
-        /// The [`LaneRotationEvent`] will affect objects with a beat greater than the event's beat.
+        /// The [`LaneRotationEvent`] will affect objects with a beat *greater than* the event's beat.
         Late = 1,
     }
 );

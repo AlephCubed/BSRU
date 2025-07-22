@@ -1,3 +1,5 @@
+//! Defines the color schemes provided by the base game for each environment.
+
 use crate::info::color_scheme::{Color, ColorScheme};
 use crate::info::{AllDirectionEnvironment, Environment};
 

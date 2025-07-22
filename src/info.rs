@@ -7,6 +7,7 @@ pub use color_scheme::*;
 use crate::loose_enum;
 use serde::{Deserialize, Serialize};
 
+/// A map's `Info.dat` file.
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[cfg_attr(
     feature = "bevy_reflect",
@@ -51,11 +52,12 @@ pub struct Beatmap {
     /// The path to the cover image file, relative to the map's folder.
     #[serde(rename = "_coverImageFilename")]
     pub cover_image_file: String,
+    /// The environment that will be used for 90 and 360 degree difficulties.
+    ///
+    /// Starting in info file V2.1, individual difficulties can override this using [environment_index](DifficultyInfo::environment_index).
     #[serde(rename = "_environmentName")]
     pub environment: Environment,
     /// The environment that will be used for 90 and 360 degree difficulties.
-    ///
-    /// Starting in info file V2.1, Individual difficulties can override this using [environment_index](DifficultyInfo::environment_index).
     #[serde(rename = "_allDirectionsEnvironmentName")]
     pub all_directions_environment: AllDirectionEnvironment,
     /// > Only present in info file V2.1 or higher.

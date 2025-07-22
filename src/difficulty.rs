@@ -10,6 +10,7 @@ pub use playfield::*;
 
 use serde::{Deserialize, Serialize};
 
+/// A map's difficulty file(s) (i.e. `ExpertStandard.dat`).
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 #[cfg_attr(

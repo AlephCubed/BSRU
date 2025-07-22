@@ -1,3 +1,5 @@
+//! Describes the colors of objects and lights for an environment/map.
+
 pub mod presets;
 
 #[allow(unused_imports)]
@@ -18,7 +20,7 @@ pub struct ColorSchemeOverride {
     pub color_scheme: ColorScheme,
 }
 
-/// Describes the colors of objects a lights for an environment/map.
+/// The colors of objects and lights for an environment/map.
 ///
 /// This does *not* currently support while light color overrides.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -105,6 +107,7 @@ impl Default for ColorScheme {
     }
 }
 
+/// The color of an object/light.
 #[derive(Debug, Copy, Clone, PartialEq, Serialize, Deserialize)]
 #[cfg_attr(
     feature = "bevy_reflect",

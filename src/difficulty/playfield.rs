@@ -3,7 +3,7 @@
 use crate::{impl_duration, impl_timed, loose_enum};
 use serde::{Deserialize, Serialize};
 
-/// The standard block/note.
+/// The standard block/note that a player cuts.
 #[doc(alias = "Block")]
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[cfg_attr(
@@ -23,8 +23,10 @@ pub struct Note {
     /// In the range 0..3 inclusive, with zero being the far left and three being the far right column.
     #[serde(rename = "x")]
     pub col: i32,
+    /// The color that determines which saber should be used to cut the note.
     #[serde(rename = "c")]
     pub color: NoteColor,
+    /// The direction the note should be cut.
     #[serde(rename = "d")]
     pub direction: CutDirection,
     /// The number of degrees counter-clockwise to offset the object by.
@@ -57,6 +59,7 @@ loose_enum! {
         UpRight = 5,
         DownLeft = 6,
         DownRight = 7,
+        #[doc(alias = "Dot")]
         Any = 8,
     }
 }
@@ -81,6 +84,7 @@ impl CutDirection {
     }
 }
 
+/// The spiked bombs that players avoid hitting with their sabers.
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[cfg_attr(
     feature = "bevy_reflect",
@@ -103,6 +107,7 @@ pub struct Bomb {
 
 impl_timed!(Bomb::beat);
 
+/// A wall/obstacle that players avoid running into.
 #[doc(alias = "Obstacle")]
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[cfg_attr(
@@ -125,8 +130,12 @@ pub struct Wall {
     /// In the range 0..3 inclusive, with zero being the far left and three being the far right column.
     #[serde(rename = "x")]
     pub col: i32,
+    /// The number of columns that the wall will take up.
     #[serde(rename = "w")]
     pub width: i32,
+    /// The number of rows that the wall will take up.
+    ///
+    /// A standard wall has a height of five while a crouch wall has a height of three.
     #[serde(rename = "h")]
     pub height: i32,
 }
@@ -146,6 +155,7 @@ impl Default for Wall {
 
 impl_duration!(Wall::beat, duration: duration);
 
+/// A glowing line that guides the player's saber.
 #[doc(alias = "Slider")]
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[cfg_attr(
@@ -165,8 +175,10 @@ pub struct Arc {
     /// In the range 0..3 inclusive, with zero being the far left and three being the far right column.
     #[serde(rename = "x")]
     pub col: i32,
+    /// The color of the arc.
     #[serde(rename = "c")]
     pub color: NoteColor,
+    /// The direction the arc moves in at the start.
     #[serde(rename = "d")]
     pub direction: CutDirection,
     /// Controls how far away the starting bezier control point is in [cut direction](Self::direction).
@@ -184,12 +196,14 @@ pub struct Arc {
     /// In the range 0..3 inclusive, with zero being the far left and three being the far right column.
     #[serde(rename = "tx")]
     pub tail_col: i32,
+    /// The direction the arc moves in at the end.
     #[serde(rename = "tc")]
     pub tail_direction: CutDirection,
     /// Controls how far away the ending bezier control point is in [tail cut direction](Self::tail_direction).
     #[serde(rename = "tmu")]
     pub tail_control_point: f32,
 
+    /// Controls how the arc curves from its head to its tail.
     #[serde(rename = "m")]
     pub mid_anchor_mode: MidAnchorMode,
 }
@@ -216,6 +230,7 @@ impl Default for Arc {
 impl_duration!(Arc::beat, end: tail_beat);
 
 loose_enum! {
+    /// Controls how an arc curves from its head to its tail.
     #[derive(Default, Copy)]
     MidAnchorMode: i32 {
         #[default]
@@ -225,6 +240,7 @@ loose_enum! {
     }
 }
 
+/// A chain/burst of mini-notes.
 #[doc(alias = "BurstSlider")]
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[cfg_attr(
@@ -244,8 +260,10 @@ pub struct Chain {
     /// In the range 0..3 inclusive, with zero being the far left and three being the far right column.
     #[serde(rename = "x")]
     pub col: i32,
+    /// The color that determines which saber should be used to cut the chain links.
     #[serde(rename = "c")]
     pub color: NoteColor,
+    /// The direction the start of the chain should be cut.
     #[serde(rename = "d")]
     pub direction: CutDirection,
 
@@ -264,6 +282,10 @@ pub struct Chain {
     /// The number of links the chain has, including the connected [`Note`].
     #[serde(rename = "sc")]
     pub link_count: i32,
+    /// The percent of the path (from head to tail) that will be used, usually in the range 0..1 inclusive.
+    /// Smaller values will result in the chain links bunching up near the head.
+    ///
+    /// Setting this to zero will crash the game.
     #[serde(rename = "s")]
     pub link_squish: f32,
 }

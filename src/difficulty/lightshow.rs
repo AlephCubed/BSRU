@@ -13,23 +13,13 @@ pub use filter::*;
 use crate::loose_enum;
 
 loose_enum! {
-    /// The distribution value does different things depending on the type.
-    ///
-    /// # [Beat Distribution](https://bsmg.wiki/mapping/map-format/lightshow.html#light-color-event-boxes-beat-distribution):
-    /// ### Wave:
-    /// The value represents the total time for all steps to complete.
-    /// ### Step:
-    /// The value represents the time until the next step is completed.
-    ///
-    /// # [Brightness](https://bsmg.wiki/mapping/map-format/lightshow.html#light-color-event-boxes-effect-distribution) and [Rotation Distribution](https://bsmg.wiki/mapping/map-format/lightshow.html#light-rotation-event-boxes-effect-distribution):
-    /// ### Wave:
-    /// The value represents the total difference between the first and last step.
-    /// ### Step:
-    /// The value represents the different between the current and next step.
+    /// The way that the distribution value is used.
     #[derive(Default, Copy)]
     DistributionType: i32 {
+        /// The distribution value represents the difference between *the last and first step*.
         #[default]
         Wave = 1,
+        /// The distribution value represents the difference between *each step*.
         Step = 2,
     }
 }
@@ -76,21 +66,19 @@ impl DistributionType {
 }
 
 loose_enum! {
-    /// Controls how the value is changed from the previous event.
-    /// - Transition: The value will blend from the previous event's value, using the
-    /// [easing](Easing) value.
-    /// - Extend: The event's value will be ignored, replaced with the values from the previous event.
-    ///
-    /// More info [here](https://bsmg.wiki/mapping/map-format/lightshow.html#light-rotation-events-type).
+    /// Controls how the state is changed relative to the previous event.
     #[derive(Default, Copy)]
     TransitionType: i32 {
+        /// The state will blend from the previous event's state, using the events [easing](Easing).
         #[default]
         Transition = 0,
+        /// The event's state will be ignored, replaced with the state from the previous event.
         Extend = 1,
     }
 }
 
 loose_enum! {
+    /// The axis that a rotation/translation event effects.
     #[derive(Default, Copy)]
     EventAxis: i32 {
         #[default]

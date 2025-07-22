@@ -2,6 +2,7 @@ use crate::loose_enum;
 use simple_easing::*;
 
 loose_enum! {
+    /// The easing that a [transition](crate::lightshow::TransitionType::Transition) event will use.
     #[derive(Default, Copy)]
     Easing: i32 {
         #[default]
@@ -39,8 +40,11 @@ loose_enum! {
         OutBounce = 29,
         InOutBounce = 30,
 
+        /// Note: For [`Easing::ease`], the result will be the same as [`Easing::InOutBack`].
         BeatSaberInOutBack = 100,
+        /// Note: For [`Easing::ease`], the result will be the same as [`Easing::InOutElastic`].
         BeatSaberInOutElastic = 101,
+        /// Note: For [`Easing::ease`], the result will be the same as [`Easing::InOutBounce`].
         BeatSaberInOutBounce = 102,
     }
 }
