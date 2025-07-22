@@ -87,7 +87,7 @@ impl Default for RotationEventGroup {
             rotation_dist_type: Default::default(),
             rotation_dist_value: 0.0,
             rotation_dist_effect_first: LooseBool::True,
-            rotation_dist_easing: None,
+            rotation_dist_easing: Some(Easing::Linear),
             axis: Default::default(),
             invert_axis: Default::default(),
             data: vec![RotationEventData::default()],

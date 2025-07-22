@@ -16,14 +16,6 @@ use serde::{Deserialize, Serialize};
 )]
 pub struct Beatmap {
     /// The info file version, in the form of `2.1.0`.
-    ///
-    /// ### Version Support
-    ///
-    /// | Version | Description                                   | Supported |
-    /// |---------|-----------------------------------------------|-----------|
-    /// | 2.0     | Standard info format.                         | Yes       |
-    /// | 2.1     | Per difficulty environment and color schemes. | Yes       |
-    /// | 4.X     | Format overhaul.                              | No        |
     #[serde(rename = "_version")]
     pub version: String,
     #[serde(rename = "_songName")]

@@ -81,7 +81,7 @@ impl Default for ColorEventGroup {
             bright_dist_type: Default::default(),
             bright_dist_value: 0.0,
             bright_dist_effect_first: Default::default(),
-            bright_dist_easing: None,
+            bright_dist_easing: Some(Easing::Linear),
             data: vec![ColorEventData::default()],
         }
     }
@@ -124,12 +124,24 @@ pub struct ColorEventData {
     pub transition_type: ColorTransitionType,
     #[serde(rename = "c")]
     pub color: LightColor,
+    /// Controls how bright the light is, with zero being off and one being normal brightness.
     #[serde(rename = "s")]
     pub brightness: f32,
     /// Determines the number of strobes that will take place each beat.
     /// A value of zero will result in no strobing.
     #[serde(rename = "f")]
     pub strobe_frequency: i32,
+    /// > Only present in difficulty file V3.3 or higher.
+    ///
+    /// Controls the brightness of the "off" strobe state.
+    /// If this equals the event's [brightness](Self::brightness), strobing will have no effect.
+    #[serde(rename = "sb")]
+    pub strobe_brightness: Option<f32>,
+    /// > Only present in difficulty file V3.3 or higher.
+    ///
+    /// Whether to fade between strobe states or not.
+    #[serde(rename = "sf")]
+    pub strobe_fade: Option<LooseBool>,
 }
 
 impl Default for ColorEventData {
@@ -140,6 +152,8 @@ impl Default for ColorEventData {
             color: Default::default(),
             brightness: 1.0,
             strobe_frequency: 0,
+            strobe_brightness: Some(0.0),
+            strobe_fade: Some(LooseBool::False),
         }
     }
 }
