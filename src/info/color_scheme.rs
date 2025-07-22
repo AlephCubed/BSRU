@@ -1,3 +1,5 @@
+//! Describes the colors of objects and lights for an environment/map.
+
 pub mod presets;
 
 #[allow(unused_imports)]
@@ -18,6 +20,9 @@ pub struct ColorSchemeOverride {
     pub color_scheme: ColorScheme,
 }
 
+/// The colors of objects and lights for an environment/map.
+///
+/// This does *not* currently support while light color overrides.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[cfg_attr(
     feature = "bevy_reflect",
@@ -26,29 +31,37 @@ pub struct ColorSchemeOverride {
 )]
 #[serde(rename_all = "camelCase")]
 pub struct ColorScheme {
+    /// The name of the color scheme.
     #[serde(rename = "colorSchemeId")]
     pub id: String,
+    /// The color for the left saber/notes. Default is red.
     #[doc(alias = "saber_left")]
     #[serde(rename = "saberAColor")]
     pub note_left: Color,
+    /// The color for the right saber/notes. Default is blue.
     #[doc(alias = "saber_right")]
     #[serde(rename = "saberBColor")]
     pub note_right: Color,
 
+    /// The color of walls/obstacles.
     #[doc(alias = "obstacle")]
     #[serde(rename = "obstaclesColor")]
     pub wall: Color,
 
+    /// The primary light color, often matching the [left note color](Self::note_left).
     #[doc(alias = "environment0")]
     #[serde(rename = "environmentColor0")]
     pub light_primary: Color,
+    /// The secondary light color, often matching the [right note color](Self::note_right).
     #[doc(alias = "environment1")]
     #[serde(rename = "environmentColor1")]
     pub light_secondary: Color,
 
+    /// The primary light color when [boost colors](crate::ColorBoostEvent) are enabled.
     #[doc(alias = "environment_boost_0")]
     #[serde(rename = "environmentColor0Boost")]
     pub boost_light_primary: Color,
+    /// The secondary light color when [boost colors](crate::ColorBoostEvent) are enabled.
     #[doc(alias = "environment_boost_1")]
     #[serde(rename = "environmentColor1Boost")]
     pub boost_light_secondary: Color,
@@ -94,6 +107,7 @@ impl Default for ColorScheme {
     }
 }
 
+/// The color of an object/light.
 #[derive(Debug, Copy, Clone, PartialEq, Serialize, Deserialize)]
 #[cfg_attr(
     feature = "bevy_reflect",

@@ -1,3 +1,5 @@
+//! The advanced group lighting system events.
+
 pub mod color;
 pub mod rotation;
 pub mod translation;
@@ -9,6 +11,7 @@ pub use translation::*;
 use crate::difficulty::lightshow::filter::Filter;
 use crate::timing_traits::Timed;
 
+/// A collection of [`EventGroup`]s that share the same group ID and beat.
 pub trait EventBox: Timed {
     type Group: EventGroup<Data = Self::Data>;
     type Data: EventData;
@@ -20,7 +23,7 @@ pub trait EventBox: Timed {
 #[doc(hidden)]
 macro_rules! impl_event_box {
     ($ident:ident, $group:ident, $data:ident) => {
-        impl crate::difficulty::lightshow::boxes::EventBox for $ident {
+        impl crate::difficulty::lightshow::group::EventBox for $ident {
             type Group = $group;
             type Data = $data;
 
@@ -31,6 +34,7 @@ macro_rules! impl_event_box {
     };
 }
 
+/// A collection of [`EventData`] that share the same [`Filter`] and distribution.
 pub trait EventGroup {
     type Data: EventData;
 
@@ -45,7 +49,7 @@ pub trait EventGroup {
     )]
     fn get_beat_offset(&self, light_id: i32, group_size: i32) -> f32;
 
-    /// Returns the value that the event will be offset for a given light ID (i.e. brightness offset).
+    /// Returns the value (i.e. brightness) that the event will be offset for a given light ID.
     /// # Panics
     /// Will panic if the light ID is greater than or equal to the group size.
     #[deprecated(
@@ -58,7 +62,7 @@ pub trait EventGroup {
 #[doc(hidden)]
 macro_rules! impl_event_group {
     ($ident:ident::$value_offset:ident, $data:ident) => {
-        impl crate::difficulty::lightshow::boxes::EventGroup for $ident {
+        impl crate::difficulty::lightshow::group::EventGroup for $ident {
             type Data = $data;
 
             fn get_filter(&self) -> &Filter {
@@ -89,7 +93,9 @@ macro_rules! impl_event_group {
     };
 }
 
+/// The lowest-level group event type, which determines the base value of the event.
 pub trait EventData {
+    /// Returns the number of beats the event will be offset from the [`EventBox`]'s beat.
     fn get_beat_offset(&self) -> f32;
 }
 
@@ -97,7 +103,7 @@ pub trait EventData {
 #[doc(hidden)]
 macro_rules! impl_event_data {
     ($ident:ident) => {
-        impl crate::difficulty::lightshow::boxes::EventData for $ident {
+        impl crate::difficulty::lightshow::group::EventData for $ident {
             fn get_beat_offset(&self) -> f32 {
                 self.beat_offset
             }

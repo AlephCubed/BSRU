@@ -1,11 +1,14 @@
-use crate::difficulty::lightshow::boxes::EventData;
+//! Events that control the rotation of objects.
+
 use crate::difficulty::lightshow::easing::Easing;
 use crate::difficulty::lightshow::filter::Filter;
+use crate::difficulty::lightshow::group::EventData;
 use crate::difficulty::lightshow::{DistributionType, EventAxis, TransitionType};
 use crate::utils::LooseBool;
 use crate::{impl_event_box, impl_event_group, impl_timed, loose_enum};
 use serde::{Deserialize, Serialize};
 
+/// A collection of [`RotationEventGroup`]s that share the same group ID and beat.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[cfg_attr(
     feature = "bevy_reflect",
@@ -13,8 +16,10 @@ use serde::{Deserialize, Serialize};
     reflect(Debug, Clone, PartialEq)
 )]
 pub struct RotationEventBox {
+    /// The time the event takes place.
     #[serde(rename = "b")]
     pub beat: f32,
+    /// The ID of the collection of objects that this event effects.
     #[serde(rename = "g")]
     pub group_id: i32,
     #[serde(rename = "e")]
@@ -34,6 +39,7 @@ impl Default for RotationEventBox {
 impl_timed!(RotationEventBox::beat);
 impl_event_box!(RotationEventBox, RotationEventGroup, RotationEventData);
 
+/// A collection of [`RotationEventData`] that share the same [`EventAxis`], [`Filter`], and distribution.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[cfg_attr(
     feature = "bevy_reflect",
@@ -45,12 +51,19 @@ pub struct RotationEventGroup {
     pub filter: Filter,
     #[serde(rename = "d")]
     pub beat_dist_type: DistributionType,
+    /// The strength of the beat distribution. Dependent on the [distribution type](Self::beat_dist_type).
+    ///
+    /// A value of zero will have no effect.
     #[serde(rename = "w")]
     pub beat_dist_value: f32,
     #[serde(rename = "t")]
     pub rotation_dist_type: DistributionType,
+    /// The strength of the rotation distribution. Dependent on the [distribution type](Self::rotation_dist_type).
+    ///
+    /// A value of zero will have no effect.
     #[serde(rename = "s")]
     pub rotation_dist_value: f32,
+    /// Whether the first [`RotationEventData`] of the group will be effected by rotation distribution.
     #[serde(rename = "b")]
     pub rotation_dist_effect_first: LooseBool,
     /// > Only present in difficulty file V3.2 or higher.
@@ -58,6 +71,7 @@ pub struct RotationEventGroup {
     pub rotation_dist_easing: Option<Easing>,
     #[serde(rename = "a")]
     pub axis: EventAxis,
+    /// If true, the rotation will be mirrored.
     #[serde(rename = "r")]
     pub invert_axis: LooseBool,
     #[serde(rename = "l")]
@@ -103,6 +117,7 @@ impl RotationEventGroup {
     }
 }
 
+/// The lowest-level group event type, which determines the base rotation of the event.
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[cfg_attr(
     feature = "bevy_reflect",
@@ -110,16 +125,19 @@ impl RotationEventGroup {
     reflect(Debug, Clone, PartialEq)
 )]
 pub struct RotationEventData {
+    /// The number of beats the event will be offset from the [`RotationEventBox`]'s beat.
     #[serde(rename = "b")]
     pub beat_offset: f32,
     #[serde(rename = "p")]
     pub transition_type: TransitionType,
     #[serde(rename = "e")]
     pub easing: Easing,
+    /// The base number of degrees the event will rotate objects by.
     #[serde(rename = "r")]
     pub degrees: f32,
     #[serde(rename = "o")]
     pub direction: RotationDirection,
+    /// Extends the rotation by 360 degrees in the [`RotationDirection`].
     #[serde(rename = "l")]
     pub loops: i32,
 }

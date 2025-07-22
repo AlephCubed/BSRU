@@ -1,3 +1,5 @@
+//! Traits that are used to get an object's position in time and duration.
+
 /// Represents any beatmap object that happens at a specific beat.
 pub trait Timed {
     /// Returns the beat that an object takes place.

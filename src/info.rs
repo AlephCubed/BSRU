@@ -1,3 +1,5 @@
+//! Defines the structure of a map's `Info.dat` file.
+
 pub mod color_scheme;
 
 pub use color_scheme::*;
@@ -5,6 +7,7 @@ pub use color_scheme::*;
 use crate::loose_enum;
 use serde::{Deserialize, Serialize};
 
+/// A map's `Info.dat` file.
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[cfg_attr(
     feature = "bevy_reflect",
@@ -14,7 +17,7 @@ use serde::{Deserialize, Serialize};
 pub struct Beatmap {
     /// The info file version, in the form of `2.1.0`.
     ///
-    /// ### Info File
+    /// ### Version Support
     ///
     /// | Version | Description                                   | Supported |
     /// |---------|-----------------------------------------------|-----------|
@@ -49,11 +52,12 @@ pub struct Beatmap {
     /// The path to the cover image file, relative to the map's folder.
     #[serde(rename = "_coverImageFilename")]
     pub cover_image_file: String,
+    /// The environment that will be used for 90 and 360 degree difficulties.
+    ///
+    /// Starting in info file V2.1, individual difficulties can override this using [environment_index](DifficultyInfo::environment_index).
     #[serde(rename = "_environmentName")]
     pub environment: Environment,
     /// The environment that will be used for 90 and 360 degree difficulties.
-    ///
-    /// Starting in info file V2.1, Individual difficulties can override this using [environment_index](DifficultyInfo::environment_index).
     #[serde(rename = "_allDirectionsEnvironmentName")]
     pub all_directions_environment: AllDirectionEnvironment,
     /// > Only present in info file V2.1 or higher.
@@ -67,6 +71,9 @@ pub struct Beatmap {
 }
 
 loose_enum! {
+    /// The world that surrounds the player and defines which lights are available.
+    ///
+    /// For 90/360 degree mode, see [`AllDirectionEnvironment`].
     #[derive(Default)]
     Environment: String {
         #[default]
@@ -121,6 +128,9 @@ loose_enum! {
 }
 
 loose_enum! {
+    /// The world that surrounds the player while playing 90/360 degree mode.
+    ///
+    /// For standard mode, see [`Environment`].
     #[derive(Default)]
     AllDirectionEnvironment: String {
         #[default]
@@ -128,6 +138,7 @@ loose_enum! {
     }
 }
 
+/// Describes a group of difficulties, all with the same [characteristic/mode](Characteristic).
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[cfg_attr(
     feature = "bevy_reflect",
@@ -142,6 +153,10 @@ pub struct DifficultySet {
 }
 
 loose_enum! {
+    /// Describes the type/game mode of a difficulty.
+    ///
+    /// Note that [`Lawless`](Self::Lawless) and [`Lightshow`](Self::Lightshow) are modded characteristics,
+    /// and may cause problems in un-modded versions of the game.
     #[derive(Default)]
     Characteristic: String {
         #[default]
@@ -158,6 +173,9 @@ loose_enum! {
     }
 }
 
+/// Describes the settings for a difficulty.
+///
+/// Note that a difficulties [characteristic](Characteristic) is defined by its [`DifficultySet`].
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[cfg_attr(
     feature = "bevy_reflect",

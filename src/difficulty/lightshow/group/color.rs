@@ -1,3 +1,5 @@
+//! Events that control the color of lights.
+
 use crate::difficulty::lightshow::DistributionType;
 use crate::difficulty::lightshow::easing::Easing;
 use crate::difficulty::lightshow::filter::Filter;
@@ -5,6 +7,7 @@ use crate::utils::LooseBool;
 use crate::{impl_event_box, impl_event_data, impl_event_group, impl_timed, loose_enum};
 use serde::{Deserialize, Serialize};
 
+/// A collection of [`ColorEventGroup`]s that share the same group ID and beat.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[cfg_attr(
     feature = "bevy_reflect",
@@ -12,8 +15,10 @@ use serde::{Deserialize, Serialize};
     reflect(Debug, Clone, PartialEq)
 )]
 pub struct ColorEventBox {
+    /// The time the event takes place.
     #[serde(rename = "b")]
     pub beat: f32,
+    /// The ID of the collection of objects that this event effects.
     #[serde(rename = "g")]
     pub group_id: i32,
     #[serde(rename = "e")]
@@ -33,6 +38,7 @@ impl Default for ColorEventBox {
 impl_timed!(ColorEventBox::beat);
 impl_event_box!(ColorEventBox, ColorEventGroup, ColorEventData);
 
+/// A collection of [`ColorEventData`] that share the same [`Filter`] and distribution.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[cfg_attr(
     feature = "bevy_reflect",
@@ -44,12 +50,19 @@ pub struct ColorEventGroup {
     pub filter: Filter,
     #[serde(rename = "d")]
     pub beat_dist_type: DistributionType,
+    /// The strength of the beat distribution. Dependent on the [distribution type](Self::beat_dist_type).
+    ///
+    /// A value of zero will have no effect.
     #[serde(rename = "w")]
     pub beat_dist_value: f32,
+    /// The strength of the brightness distribution. Dependent on the [distribution type](Self::bright_dist_type).
+    ///
+    /// A value of zero will have no effect.
     #[serde(rename = "t")]
     pub bright_dist_type: DistributionType,
     #[serde(rename = "r")]
     pub bright_dist_value: f32,
+    /// Whether the first [`ColorEventData`] of the group will be effected by brightness distribution.
     #[serde(rename = "b")]
     pub bright_dist_effect_first: LooseBool,
     /// > Only present in difficulty file V3.2 or higher.
@@ -96,6 +109,7 @@ impl ColorEventGroup {
     }
 }
 
+/// The lowest-level group event type, which determines the color of the event.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[cfg_attr(
     feature = "bevy_reflect",
@@ -103,6 +117,7 @@ impl ColorEventGroup {
     reflect(Debug, Clone, PartialEq)
 )]
 pub struct ColorEventData {
+    /// The number of beats the event will be offset from the [`ColorEventBox`]'s beat.
     #[serde(rename = "b")]
     pub beat_offset: f32,
     #[serde(rename = "i")]
@@ -111,6 +126,8 @@ pub struct ColorEventData {
     pub color: LightColor,
     #[serde(rename = "s")]
     pub brightness: f32,
+    /// Determines the number of strobes that will take place each beat.
+    /// A value of zero will result in no strobing.
     #[serde(rename = "f")]
     pub strobe_frequency: i32,
 }
@@ -130,17 +147,23 @@ impl Default for ColorEventData {
 impl_event_data!(ColorEventData);
 
 loose_enum! {
+    /// Controls how the state is changed relative to the previous event.
     #[derive(Default, Copy)]
     ColorTransitionType: i32 {
-        /// Replaced with `Transition` and [`Easing::None`] in difficulty file V3.2 or higher.
-        Instant = 0,
+        /// Unique to color events.
+        /// Has the same effect as using [`TransitionType::Transition`](crate::lightshow::TransitionType::Transition)
+        /// and [`Easing::None`] in rotation/translation events.
         #[default]
+        Instant = 0,
+        /// The state will blend from the previous event's state, using the events [easing](Easing).
         Transition = 1,
+        /// The event's state will be ignored, replaced with the state from the previous event.
         Extend = 2,
     }
 }
 
 loose_enum! {
+    /// Controls which color to display, based on a map or environment's [color scheme](crate::info::color_scheme::ColorScheme).
     #[derive(Default, Copy)]
     LightColor: i32 {
         #[default]
@@ -154,8 +177,8 @@ loose_enum! {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::difficulty::lightshow::boxes::EventGroup;
     use crate::difficulty::lightshow::filter::FilterType;
+    use crate::difficulty::lightshow::group::EventGroup;
 
     #[test]
     fn beat_wave() {

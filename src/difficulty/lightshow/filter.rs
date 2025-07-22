@@ -1,8 +1,10 @@
+//! Controls which light IDs are affected by an event.
+
 use crate::loose_enum;
 use crate::utils::LooseBool;
 use serde::{Deserialize, Serialize};
 
-/// Controls which light indices are affected by event boxes.
+/// Controls which light IDs are affected by an event.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[cfg_attr(
     feature = "bevy_reflect",
@@ -11,14 +13,16 @@ use serde::{Deserialize, Serialize};
 )]
 pub struct Filter {
     // V3.0:
+    /// Controls how [`parameter1`](Self::parameter1) and [`parameter2`](Self::parameter2) are used.
     #[serde(rename = "f")]
     pub filter_type: FilterType,
-    /// Dependent on the [`FilterType`]
+    /// Dependent on the [`FilterType`].
     #[serde(rename = "p")]
     pub parameter1: i32,
-    /// Dependent on the [`FilterType`]
+    /// Dependent on the [`FilterType`].
     #[serde(rename = "t")]
     pub parameter2: i32,
+    /// If true, the filter will start at the end of a group and work backwards.
     #[serde(rename = "r")]
     pub reverse: LooseBool,
     // V3.1:
@@ -152,23 +156,19 @@ impl Filter {
 }
 
 loose_enum! {
-    /// The parameters of a [Filter] do different things depending on the type.
-    ///
-    /// ### [Division](https://bsmg.wiki/mapping/map-format/lightshow.html#index-filters-type-1):
-    /// Splits the group up into equal sections and selects one.
-    /// - Parameter 1 determines the number of sections.
-    ///   It will be rounded up to the nearest multiple of the group size.
-    /// - Parameter 2 determines the section to select, starting at 0.
-    ///
-    /// ### [Step and Offset](https://bsmg.wiki/mapping/map-format/lightshow.html#index-filters-type-2):
-    /// Alternates selecting and not selecting lights.
-    /// - Parameter 1 is the index of the first light that will be selected, starting at 0.
-    /// - Parameter 2 determines the number of IDs to move forward before selecting another light.
+    /// Controls how a [`Filter`]'s [`parameter1`](Filter::parameter1)
+    /// and [`parameter2`](Filter::parameter2) values are used.
     #[derive(Default, Copy)]
     FilterType: i32 {
+        /// Splits the group up into equal sections and selects one.
+        /// - [`parameter1`](Filter::parameter1) determines the number of sections.
+        ///   It will be rounded up to the nearest multiple of the group size.
+        /// - [`parameter2`](Filter::parameter2) determines the section to select, starting at 0.
         #[default]
-        //Todo Doesn't match wiki
         Division = 1,
+        /// Alternates selecting and not selecting lights.
+        /// - [`parameter1`](Filter::parameter1) is the index of the first light that will be selected, starting at 0.
+        /// - [`parameter2`](Filter::parameter2) determines the number of IDs to move forward before selecting another light.
         StepAndOffset = 2,
     }
 }
