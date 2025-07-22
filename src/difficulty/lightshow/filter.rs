@@ -1,8 +1,10 @@
+//! Controls which light IDs are affected by an event.
+
 use crate::loose_enum;
 use crate::utils::LooseBool;
 use serde::{Deserialize, Serialize};
 
-/// Controls which light IDs are affected by an event box.
+/// Controls which light IDs are affected by an event.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[cfg_attr(
     feature = "bevy_reflect",

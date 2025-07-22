@@ -11,10 +11,12 @@ use serde::{Deserialize, Serialize};
     reflect(Debug, Clone, PartialEq)
 )]
 pub struct LaneRotationEvent {
+    /// The time the event takes place.
     #[serde(rename = "b")]
     pub beat: f32,
     #[serde(rename = "e")]
     pub execution_time: ExecutionTime,
+    /// The number of degrees to rotate objects around the player.
     #[serde(rename = "r")]
     pub degrees: f32,
 }
@@ -33,6 +35,7 @@ loose_enum!(
     }
 );
 
+/// Changes the BPM of the map at a specific beat.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[cfg_attr(
     feature = "bevy_reflect",
@@ -40,8 +43,10 @@ loose_enum!(
     reflect(Debug, Clone, PartialEq)
 )]
 pub struct BpmEvent {
+    /// The time the event takes place.
     #[serde(rename = "b")]
     pub beat: f32,
+    /// The BPM to change the map too.
     #[serde(rename = "m")]
     pub bpm: f32,
 }

@@ -1,3 +1,5 @@
+//! Events that control the color of lights.
+
 use crate::difficulty::lightshow::DistributionType;
 use crate::difficulty::lightshow::easing::Easing;
 use crate::difficulty::lightshow::filter::Filter;
@@ -13,8 +15,10 @@ use serde::{Deserialize, Serialize};
     reflect(Debug, Clone, PartialEq)
 )]
 pub struct ColorEventBox {
+    /// The time the event takes place.
     #[serde(rename = "b")]
     pub beat: f32,
+    /// The ID of the collection of objects that this event effects.
     #[serde(rename = "g")]
     pub group_id: i32,
     #[serde(rename = "e")]
@@ -46,12 +50,19 @@ pub struct ColorEventGroup {
     pub filter: Filter,
     #[serde(rename = "d")]
     pub beat_dist_type: DistributionType,
+    /// The strength of the beat distribution. Dependent on the [distribution type](Self::beat_dist_type).
+    ///
+    /// A value of zero will have no effect.
     #[serde(rename = "w")]
     pub beat_dist_value: f32,
+    /// The strength of the brightness distribution. Dependent on the [distribution type](Self::bright_dist_type).
+    ///
+    /// A value of zero will have no effect.
     #[serde(rename = "t")]
     pub bright_dist_type: DistributionType,
     #[serde(rename = "r")]
     pub bright_dist_value: f32,
+    /// Whether the first [`ColorEventData`] of the group will be effected by brightness distribution.
     #[serde(rename = "b")]
     pub bright_dist_effect_first: LooseBool,
     /// > Only present in difficulty file V3.2 or higher.
@@ -106,6 +117,7 @@ impl ColorEventGroup {
     reflect(Debug, Clone, PartialEq)
 )]
 pub struct ColorEventData {
+    /// The number of beats the event will be offset from the [`ColorEventBox`]'s beat.
     #[serde(rename = "b")]
     pub beat_offset: f32,
     #[serde(rename = "i")]
@@ -165,8 +177,8 @@ loose_enum! {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::difficulty::lightshow::boxes::EventGroup;
     use crate::difficulty::lightshow::filter::FilterType;
+    use crate::difficulty::lightshow::group::EventGroup;
 
     #[test]
     fn beat_wave() {

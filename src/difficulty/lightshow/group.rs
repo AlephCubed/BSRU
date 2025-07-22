@@ -1,3 +1,5 @@
+//! The advanced group lighting system events.
+
 pub mod color;
 pub mod rotation;
 pub mod translation;
@@ -21,7 +23,7 @@ pub trait EventBox: Timed {
 #[doc(hidden)]
 macro_rules! impl_event_box {
     ($ident:ident, $group:ident, $data:ident) => {
-        impl crate::difficulty::lightshow::boxes::EventBox for $ident {
+        impl crate::difficulty::lightshow::group::EventBox for $ident {
             type Group = $group;
             type Data = $data;
 
@@ -60,7 +62,7 @@ pub trait EventGroup {
 #[doc(hidden)]
 macro_rules! impl_event_group {
     ($ident:ident::$value_offset:ident, $data:ident) => {
-        impl crate::difficulty::lightshow::boxes::EventGroup for $ident {
+        impl crate::difficulty::lightshow::group::EventGroup for $ident {
             type Data = $data;
 
             fn get_filter(&self) -> &Filter {
@@ -93,6 +95,7 @@ macro_rules! impl_event_group {
 
 /// The lowest-level group event type, which determines the base value of the event.
 pub trait EventData {
+    /// Returns the number of beats the event will be offset from the [`EventBox`]'s beat.
     fn get_beat_offset(&self) -> f32;
 }
 
@@ -100,7 +103,7 @@ pub trait EventData {
 #[doc(hidden)]
 macro_rules! impl_event_data {
     ($ident:ident) => {
-        impl crate::difficulty::lightshow::boxes::EventData for $ident {
+        impl crate::difficulty::lightshow::group::EventData for $ident {
             fn get_beat_offset(&self) -> f32 {
                 self.beat_offset
             }

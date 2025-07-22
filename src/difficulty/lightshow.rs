@@ -1,14 +1,14 @@
 //! Events that have no effect on gameplay.
 
 pub mod basic;
-pub mod boxes;
 pub mod easing;
 pub mod filter;
+pub mod group;
 
 pub use basic::*;
-pub use boxes::*;
 pub use easing::*;
 pub use filter::*;
+pub use group::*;
 
 use crate::loose_enum;
 

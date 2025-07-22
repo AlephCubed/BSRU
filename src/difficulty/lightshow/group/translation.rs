@@ -1,6 +1,8 @@
-use crate::difficulty::lightshow::boxes::EventData;
+//! Events that control the translation/position of objects.
+
 use crate::difficulty::lightshow::easing::Easing;
 use crate::difficulty::lightshow::filter::Filter;
+use crate::difficulty::lightshow::group::EventData;
 use crate::difficulty::lightshow::{DistributionType, EventAxis, TransitionType};
 use crate::utils::LooseBool;
 use crate::{impl_event_box, impl_event_group, impl_timed};
@@ -14,8 +16,10 @@ use serde::{Deserialize, Serialize};
     reflect(Debug, Clone, PartialEq)
 )]
 pub struct TranslationEventBox {
+    /// The time the event takes place.
     #[serde(rename = "b")]
     pub beat: f32,
+    /// The ID of the collection of objects that this event effects.
     #[serde(rename = "g")]
     pub group_id: i32,
     #[serde(rename = "e")]
@@ -51,12 +55,19 @@ pub struct TranslationEventGroup {
     pub filter: Filter,
     #[serde(rename = "d")]
     pub beat_dist_type: DistributionType,
+    /// The strength of the beat distribution. Dependent on the [beat distribution type](Self::beat_dist_type).
+    ///
+    /// A value of zero will have no effect.
     #[serde(rename = "w")]
     pub beat_dist_value: f32,
     #[serde(rename = "t")]
     pub translation_dist_type: DistributionType,
+    /// The strength of the translation distribution. Dependent on the [distribution type](Self::translation_dist_type).
+    ///
+    /// A value of zero will have no effect.
     #[serde(rename = "s")]
     pub translation_dist_value: f32,
+    /// Whether the first [`TranslationEventData`] of the group will be effected by translation distribution.
     #[serde(rename = "b")]
     pub translation_dist_effect_first: LooseBool,
     #[serde(rename = "i")]
@@ -120,12 +131,14 @@ impl TranslationEventGroup {
     reflect(Debug, Clone, PartialEq)
 )]
 pub struct TranslationEventData {
+    /// The number of beats the event will be offset from the [`TranslationEventBox`]'s beat.
     #[serde(rename = "b")]
     pub beat_offset: f32,
     #[serde(rename = "p")]
     pub transition_type: TransitionType,
     #[serde(rename = "e")]
     pub easing: Easing,
+    /// The base number of units the event will offset objects by.
     #[serde(rename = "t")]
     pub value: f32,
 }

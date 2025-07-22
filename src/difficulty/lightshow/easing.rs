@@ -1,3 +1,5 @@
+//! The easing that a [transition](crate::lightshow::TransitionType::Transition) event will use.
+
 use crate::loose_enum;
 use simple_easing::*;
 

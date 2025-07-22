@@ -1,3 +1,5 @@
+//! The non-group events that were inherited from difficulty file V2.
+
 use crate::difficulty::playfield::CutDirection;
 use crate::impl_timed;
 use serde::{Deserialize, Serialize};
