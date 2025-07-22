@@ -9,6 +9,7 @@ pub use translation::*;
 use crate::difficulty::lightshow::filter::Filter;
 use crate::timing_traits::Timed;
 
+/// A collection of [`EventGroup`]s that share the same group ID and beat.
 pub trait EventBox: Timed {
     type Group: EventGroup<Data = Self::Data>;
     type Data: EventData;
@@ -31,6 +32,7 @@ macro_rules! impl_event_box {
     };
 }
 
+/// A collection of [`EventData`] that share the same [`Filter`] and distribution.
 pub trait EventGroup {
     type Data: EventData;
 
@@ -45,7 +47,7 @@ pub trait EventGroup {
     )]
     fn get_beat_offset(&self, light_id: i32, group_size: i32) -> f32;
 
-    /// Returns the value that the event will be offset for a given light ID (i.e. brightness offset).
+    /// Returns the value (i.e. brightness) that the event will be offset for a given light ID.
     /// # Panics
     /// Will panic if the light ID is greater than or equal to the group size.
     #[deprecated(
@@ -89,6 +91,7 @@ macro_rules! impl_event_group {
     };
 }
 
+/// The lowest-level group event type, which determines the base value of the event.
 pub trait EventData {
     fn get_beat_offset(&self) -> f32;
 }

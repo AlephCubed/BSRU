@@ -6,6 +6,7 @@ use crate::utils::LooseBool;
 use crate::{impl_event_box, impl_event_group, impl_timed, loose_enum};
 use serde::{Deserialize, Serialize};
 
+/// A collection of [`RotationEventGroup`]s that share the same group ID and beat.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[cfg_attr(
     feature = "bevy_reflect",
@@ -34,6 +35,7 @@ impl Default for RotationEventBox {
 impl_timed!(RotationEventBox::beat);
 impl_event_box!(RotationEventBox, RotationEventGroup, RotationEventData);
 
+/// A collection of [`RotationEventData`] that share the same [`EventAxis`], [`Filter`], and distribution.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[cfg_attr(
     feature = "bevy_reflect",
@@ -58,6 +60,7 @@ pub struct RotationEventGroup {
     pub rotation_dist_easing: Option<Easing>,
     #[serde(rename = "a")]
     pub axis: EventAxis,
+    /// If true, the rotation will be mirrored.
     #[serde(rename = "r")]
     pub invert_axis: LooseBool,
     #[serde(rename = "l")]
@@ -103,6 +106,7 @@ impl RotationEventGroup {
     }
 }
 
+/// The lowest-level group event type, which determines the base rotation of the event.
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[cfg_attr(
     feature = "bevy_reflect",
@@ -120,6 +124,7 @@ pub struct RotationEventData {
     pub degrees: f32,
     #[serde(rename = "o")]
     pub direction: RotationDirection,
+    /// Extends the rotation by 360 degrees in the [`RotationDirection`].
     #[serde(rename = "l")]
     pub loops: i32,
 }

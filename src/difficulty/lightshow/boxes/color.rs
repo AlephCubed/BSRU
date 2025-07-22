@@ -5,6 +5,7 @@ use crate::utils::LooseBool;
 use crate::{impl_event_box, impl_event_data, impl_event_group, impl_timed, loose_enum};
 use serde::{Deserialize, Serialize};
 
+/// A collection of [`ColorEventGroup`]s that share the same group ID and beat.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[cfg_attr(
     feature = "bevy_reflect",
@@ -33,6 +34,7 @@ impl Default for ColorEventBox {
 impl_timed!(ColorEventBox::beat);
 impl_event_box!(ColorEventBox, ColorEventGroup, ColorEventData);
 
+/// A collection of [`ColorEventData`] that share the same [`Filter`] and distribution.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[cfg_attr(
     feature = "bevy_reflect",
@@ -96,6 +98,7 @@ impl ColorEventGroup {
     }
 }
 
+/// The lowest-level group event type, which determines the color of the event.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[cfg_attr(
     feature = "bevy_reflect",
@@ -111,6 +114,8 @@ pub struct ColorEventData {
     pub color: LightColor,
     #[serde(rename = "s")]
     pub brightness: f32,
+    /// Determines the number of strobes that will take place each beat.
+    /// A value of zero will result in no strobing.
     #[serde(rename = "f")]
     pub strobe_frequency: i32,
 }
@@ -130,17 +135,23 @@ impl Default for ColorEventData {
 impl_event_data!(ColorEventData);
 
 loose_enum! {
+    /// Controls how the state is changed relative to the previous event.
     #[derive(Default, Copy)]
     ColorTransitionType: i32 {
-        /// Replaced with `Transition` and [`Easing::None`] in difficulty file V3.2 or higher.
-        Instant = 0,
+        /// Unique to color events.
+        /// Has the same effect as using [`TransitionType::Transition`](crate::lightshow::TransitionType::Transition)
+        /// and [`Easing::None`] in rotation/translation events.
         #[default]
+        Instant = 0,
+        /// The state will blend from the previous event's state, using the events [easing](Easing).
         Transition = 1,
+        /// The event's state will be ignored, replaced with the state from the previous event.
         Extend = 2,
     }
 }
 
 loose_enum! {
+    /// Controls which color to display, based on a map or environment's [color scheme](crate::info::color_scheme::ColorScheme).
     #[derive(Default, Copy)]
     LightColor: i32 {
         #[default]

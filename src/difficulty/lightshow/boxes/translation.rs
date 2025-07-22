@@ -6,6 +6,7 @@ use crate::utils::LooseBool;
 use crate::{impl_event_box, impl_event_group, impl_timed};
 use serde::{Deserialize, Serialize};
 
+/// A collection of [`TranslationEventGroup`]s that share the same group ID and beat.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[cfg_attr(
     feature = "bevy_reflect",
@@ -38,6 +39,7 @@ impl_event_box!(
     TranslationEventData
 );
 
+/// A collection of [`TranslationEventData`] that share the same [`EventAxis`], [`Filter`], and distribution.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[cfg_attr(
     feature = "bevy_reflect",
@@ -61,6 +63,7 @@ pub struct TranslationEventGroup {
     pub translation_dist_easing: Easing,
     #[serde(rename = "a")]
     pub axis: EventAxis,
+    /// If true, the translation will be mirrored.
     #[serde(rename = "r")]
     pub invert_axis: LooseBool,
     #[serde(rename = "l")]
@@ -109,6 +112,7 @@ impl TranslationEventGroup {
     }
 }
 
+/// The lowest-level group event type, which determines the base position of the event.
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[cfg_attr(
     feature = "bevy_reflect",
