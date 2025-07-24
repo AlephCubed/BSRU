@@ -107,6 +107,16 @@ mod tests {
     }
 
     #[test]
+    fn step() {
+        for i in 0..12 {
+            assert_eq!(
+                DistributionType::Step.compute_offset(i, 12, &Filter::default(), 1.0, None, None),
+                i as f32
+            );
+        }
+    }
+
+    #[test]
     fn wave_negative() {
         for i in 0..12 {
             assert_eq!(
@@ -117,11 +127,11 @@ mod tests {
     }
 
     #[test]
-    fn step() {
+    fn step_negative() {
         for i in 0..12 {
             assert_eq!(
-                DistributionType::Step.compute_offset(i, 12, &Filter::default(), 1.0, None, None),
-                i as f32
+                DistributionType::Step.compute_offset(i, 12, &Filter::default(), -1.0, None, None),
+                -i as f32
             );
         }
     }
@@ -270,6 +280,78 @@ mod tests {
                     None
                 ),
                 12.0 - i as f32
+            );
+        }
+    }
+
+    #[test]
+    fn wave_with_chunks_of_size_two() {
+        for i in 0..6 {
+            let filter = Filter {
+                chunks: Some(6),
+                ..Default::default()
+            };
+            assert_eq!(
+                DistributionType::Wave.compute_offset(i * 2, 12, &filter, 6.0, None, None),
+                i as f32
+            );
+            assert_eq!(
+                DistributionType::Wave.compute_offset(i * 2 + 1, 12, &filter, 6.0, None, None),
+                i as f32
+            );
+        }
+    }
+
+    #[test]
+    fn step_with_chunks_of_size_two() {
+        for i in 0..6 {
+            let filter = Filter {
+                chunks: Some(6),
+                ..Default::default()
+            };
+            assert_eq!(
+                DistributionType::Step.compute_offset(i * 2, 12, &filter, 1.0, None, None),
+                i as f32
+            );
+            assert_eq!(
+                DistributionType::Step.compute_offset(i * 2 + 1, 12, &filter, 1.0, None, None),
+                i as f32
+            );
+        }
+    }
+
+    #[test]
+    fn wave_with_chunks_of_size_six() {
+        for i in 0..6 {
+            let filter = Filter {
+                chunks: Some(2),
+                ..Default::default()
+            };
+            assert_eq!(
+                DistributionType::Wave.compute_offset(i, 12, &filter, 2.0, None, None),
+                0.0
+            );
+            assert_eq!(
+                DistributionType::Wave.compute_offset(i + 6, 12, &filter, 2.0, None, None),
+                1.0
+            );
+        }
+    }
+
+    #[test]
+    fn step_with_chunks_of_size_six() {
+        for i in 0..6 {
+            let filter = Filter {
+                chunks: Some(2),
+                ..Default::default()
+            };
+            assert_eq!(
+                DistributionType::Step.compute_offset(i, 12, &filter, 1.0, None, None),
+                0.0
+            );
+            assert_eq!(
+                DistributionType::Step.compute_offset(i + 6, 12, &filter, 1.0, None, None),
+                1.0
             );
         }
     }
