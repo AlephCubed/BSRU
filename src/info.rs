@@ -2,6 +2,7 @@
 
 pub mod color_scheme;
 
+#[doc(hidden)]
 pub use color_scheme::*;
 
 use crate::loose_enum;

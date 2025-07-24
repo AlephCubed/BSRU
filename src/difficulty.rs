@@ -4,8 +4,11 @@ pub mod gameplay_event;
 pub mod lightshow;
 pub mod playfield;
 
+#[doc(hidden)]
 pub use gameplay_event::*;
+#[doc(hidden)]
 pub use lightshow::*;
+#[doc(hidden)]
 pub use playfield::*;
 
 use serde::{Deserialize, Serialize};

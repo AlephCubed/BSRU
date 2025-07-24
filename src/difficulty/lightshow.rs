@@ -5,9 +5,13 @@ pub mod easing;
 pub mod filter;
 pub mod group;
 
+#[doc(hidden)]
 pub use basic::*;
+#[doc(hidden)]
 pub use easing::*;
+#[doc(hidden)]
 pub use filter::*;
+#[doc(hidden)]
 pub use group::*;
 
 use crate::loose_enum;

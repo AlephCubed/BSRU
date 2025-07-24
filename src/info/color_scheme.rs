@@ -3,6 +3,7 @@
 pub mod presets;
 
 #[allow(unused_imports)]
+#[doc(hidden)]
 pub use presets::*;
 
 use serde::{Deserialize, Serialize};
