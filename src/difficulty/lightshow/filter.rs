@@ -61,7 +61,7 @@ impl Default for Filter {
             parameter1: 1,
             parameter2: 0,
             reverse: LooseBool::False,
-            chunks: Some(1),
+            chunks: Some(0),
             random_behaviour: Some(RandomBehaviour::None),
             random_seed: Some(0),
             limit_behaviour: Some(LimitBehaviour::None),
@@ -78,14 +78,20 @@ impl Filter {
     /// Will panic if the light ID is greater than or equal to the group size.
     #[must_use]
     #[inline]
-    #[deprecated(
-        note = "Experimental. Does not consider chunks, random, or limit in calculations."
-    )]
-    pub fn is_in_filter(&self, mut light_id: i32, group_size: i32) -> bool {
+    #[deprecated(note = "Experimental. Does not consider random or limit in calculations.")]
+    pub fn is_in_filter(&self, mut light_id: i32, mut group_size: i32) -> bool {
         assert!(light_id < group_size);
 
         if self.reverse.is_true() {
             light_id = group_size - light_id - 1;
+        }
+
+        if let Some(chunks) = self.chunks
+            && chunks > 0
+            && chunks < group_size
+        {
+            light_id = (light_id as f32 / (group_size as f32 / chunks as f32)) as i32;
+            group_size = chunks;
         }
 
         match self.filter_type {
@@ -102,15 +108,20 @@ impl Filter {
         }
     }
 
-    /// Returns the number of lights effected by the filter.
+    /// Returns the number of light chunks effected by the filter.
     /// # Unknown
     /// If the [`FilterType`] is `Unknown` then the result will be the same as `group_size`.
     #[must_use]
     #[inline]
-    #[deprecated(
-        note = "Experimental. Does not consider chunks, random, or limit in calculations."
-    )]
-    pub fn count_filtered(&self, group_size: i32) -> i32 {
+    #[deprecated(note = "Experimental. Does not consider random or limit in calculations.")]
+    pub fn count_filtered(&self, mut group_size: i32) -> i32 {
+        if let Some(chunks) = self.chunks
+            && chunks > 0
+            && chunks < group_size
+        {
+            group_size = chunks;
+        }
+
         match self.filter_type {
             FilterType::Division => {
                 let start = self.parameter2 * group_size / self.parameter1.max(1);
@@ -124,21 +135,28 @@ impl Filter {
         }
     }
 
-    /// Returns the light ID relative to the filtered count.
+    #[allow(deprecated)]
+    /// Returns the light chunk ID relative to the [filtered count](Self::count_filtered).
     /// # Unknown
     /// If the [`FilterType`] is `Unknown` then the result will be the same as `light_id`.
     /// # Panics
     /// Will panic if the light ID is greater than or equal to the group size.
     #[must_use]
     #[inline]
-    #[deprecated(
-        note = "Experimental. Does not consider chunks, random, or limit in calculations."
-    )]
-    pub fn get_relative_index(&self, mut light_id: i32, group_size: i32) -> i32 {
+    #[deprecated(note = "Experimental. Does not consider random or limit in calculations.")]
+    pub fn get_relative_index(&self, mut light_id: i32, mut group_size: i32) -> i32 {
         assert!(light_id < group_size);
 
         if self.reverse.is_true() {
             light_id = group_size - light_id;
+        }
+
+        if let Some(chunks) = self.chunks
+            && chunks > 0
+            && chunks < group_size
+        {
+            light_id = (light_id as f32 / (group_size as f32 / chunks as f32)) as i32;
+            group_size = chunks;
         }
 
         match self.filter_type {
@@ -378,5 +396,59 @@ mod tests {
             }
         }
         assert_eq!(filter.count_filtered(12), 6);
+    }
+
+    #[test]
+    fn chunks_of_two() {
+        let filter = Filter {
+            chunks: Some(6),
+            ..Default::default()
+        };
+
+        assert!((0..12).all(|i| filter.is_in_filter(i, 12)));
+        assert_eq!(filter.count_filtered(12), 6);
+        assert!((0..6).all(|i| {
+            filter.get_relative_index(i * 2, 12) == i
+                && filter.get_relative_index(i * 2 + 1, 12) == i
+        }));
+    }
+
+    #[test]
+    fn chunks_of_six() {
+        let filter = Filter {
+            chunks: Some(2),
+            ..Default::default()
+        };
+
+        assert!((0..12).all(|i| filter.is_in_filter(i, 12)));
+        assert_eq!(filter.count_filtered(12), 2);
+        assert!((0..6).all(|i| filter.get_relative_index(i, 12) == 0));
+        assert!((0..6).all(|i| filter.get_relative_index(i + 6, 12) == 1));
+    }
+
+    #[test]
+    fn chunks_out_of_bounds() {
+        let filter = Filter {
+            chunks: Some(24),
+            ..Default::default()
+        };
+
+        assert!((0..12).all(|i| filter.is_in_filter(i, 12)));
+        assert_eq!(filter.count_filtered(12), 12);
+        assert!((0..12).all(|i| filter.get_relative_index(i, 12) == i));
+    }
+
+    #[test]
+    fn chunks_non_factor() {
+        let filter = Filter {
+            chunks: Some(3),
+            ..Default::default()
+        };
+
+        assert!((0..8).all(|i| filter.is_in_filter(i, 8)));
+        assert_eq!(filter.count_filtered(8), 3);
+        assert!((0..3).all(|i| filter.get_relative_index(i, 8) == 0));
+        assert!((3..6).all(|i| filter.get_relative_index(i, 8) == 1));
+        assert!((6..8).all(|i| filter.get_relative_index(i, 8) == 2));
     }
 }
