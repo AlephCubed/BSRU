@@ -25,9 +25,7 @@ loose_enum! {
 }
 
 impl DistributionType {
-    #[deprecated(
-        note = "Experimental. Does not consider chunks, random, or limit in filter calculations."
-    )]
+    #[deprecated(note = "Experimental. Does not consider random or limit in filter calculations.")]
     #[allow(deprecated)]
     fn compute_offset(
         &self,
