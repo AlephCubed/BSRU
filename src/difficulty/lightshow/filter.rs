@@ -61,7 +61,7 @@ impl Default for Filter {
             parameter1: 1,
             parameter2: 0,
             reverse: LooseBool::False,
-            chunks: Some(1),
+            chunks: Some(0),
             random_behaviour: Some(RandomBehaviour::None),
             random_seed: Some(0),
             limit_behaviour: Some(LimitBehaviour::None),
@@ -89,7 +89,7 @@ impl Filter {
         }
 
         if let Some(chunks) = self.chunks
-            && chunks > 1
+            && chunks > 0
         {
             light_id /= group_size / chunks;
             group_size /= group_size / chunks;
@@ -119,7 +119,7 @@ impl Filter {
     )]
     pub fn count_filtered(&self, mut group_size: i32) -> i32 {
         if let Some(chunks) = self.chunks
-            && chunks > 1
+            && chunks > 0
         {
             group_size /= group_size / chunks;
         }
@@ -156,7 +156,7 @@ impl Filter {
         }
 
         if let Some(chunks) = self.chunks
-            && chunks > 1
+            && chunks > 0
         {
             light_id /= group_size / chunks;
             group_size /= group_size / chunks;
