@@ -92,8 +92,8 @@ impl Filter {
             && chunks > 0
             && chunks < group_size
         {
-            light_id /= group_size / chunks;
-            group_size /= group_size / chunks;
+            light_id = (light_id as f32 / (group_size as f32 / chunks as f32)) as i32;
+            group_size = chunks;
         }
 
         match self.filter_type {
@@ -123,7 +123,7 @@ impl Filter {
             && chunks > 0
             && chunks < group_size
         {
-            group_size /= group_size / chunks;
+            group_size = chunks;
         }
 
         match self.filter_type {
@@ -161,8 +161,8 @@ impl Filter {
             && chunks > 0
             && chunks < group_size
         {
-            light_id /= group_size / chunks;
-            group_size /= group_size / chunks;
+            light_id = (light_id as f32 / (group_size as f32 / chunks as f32)) as i32;
+            group_size = chunks;
         }
 
         match self.filter_type {
@@ -442,5 +442,19 @@ mod tests {
         assert!((0..12).all(|i| filter.is_in_filter(i, 12)));
         assert_eq!(filter.count_filtered(12), 12);
         assert!((0..12).all(|i| filter.get_relative_index(i, 12) == i));
+    }
+
+    #[test]
+    fn chunks_non_factor() {
+        let filter = Filter {
+            chunks: Some(3),
+            ..Default::default()
+        };
+
+        assert!((0..8).all(|i| filter.is_in_filter(i, 8)));
+        assert_eq!(filter.count_filtered(8), 3);
+        assert!((0..3).all(|i| filter.get_relative_index(i, 8) == 0));
+        assert!((3..6).all(|i| filter.get_relative_index(i, 8) == 1));
+        assert!((6..8).all(|i| filter.get_relative_index(i, 8) == 2));
     }
 }
