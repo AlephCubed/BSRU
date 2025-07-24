@@ -90,6 +90,7 @@ impl Filter {
 
         if let Some(chunks) = self.chunks
             && chunks > 0
+            && chunks < group_size
         {
             light_id /= group_size / chunks;
             group_size /= group_size / chunks;
@@ -120,6 +121,7 @@ impl Filter {
     pub fn count_filtered(&self, mut group_size: i32) -> i32 {
         if let Some(chunks) = self.chunks
             && chunks > 0
+            && chunks < group_size
         {
             group_size /= group_size / chunks;
         }
@@ -157,6 +159,7 @@ impl Filter {
 
         if let Some(chunks) = self.chunks
             && chunks > 0
+            && chunks < group_size
         {
             light_id /= group_size / chunks;
             group_size /= group_size / chunks;
@@ -427,5 +430,17 @@ mod tests {
         assert_eq!(filter.count_filtered(12), 2);
         assert!((0..6).all(|i| filter.get_relative_index(i, 12) == 0));
         assert!((0..6).all(|i| filter.get_relative_index(i + 6, 12) == 1));
+    }
+
+    #[test]
+    fn chunks_out_of_bounds() {
+        let filter = Filter {
+            chunks: Some(24),
+            ..Default::default()
+        };
+
+        assert!((0..12).all(|i| filter.is_in_filter(i, 12)));
+        assert_eq!(filter.count_filtered(12), 12);
+        assert!((0..12).all(|i| filter.get_relative_index(i, 12) == i));
     }
 }

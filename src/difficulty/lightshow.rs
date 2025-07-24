@@ -355,4 +355,32 @@ mod tests {
             );
         }
     }
+
+    #[test]
+    fn wave_with_chunks_out_of_bounds() {
+        for i in 0..12 {
+            let filter = Filter {
+                chunks: Some(24),
+                ..Default::default()
+            };
+            assert_eq!(
+                DistributionType::Wave.compute_offset(i, 12, &filter, 12.0, None, None),
+                i as f32
+            );
+        }
+    }
+
+    #[test]
+    fn step_with_chunks_out_of_bounds() {
+        for i in 0..12 {
+            let filter = Filter {
+                chunks: Some(24),
+                ..Default::default()
+            };
+            assert_eq!(
+                DistributionType::Step.compute_offset(i, 12, &filter, 1.0, None, None),
+                i as f32
+            );
+        }
+    }
 }
