@@ -110,7 +110,7 @@ impl TranslationEventGroup {
     #[deprecated(note = "Experimental. Does not consider random or limit in filter calculations.")]
     #[allow(deprecated)]
     pub fn get_translation_offset(&self, light_id: i32, group_size: i32) -> f32 {
-        self.translation_dist_type.compute_offset(
+        self.translation_dist_type.compute_value_offset(
             light_id,
             group_size,
             &self.filter,

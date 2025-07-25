@@ -71,7 +71,7 @@ macro_rules! impl_event_group {
 
             #[allow(deprecated)]
             fn get_beat_offset(&self, light_id: i32, group_size: i32) -> f32 {
-                self.beat_dist_type.compute_offset(
+                self.beat_dist_type.compute_beat_offset(
                     light_id,
                     group_size,
                     &self.filter,

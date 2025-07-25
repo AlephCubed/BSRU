@@ -27,7 +27,7 @@ loose_enum! {
 impl DistributionType {
     #[deprecated(note = "Experimental. Does not consider random or limit in filter calculations.")]
     #[allow(deprecated)]
-    fn compute_offset(
+    fn compute_beat_offset(
         &self,
         light_id: i32,
         group_size: i32,
@@ -36,12 +36,72 @@ impl DistributionType {
         last_data_offset: Option<f32>,
         easing: Option<Easing>,
     ) -> f32 {
+        let filtered_id = filter.get_relative_index(light_id, group_size);
+
+        let filtered_size = if let Some(limit_behaviour) = filter.limit_behaviour
+            && limit_behaviour.duration()
+        {
+            filter.count_filtered(group_size)
+        } else {
+            filter.count_filtered_without_limit(group_size)
+        };
+
+        self.compute_offset(
+            filtered_id,
+            filtered_size,
+            dist_value,
+            last_data_offset,
+            easing,
+        )
+    }
+
+    #[deprecated(note = "Experimental. Does not consider random or limit in filter calculations.")]
+    #[allow(deprecated)]
+    fn compute_value_offset(
+        &self,
+        light_id: i32,
+        group_size: i32,
+        filter: &Filter,
+        dist_value: f32,
+        last_data_offset: Option<f32>,
+        easing: Option<Easing>,
+    ) -> f32 {
+        let filtered_id = filter.get_relative_index(light_id, group_size);
+
+        let filtered_size = if let Some(limit_behaviour) = filter.limit_behaviour
+            && limit_behaviour.distribution()
+        {
+            filter.count_filtered(group_size)
+        } else {
+            filter.count_filtered_without_limit(group_size)
+        };
+
+        self.compute_offset(
+            filtered_id,
+            filtered_size,
+            dist_value,
+            last_data_offset,
+            easing,
+        )
+    }
+
+    #[deprecated(note = "Experimental. Does not consider random or limit in filter calculations.")]
+    #[allow(deprecated)]
+    #[inline(always)]
+    fn compute_offset(
+        &self,
+        filtered_id: i32,
+        filtered_size: i32,
+        dist_value: f32,
+        last_data_offset: Option<f32>,
+        easing: Option<Easing>,
+    ) -> f32 {
+        let filtered_id = filtered_id as f32;
+        let filtered_size = filtered_size as f32;
+
         if dist_value == 0.0 {
             return 0.0;
         }
-
-        let filtered_size = filter.count_filtered(group_size) as f32;
-        let filtered_id = filter.get_relative_index(light_id, group_size) as f32;
 
         match self {
             DistributionType::Wave => {
@@ -60,6 +120,48 @@ impl DistributionType {
             DistributionType::Step => dist_value * filtered_id,
             DistributionType::Unknown(_) => 0.0,
         }
+    }
+
+    /// Tests that both [`self.compute_beat_offset`] and [`self.compute_value_offset`] have the same return value, returning that value.
+    ///
+    /// This only makes sense if the [`LimitBehaviour`] is either `None` or `Both`.
+    #[cfg(test)]
+    #[allow(deprecated)]
+    fn compute_both(
+        &self,
+        light_id: i32,
+        group_size: i32,
+        filter: &Filter,
+        dist_value: f32,
+        last_data_offset: Option<f32>,
+        easing: Option<Easing>,
+    ) -> f32 {
+        assert!(
+            matches!(
+                filter.limit_behaviour,
+                None | Some(LimitBehaviour::None) | Some(LimitBehaviour::Both)
+            ),
+            "This test method only makes sense if LimitBehaviour is `None` or `Both`"
+        );
+
+        let beat = self.compute_beat_offset(
+            light_id,
+            group_size,
+            filter,
+            dist_value,
+            last_data_offset,
+            easing,
+        );
+        let value = self.compute_value_offset(
+            light_id,
+            group_size,
+            filter,
+            dist_value,
+            last_data_offset,
+            easing,
+        );
+        assert_eq!(beat, value);
+        beat
     }
 }
 
@@ -98,7 +200,7 @@ mod tests {
     fn wave() {
         for i in 0..12 {
             assert_eq!(
-                DistributionType::Wave.compute_offset(i, 12, &Filter::default(), 12.0, None, None),
+                DistributionType::Wave.compute_both(i, 12, &Filter::default(), 12.0, None, None),
                 i as f32
             );
         }
@@ -108,7 +210,7 @@ mod tests {
     fn step() {
         for i in 0..12 {
             assert_eq!(
-                DistributionType::Step.compute_offset(i, 12, &Filter::default(), 1.0, None, None),
+                DistributionType::Step.compute_both(i, 12, &Filter::default(), 1.0, None, None),
                 i as f32
             );
         }
@@ -118,7 +220,7 @@ mod tests {
     fn wave_negative() {
         for i in 0..12 {
             assert_eq!(
-                DistributionType::Wave.compute_offset(i, 12, &Filter::default(), -12.0, None, None),
+                DistributionType::Wave.compute_both(i, 12, &Filter::default(), -12.0, None, None),
                 -i as f32
             );
         }
@@ -128,7 +230,7 @@ mod tests {
     fn step_negative() {
         for i in 0..12 {
             assert_eq!(
-                DistributionType::Step.compute_offset(i, 12, &Filter::default(), -1.0, None, None),
+                DistributionType::Step.compute_both(i, 12, &Filter::default(), -1.0, None, None),
                 -i as f32
             );
         }
@@ -138,7 +240,7 @@ mod tests {
     fn wave_zero() {
         for i in 0..12 {
             assert_eq!(
-                DistributionType::Wave.compute_offset(i, 12, &Filter::default(), 0.0, None, None),
+                DistributionType::Wave.compute_both(i, 12, &Filter::default(), 0.0, None, None),
                 0.0
             );
         }
@@ -148,7 +250,7 @@ mod tests {
     fn step_zero() {
         for i in 0..12 {
             assert_eq!(
-                DistributionType::Step.compute_offset(i, 12, &Filter::default(), 0.0, None, None),
+                DistributionType::Step.compute_both(i, 12, &Filter::default(), 0.0, None, None),
                 0.0
             );
         }
@@ -158,7 +260,7 @@ mod tests {
     fn wave_with_division_filter() {
         for i in 0..6 {
             assert_eq!(
-                DistributionType::Wave.compute_offset(
+                DistributionType::Wave.compute_both(
                     i + 6,
                     12,
                     &Filter {
@@ -180,7 +282,7 @@ mod tests {
     fn step_with_division_filter() {
         for i in 0..6 {
             assert_eq!(
-                DistributionType::Step.compute_offset(
+                DistributionType::Step.compute_both(
                     i + 6,
                     12,
                     &Filter {
@@ -202,7 +304,7 @@ mod tests {
     fn wave_with_step_filter() {
         for i in 0..6 {
             assert_eq!(
-                DistributionType::Wave.compute_offset(
+                DistributionType::Wave.compute_both(
                     i * 2,
                     12,
                     &Filter {
@@ -224,7 +326,7 @@ mod tests {
     fn step_with_step_filter() {
         for i in 0..6 {
             assert_eq!(
-                DistributionType::Step.compute_offset(
+                DistributionType::Step.compute_both(
                     i * 2,
                     12,
                     &Filter {
@@ -246,7 +348,7 @@ mod tests {
     fn wave_with_reverse_filter() {
         for i in 0..12 {
             assert_eq!(
-                DistributionType::Wave.compute_offset(
+                DistributionType::Wave.compute_both(
                     i,
                     12,
                     &Filter {
@@ -266,7 +368,7 @@ mod tests {
     fn step_with_reverse_filter() {
         for i in 0..12 {
             assert_eq!(
-                DistributionType::Step.compute_offset(
+                DistributionType::Step.compute_both(
                     i,
                     12,
                     &Filter {
@@ -290,11 +392,11 @@ mod tests {
                 ..Default::default()
             };
             assert_eq!(
-                DistributionType::Wave.compute_offset(i * 2, 12, &filter, 6.0, None, None),
+                DistributionType::Wave.compute_both(i * 2, 12, &filter, 6.0, None, None),
                 i as f32
             );
             assert_eq!(
-                DistributionType::Wave.compute_offset(i * 2 + 1, 12, &filter, 6.0, None, None),
+                DistributionType::Wave.compute_both(i * 2 + 1, 12, &filter, 6.0, None, None),
                 i as f32
             );
         }
@@ -308,11 +410,11 @@ mod tests {
                 ..Default::default()
             };
             assert_eq!(
-                DistributionType::Step.compute_offset(i * 2, 12, &filter, 1.0, None, None),
+                DistributionType::Step.compute_both(i * 2, 12, &filter, 1.0, None, None),
                 i as f32
             );
             assert_eq!(
-                DistributionType::Step.compute_offset(i * 2 + 1, 12, &filter, 1.0, None, None),
+                DistributionType::Step.compute_both(i * 2 + 1, 12, &filter, 1.0, None, None),
                 i as f32
             );
         }
@@ -326,11 +428,11 @@ mod tests {
                 ..Default::default()
             };
             assert_eq!(
-                DistributionType::Wave.compute_offset(i, 12, &filter, 2.0, None, None),
+                DistributionType::Wave.compute_both(i, 12, &filter, 2.0, None, None),
                 0.0
             );
             assert_eq!(
-                DistributionType::Wave.compute_offset(i + 6, 12, &filter, 2.0, None, None),
+                DistributionType::Wave.compute_both(i + 6, 12, &filter, 2.0, None, None),
                 1.0
             );
         }
@@ -344,11 +446,11 @@ mod tests {
                 ..Default::default()
             };
             assert_eq!(
-                DistributionType::Step.compute_offset(i, 12, &filter, 1.0, None, None),
+                DistributionType::Step.compute_both(i, 12, &filter, 1.0, None, None),
                 0.0
             );
             assert_eq!(
-                DistributionType::Step.compute_offset(i + 6, 12, &filter, 1.0, None, None),
+                DistributionType::Step.compute_both(i + 6, 12, &filter, 1.0, None, None),
                 1.0
             );
         }
@@ -356,13 +458,14 @@ mod tests {
 
     #[test]
     fn wave_with_chunks_out_of_bounds() {
+        let filter = Filter {
+            chunks: Some(24),
+            ..Default::default()
+        };
+
         for i in 0..12 {
-            let filter = Filter {
-                chunks: Some(24),
-                ..Default::default()
-            };
             assert_eq!(
-                DistributionType::Wave.compute_offset(i, 12, &filter, 12.0, None, None),
+                DistributionType::Wave.compute_both(i, 12, &filter, 12.0, None, None),
                 i as f32
             );
         }
@@ -370,13 +473,76 @@ mod tests {
 
     #[test]
     fn step_with_chunks_out_of_bounds() {
+        let filter = Filter {
+            chunks: Some(24),
+            ..Default::default()
+        };
+
         for i in 0..12 {
-            let filter = Filter {
-                chunks: Some(24),
-                ..Default::default()
-            };
             assert_eq!(
-                DistributionType::Step.compute_offset(i, 12, &filter, 1.0, None, None),
+                DistributionType::Step.compute_both(i, 12, &filter, 1.0, None, None),
+                i as f32
+            );
+        }
+    }
+
+    #[test]
+    fn wave_with_limit() {
+        let filter = Filter {
+            limit_percent: Some(0.5),
+            ..Default::default()
+        };
+
+        for i in 0..6 {
+            assert_eq!(
+                DistributionType::Wave.compute_both(i, 12, &filter, 12.0, None, None),
+                i as f32
+            );
+        }
+    }
+
+    #[test]
+    fn step_with_limit() {
+        let filter = Filter {
+            limit_percent: Some(0.5),
+            ..Default::default()
+        };
+
+        for i in 0..6 {
+            assert_eq!(
+                DistributionType::Step.compute_both(i, 12, &filter, 1.0, None, None),
+                i as f32
+            );
+        }
+    }
+
+    #[test]
+    fn wave_with_enabled_limit() {
+        let filter = Filter {
+            limit_behaviour: Some(LimitBehaviour::Both),
+            limit_percent: Some(0.5),
+            ..Default::default()
+        };
+
+        for i in 0..6 {
+            assert_eq!(
+                DistributionType::Wave.compute_both(i, 12, &filter, 12.0, None, None),
+                (i * 2) as f32
+            );
+        }
+    }
+
+    #[test]
+    fn step_with_enabled_limit() {
+        let filter = Filter {
+            limit_behaviour: Some(LimitBehaviour::Both),
+            limit_percent: Some(0.5),
+            ..Default::default()
+        };
+
+        for i in 0..6 {
+            assert_eq!(
+                DistributionType::Step.compute_both(i, 12, &filter, 1.0, None, None),
                 i as f32
             );
         }

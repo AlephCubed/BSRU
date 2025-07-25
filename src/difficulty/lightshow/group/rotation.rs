@@ -104,7 +104,7 @@ impl RotationEventGroup {
     #[deprecated(note = "Experimental. Does not consider random or limit in filter calculations.")]
     #[allow(deprecated)]
     pub fn get_rotation_offset(&self, light_id: i32, group_size: i32) -> f32 {
-        self.rotation_dist_type.compute_offset(
+        self.rotation_dist_type.compute_value_offset(
             light_id,
             group_size,
             &self.filter,

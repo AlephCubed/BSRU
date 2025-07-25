@@ -114,13 +114,15 @@ impl Filter {
         }
     }
 
-    /// Returns the number of light chunks effected by the filter.
+    /// Returns the number of light chunks effected by the filter, but before applying the limit.
+    ///
+    /// This is required for distribution calculations.
     /// # Unknown
     /// If the [`FilterType`] is `Unknown` then the result will be the same as `group_size`.
     #[must_use]
     #[inline]
     #[deprecated(note = "Experimental. Does not consider random or limit in calculations.")]
-    pub fn count_filtered(&self, mut group_size: i32) -> i32 {
+    pub(crate) fn count_filtered_without_limit(&self, mut group_size: i32) -> i32 {
         if let Some(chunks) = self.chunks
             && chunks > 0
             && chunks < group_size
@@ -128,7 +130,7 @@ impl Filter {
             group_size = chunks;
         }
 
-        let mut filtered = match self.filter_type {
+        match self.filter_type {
             FilterType::Division => {
                 let start = self.parameter2 * group_size / self.parameter1.max(1);
                 let end = (self.parameter2 + 1) * group_size / self.parameter1.max(1);
@@ -138,13 +140,24 @@ impl Filter {
                 group_size / self.parameter2.max(1) - self.parameter1 / self.parameter2.max(1)
             }
             FilterType::Unknown(_) => group_size,
-        };
+        }
+    }
+
+    /// Returns the number of light chunks effected by the filter.
+    /// # Unknown
+    /// If the [`FilterType`] is `Unknown` then the result will be the same as `group_size`.
+    #[must_use]
+    #[inline]
+    #[deprecated(note = "Experimental. Does not consider random or limit in calculations.")]
+    #[allow(deprecated)]
+    pub fn count_filtered(&self, group_size: i32) -> i32 {
+        let filtered = self.count_filtered_without_limit(group_size);
 
         if let Some(limit) = self.limit_percent {
-            filtered = (filtered as f32 * limit) as i32;
+            (filtered as f32 * limit) as i32
+        } else {
+            filtered
         }
-
-        filtered
     }
 
     #[allow(deprecated)]
@@ -488,6 +501,7 @@ mod tests {
         assert!((0..6).all(|i| filter.is_in_filter(i, 12)));
         assert!((6..12).all(|i| !filter.is_in_filter(i, 12)));
         assert_eq!(filter.count_filtered(12), 6);
+        assert_eq!(filter.count_filtered_without_limit(12), 12);
         assert!((0..6).all(|i| filter.get_relative_index(i, 12) == i));
     }
 
@@ -500,6 +514,7 @@ mod tests {
 
         assert!((0..8).all(|i| !filter.is_in_filter(i, 8)));
         assert_eq!(filter.count_filtered(8), 0);
+        assert_eq!(filter.count_filtered_without_limit(8), 8);
     }
 
     #[test]
@@ -512,6 +527,7 @@ mod tests {
         assert!((0..7).all(|i| filter.is_in_filter(i, 8)));
         assert!(!filter.is_in_filter(7, 8));
         assert_eq!(filter.count_filtered(8), 7);
+        assert_eq!(filter.count_filtered_without_limit(8), 8);
         assert!((0..7).all(|i| filter.get_relative_index(i, 8) == i));
     }
 }
