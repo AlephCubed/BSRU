@@ -225,6 +225,18 @@ loose_enum!(
     }
 );
 
+impl LimitBehaviour {
+    /// Returns true if duration limiting is enabled, that is either `Duration` or `Both`.
+    pub fn duration(&self) -> bool {
+        matches!(self, LimitBehaviour::Duration | LimitBehaviour::Both)
+    }
+
+    /// Returns true if distribution limiting is enabled, that is either `Distribution` or `Both`.
+    pub fn distribution(&self) -> bool {
+        matches!(self, LimitBehaviour::Distribution | LimitBehaviour::Both)
+    }
+}
+
 #[allow(deprecated)]
 #[cfg(test)]
 mod tests {
