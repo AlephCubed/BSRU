@@ -245,13 +245,13 @@ loose_enum!(
 );
 
 impl LimitBehaviour {
-    /// Returns true if duration limiting is enabled, that is either `Beat` or `Both`.
-    pub fn duration(&self) -> bool {
+    /// Returns true if beat limiting is enabled, that is either `Beat` or `Both`.
+    pub fn beat_enabled(&self) -> bool {
         matches!(self, LimitBehaviour::Beat | LimitBehaviour::Both)
     }
 
-    /// Returns true if distribution limiting is enabled, that is either `Value` or `Both`.
-    pub fn distribution(&self) -> bool {
+    /// Returns true if value limiting is enabled, that is either `Value` or `Both`.
+    pub fn value_enabled(&self) -> bool {
         matches!(self, LimitBehaviour::Value | LimitBehaviour::Both)
     }
 }
@@ -526,7 +526,7 @@ mod tests {
     #[test]
     fn limit_non_factor_all_but_one() {
         let filter = Filter {
-            limit_percent: Some(0.90),
+            limit_percent: Some(0.9),
             ..Default::default()
         };
 

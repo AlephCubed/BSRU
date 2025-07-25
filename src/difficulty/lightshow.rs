@@ -39,7 +39,7 @@ impl DistributionType {
         let filtered_id = filter.get_relative_index(light_id, group_size);
 
         let filtered_size = if let Some(limit_behaviour) = filter.limit_behaviour
-            && limit_behaviour.duration()
+            && limit_behaviour.beat_enabled()
         {
             filter.count_filtered(group_size)
         } else {
@@ -69,7 +69,7 @@ impl DistributionType {
         let filtered_id = filter.get_relative_index(light_id, group_size);
 
         let filtered_size = if let Some(limit_behaviour) = filter.limit_behaviour
-            && limit_behaviour.distribution()
+            && limit_behaviour.value_enabled()
         {
             filter.count_filtered(group_size)
         } else {
