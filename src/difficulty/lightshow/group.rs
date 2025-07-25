@@ -4,8 +4,11 @@ pub mod color;
 pub mod rotation;
 pub mod translation;
 
+#[doc(hidden)]
 pub use color::*;
+#[doc(hidden)]
 pub use rotation::*;
+#[doc(hidden)]
 pub use translation::*;
 
 use crate::difficulty::lightshow::filter::Filter;
