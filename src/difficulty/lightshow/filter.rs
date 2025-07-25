@@ -229,25 +229,30 @@ loose_enum!(
 );
 
 loose_enum!(
+    /// Controls whether to extend wave distributions so they match the duration before the limit was applied.
+    ///
+    /// To see this in practice, check out [this video](https://youtube.com/watch?v=NJPPBvyHJjg&t=338).
+    ///
+    /// Includes the option to only enable for beat distribution and not value distribution, and vice versa.
     #[derive(Default, Copy)]
     LimitBehaviour: i32 {
         #[default]
         None = 0,
-        Duration = 1,
-        Distribution = 2,
+        Beat = 1,
+        Value = 2,
         Both = 3,
     }
 );
 
 impl LimitBehaviour {
-    /// Returns true if duration limiting is enabled, that is either `Duration` or `Both`.
+    /// Returns true if duration limiting is enabled, that is either `Beat` or `Both`.
     pub fn duration(&self) -> bool {
-        matches!(self, LimitBehaviour::Duration | LimitBehaviour::Both)
+        matches!(self, LimitBehaviour::Beat | LimitBehaviour::Both)
     }
 
-    /// Returns true if distribution limiting is enabled, that is either `Distribution` or `Both`.
+    /// Returns true if distribution limiting is enabled, that is either `Value` or `Both`.
     pub fn distribution(&self) -> bool {
-        matches!(self, LimitBehaviour::Distribution | LimitBehaviour::Both)
+        matches!(self, LimitBehaviour::Value | LimitBehaviour::Both)
     }
 }
 

@@ -415,7 +415,7 @@ mod tests {
     fn beat_wave_with_limit_filter() {
         let group = ColorEventGroup {
             filter: Filter {
-                limit_behaviour: Some(LimitBehaviour::Duration),
+                limit_behaviour: Some(LimitBehaviour::Beat),
                 limit_percent: Some(0.5),
                 ..Default::default()
             },
@@ -431,7 +431,7 @@ mod tests {
     fn brightness_wave_with_limit_filter() {
         let group = ColorEventGroup {
             filter: Filter {
-                limit_behaviour: Some(LimitBehaviour::Distribution),
+                limit_behaviour: Some(LimitBehaviour::Value),
                 limit_percent: Some(0.5),
                 ..Default::default()
             },
