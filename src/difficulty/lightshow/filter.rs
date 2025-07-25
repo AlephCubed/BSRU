@@ -82,6 +82,12 @@ impl Filter {
     pub fn is_in_filter(&self, mut light_id: i32, mut group_size: i32) -> bool {
         assert!(light_id < group_size);
 
+        if let Some(limit) = self.limit_percent {
+            if light_id >= (group_size as f32 * limit) as i32 {
+                return false;
+            }
+        }
+
         if self.reverse.is_true() {
             light_id = group_size - light_id - 1;
         }
@@ -122,7 +128,7 @@ impl Filter {
             group_size = chunks;
         }
 
-        match self.filter_type {
+        let mut filtered = match self.filter_type {
             FilterType::Division => {
                 let start = self.parameter2 * group_size / self.parameter1.max(1);
                 let end = (self.parameter2 + 1) * group_size / self.parameter1.max(1);
@@ -132,7 +138,13 @@ impl Filter {
                 group_size / self.parameter2.max(1) - self.parameter1 / self.parameter2.max(1)
             }
             FilterType::Unknown(_) => group_size,
+        };
+
+        if let Some(limit) = self.limit_percent {
+            filtered = (filtered as f32 * limit) as i32;
         }
+
+        filtered
     }
 
     #[allow(deprecated)]
@@ -141,6 +153,7 @@ impl Filter {
     /// If the [`FilterType`] is `Unknown` then the result will be the same as `light_id`.
     /// # Panics
     /// Will panic if the light ID is greater than or equal to the group size.
+    // Todo what is the behaviour when the light ID is not in the filter?
     #[must_use]
     #[inline]
     #[deprecated(note = "Experimental. Does not consider random or limit in calculations.")]
@@ -208,6 +221,7 @@ loose_enum!(
         None = 0,
         Duration = 1,
         Distribution = 2,
+        Both = 3,
     }
 );
 
@@ -450,5 +464,42 @@ mod tests {
         assert!((0..3).all(|i| filter.get_relative_index(i, 8) == 0));
         assert!((3..6).all(|i| filter.get_relative_index(i, 8) == 1));
         assert!((6..8).all(|i| filter.get_relative_index(i, 8) == 2));
+    }
+
+    #[test]
+    fn limit() {
+        let filter = Filter {
+            limit_percent: Some(0.5),
+            ..Default::default()
+        };
+
+        assert!((0..6).all(|i| filter.is_in_filter(i, 12)));
+        assert!((6..12).all(|i| !filter.is_in_filter(i, 12)));
+        assert_eq!(filter.count_filtered(12), 6);
+        assert!((0..6).all(|i| filter.get_relative_index(i, 12) == i));
+    }
+
+    #[test]
+    fn limit_non_factor_none() {
+        let filter = Filter {
+            limit_percent: Some(0.01),
+            ..Default::default()
+        };
+
+        assert!((0..8).all(|i| !filter.is_in_filter(i, 8)));
+        assert_eq!(filter.count_filtered(8), 0);
+    }
+
+    #[test]
+    fn limit_non_factor_all_but_one() {
+        let filter = Filter {
+            limit_percent: Some(0.90),
+            ..Default::default()
+        };
+
+        assert!((0..7).all(|i| filter.is_in_filter(i, 8)));
+        assert!(!filter.is_in_filter(7, 8));
+        assert_eq!(filter.count_filtered(8), 7);
+        assert!((0..7).all(|i| filter.get_relative_index(i, 8) == i));
     }
 }
