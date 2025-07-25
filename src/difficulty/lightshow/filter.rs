@@ -82,10 +82,11 @@ impl Filter {
     pub fn is_in_filter(&self, mut light_id: i32, mut group_size: i32) -> bool {
         assert!(light_id < group_size);
 
-        if let Some(limit) = self.limit_percent {
-            if light_id >= (group_size as f32 * limit) as i32 {
-                return false;
-            }
+        if let Some(limit) = self.limit_percent
+            && limit > 0.0
+            && light_id >= (group_size as f32 * limit) as i32
+        {
+            return false;
         }
 
         if self.reverse.is_true() {
