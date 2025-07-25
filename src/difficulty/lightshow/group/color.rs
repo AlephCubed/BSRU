@@ -93,10 +93,10 @@ impl ColorEventGroup {
     /// Returns the brightness that the event will be offset for a given light ID.
     /// # Panics
     /// Will panic if the light ID is greater than or equal to the group size.
-    #[deprecated(note = "Experimental. Does not consider random or limit in filter calculations.")]
+    #[deprecated(note = "Experimental. Does not consider random in filter calculations.")]
     #[allow(deprecated)]
     pub fn get_brightness_offset(&self, light_id: i32, group_size: i32) -> f32 {
-        self.bright_dist_type.compute_offset(
+        self.bright_dist_type.compute_value_offset(
             light_id,
             group_size,
             &self.filter,
@@ -189,6 +189,7 @@ loose_enum! {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::LimitBehaviour;
     use crate::difficulty::lightshow::filter::FilterType;
     use crate::difficulty::lightshow::group::EventGroup;
 
@@ -408,5 +409,37 @@ mod tests {
         };
 
         assert!((0..12).all(|i| group.get_brightness_offset(i, 12) == 12.0 - i as f32));
+    }
+
+    #[test]
+    fn beat_wave_with_limit_filter() {
+        let group = ColorEventGroup {
+            filter: Filter {
+                limit_behaviour: Some(LimitBehaviour::Beat),
+                limit_percent: Some(0.5),
+                ..Default::default()
+            },
+            beat_dist_type: DistributionType::Wave,
+            beat_dist_value: 12.0,
+            ..Default::default()
+        };
+
+        assert!((0..6).all(|i| group.get_beat_offset(i, 12) == (i * 2) as f32));
+    }
+
+    #[test]
+    fn brightness_wave_with_limit_filter() {
+        let group = ColorEventGroup {
+            filter: Filter {
+                limit_behaviour: Some(LimitBehaviour::Value),
+                limit_percent: Some(0.5),
+                ..Default::default()
+            },
+            bright_dist_type: DistributionType::Wave,
+            bright_dist_value: 12.0,
+            ..Default::default()
+        };
+
+        assert!((0..6).all(|i| group.get_brightness_offset(i, 12) == (i * 2) as f32));
     }
 }

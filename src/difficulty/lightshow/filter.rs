@@ -78,9 +78,16 @@ impl Filter {
     /// Will panic if the light ID is greater than or equal to the group size.
     #[must_use]
     #[inline]
-    #[deprecated(note = "Experimental. Does not consider random or limit in calculations.")]
+    #[deprecated(note = "Experimental. Does not consider random in calculations.")]
     pub fn is_in_filter(&self, mut light_id: i32, mut group_size: i32) -> bool {
         assert!(light_id < group_size);
+
+        if let Some(limit) = self.limit_percent
+            && limit > 0.0
+            && light_id >= (group_size as f32 * limit) as i32
+        {
+            return false;
+        }
 
         if self.reverse.is_true() {
             light_id = group_size - light_id - 1;
@@ -108,13 +115,15 @@ impl Filter {
         }
     }
 
-    /// Returns the number of light chunks effected by the filter.
+    /// Returns the number of light chunks effected by the filter, but before applying the limit.
+    ///
+    /// This is required for distribution calculations.
     /// # Unknown
     /// If the [`FilterType`] is `Unknown` then the result will be the same as `group_size`.
     #[must_use]
     #[inline]
-    #[deprecated(note = "Experimental. Does not consider random or limit in calculations.")]
-    pub fn count_filtered(&self, mut group_size: i32) -> i32 {
+    #[deprecated(note = "Experimental. Does not consider random in calculations.")]
+    pub(crate) fn count_filtered_without_limit(&self, mut group_size: i32) -> i32 {
         if let Some(chunks) = self.chunks
             && chunks > 0
             && chunks < group_size
@@ -135,15 +144,33 @@ impl Filter {
         }
     }
 
+    /// Returns the number of light chunks effected by the filter.
+    /// # Unknown
+    /// If the [`FilterType`] is `Unknown` then the result will be the same as `group_size`.
+    #[must_use]
+    #[inline]
+    #[deprecated(note = "Experimental. Does not consider random in calculations.")]
+    #[allow(deprecated)]
+    pub fn count_filtered(&self, group_size: i32) -> i32 {
+        let filtered = self.count_filtered_without_limit(group_size);
+
+        if let Some(limit) = self.limit_percent {
+            (filtered as f32 * limit) as i32
+        } else {
+            filtered
+        }
+    }
+
     #[allow(deprecated)]
     /// Returns the light chunk ID relative to the [filtered count](Self::count_filtered).
     /// # Unknown
     /// If the [`FilterType`] is `Unknown` then the result will be the same as `light_id`.
     /// # Panics
     /// Will panic if the light ID is greater than or equal to the group size.
+    // Todo what is the behaviour when the light ID is not in the filter?
     #[must_use]
     #[inline]
-    #[deprecated(note = "Experimental. Does not consider random or limit in calculations.")]
+    #[deprecated(note = "Experimental. Does not consider random in calculations.")]
     pub fn get_relative_index(&self, mut light_id: i32, mut group_size: i32) -> i32 {
         assert!(light_id < group_size);
 
@@ -202,14 +229,32 @@ loose_enum!(
 );
 
 loose_enum!(
+    /// Controls whether to extend wave distributions so they match the duration before the limit was applied.
+    ///
+    /// To see this in practice, check out [this video](https://youtube.com/watch?v=NJPPBvyHJjg&t=338).
+    ///
+    /// Includes the option to only enable for beat distribution and not value distribution, and vice versa.
     #[derive(Default, Copy)]
     LimitBehaviour: i32 {
         #[default]
         None = 0,
-        Duration = 1,
-        Distribution = 2,
+        Beat = 1,
+        Value = 2,
+        Both = 3,
     }
 );
+
+impl LimitBehaviour {
+    /// Returns true if beat limiting is enabled, that is either `Beat` or `Both`.
+    pub fn beat_enabled(&self) -> bool {
+        matches!(self, LimitBehaviour::Beat | LimitBehaviour::Both)
+    }
+
+    /// Returns true if value limiting is enabled, that is either `Value` or `Both`.
+    pub fn value_enabled(&self) -> bool {
+        matches!(self, LimitBehaviour::Value | LimitBehaviour::Both)
+    }
+}
 
 #[allow(deprecated)]
 #[cfg(test)]
@@ -450,5 +495,45 @@ mod tests {
         assert!((0..3).all(|i| filter.get_relative_index(i, 8) == 0));
         assert!((3..6).all(|i| filter.get_relative_index(i, 8) == 1));
         assert!((6..8).all(|i| filter.get_relative_index(i, 8) == 2));
+    }
+
+    #[test]
+    fn limit() {
+        let filter = Filter {
+            limit_percent: Some(0.5),
+            ..Default::default()
+        };
+
+        assert!((0..6).all(|i| filter.is_in_filter(i, 12)));
+        assert!((6..12).all(|i| !filter.is_in_filter(i, 12)));
+        assert_eq!(filter.count_filtered(12), 6);
+        assert_eq!(filter.count_filtered_without_limit(12), 12);
+        assert!((0..6).all(|i| filter.get_relative_index(i, 12) == i));
+    }
+
+    #[test]
+    fn limit_non_factor_none() {
+        let filter = Filter {
+            limit_percent: Some(0.01),
+            ..Default::default()
+        };
+
+        assert!((0..8).all(|i| !filter.is_in_filter(i, 8)));
+        assert_eq!(filter.count_filtered(8), 0);
+        assert_eq!(filter.count_filtered_without_limit(8), 8);
+    }
+
+    #[test]
+    fn limit_non_factor_all_but_one() {
+        let filter = Filter {
+            limit_percent: Some(0.9),
+            ..Default::default()
+        };
+
+        assert!((0..7).all(|i| filter.is_in_filter(i, 8)));
+        assert!(!filter.is_in_filter(7, 8));
+        assert_eq!(filter.count_filtered(8), 7);
+        assert_eq!(filter.count_filtered_without_limit(8), 8);
+        assert!((0..7).all(|i| filter.get_relative_index(i, 8) == i));
     }
 }

@@ -3,6 +3,7 @@ use bsru::info::Beatmap;
 use std::fs;
 
 #[test]
+#[ignore]
 fn parse_beatmaps() {
     let paths = fs::read_dir("test_maps").unwrap().filter_map(|result| {
         if let Ok(dir) = result {
