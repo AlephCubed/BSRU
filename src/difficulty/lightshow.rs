@@ -25,7 +25,7 @@ loose_enum! {
 }
 
 impl DistributionType {
-    #[deprecated(note = "Experimental. Does not consider random or limit in filter calculations.")]
+    #[deprecated(note = "Experimental. Does not consider random in filter calculations.")]
     #[allow(deprecated)]
     fn compute_beat_offset(
         &self,
@@ -55,7 +55,7 @@ impl DistributionType {
         )
     }
 
-    #[deprecated(note = "Experimental. Does not consider random or limit in filter calculations.")]
+    #[deprecated(note = "Experimental. Does not consider random in filter calculations.")]
     #[allow(deprecated)]
     fn compute_value_offset(
         &self,
@@ -85,7 +85,7 @@ impl DistributionType {
         )
     }
 
-    #[deprecated(note = "Experimental. Does not consider random or limit in filter calculations.")]
+    #[deprecated(note = "Experimental. Does not consider random in filter calculations.")]
     #[allow(deprecated)]
     #[inline(always)]
     fn compute_offset(

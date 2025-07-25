@@ -78,7 +78,7 @@ impl Filter {
     /// Will panic if the light ID is greater than or equal to the group size.
     #[must_use]
     #[inline]
-    #[deprecated(note = "Experimental. Does not consider random or limit in calculations.")]
+    #[deprecated(note = "Experimental. Does not consider random in calculations.")]
     pub fn is_in_filter(&self, mut light_id: i32, mut group_size: i32) -> bool {
         assert!(light_id < group_size);
 
@@ -122,7 +122,7 @@ impl Filter {
     /// If the [`FilterType`] is `Unknown` then the result will be the same as `group_size`.
     #[must_use]
     #[inline]
-    #[deprecated(note = "Experimental. Does not consider random or limit in calculations.")]
+    #[deprecated(note = "Experimental. Does not consider random in calculations.")]
     pub(crate) fn count_filtered_without_limit(&self, mut group_size: i32) -> i32 {
         if let Some(chunks) = self.chunks
             && chunks > 0
@@ -149,7 +149,7 @@ impl Filter {
     /// If the [`FilterType`] is `Unknown` then the result will be the same as `group_size`.
     #[must_use]
     #[inline]
-    #[deprecated(note = "Experimental. Does not consider random or limit in calculations.")]
+    #[deprecated(note = "Experimental. Does not consider random in calculations.")]
     #[allow(deprecated)]
     pub fn count_filtered(&self, group_size: i32) -> i32 {
         let filtered = self.count_filtered_without_limit(group_size);
@@ -170,7 +170,7 @@ impl Filter {
     // Todo what is the behaviour when the light ID is not in the filter?
     #[must_use]
     #[inline]
-    #[deprecated(note = "Experimental. Does not consider random or limit in calculations.")]
+    #[deprecated(note = "Experimental. Does not consider random in calculations.")]
     pub fn get_relative_index(&self, mut light_id: i32, mut group_size: i32) -> i32 {
         assert!(light_id < group_size);
 
