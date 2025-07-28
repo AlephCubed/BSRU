@@ -1,11 +1,14 @@
 //! The advanced group lighting system events.
 
 pub mod color;
+pub mod fx;
 pub mod rotation;
 pub mod translation;
 
 #[doc(hidden)]
 pub use color::*;
+#[doc(hidden)]
+pub use fx::*;
 #[doc(hidden)]
 pub use rotation::*;
 #[doc(hidden)]
