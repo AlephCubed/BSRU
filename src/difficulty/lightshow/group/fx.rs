@@ -1,4 +1,8 @@
 //! Events that animations unique to each environment.
+//!
+//! Unlike the other V3 group event types, FX events use a template-like JSON syntax.
+//! In order to have standardized structure across all V3 events, custom serialization has been written in [`FxEventContainer`].
+//! Because of this, neither [`FxEventBox`] nor [`FxEventGroup`] implement [`Serialize`] nor [`Deserialize`].
 
 use crate::difficulty::lightshow::DistributionType;
 use crate::difficulty::lightshow::easing::Easing;
@@ -8,6 +12,7 @@ use crate::{TransitionType, impl_event_box, impl_event_data, impl_event_group, i
 use serde::ser::SerializeStruct;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 
+/// Contains a list of [`FxEventBox`] as well as the [`Serialize`] and [`Deserialize`] implementations for FX events.
 #[derive(Debug, Clone, PartialEq, Default)]
 #[cfg_attr(
     feature = "bevy_reflect",
@@ -140,6 +145,8 @@ impl Serialize for FxEventContainer {
 }
 
 /// A collection of [`FxEventGroup`]s that share the same group ID and beat.
+///
+/// Does not implement [`Serialize`] nor [`Deserialize`]. For more info, see the [module docs](super::fx).
 #[derive(Debug, Clone, PartialEq)]
 #[cfg_attr(
     feature = "bevy_reflect",
@@ -154,14 +161,15 @@ pub struct FxEventBox {
     pub groups: Vec<FxEventGroup>,
 }
 
+/// The raw JSON structure that uses [data IDs](self::data_ids) rather than actual [event data](FxEventData).
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct FxEventBoxRaw {
+struct FxEventBoxRaw {
     #[serde(rename = "b")]
-    pub beat: f32,
+    beat: f32,
     #[serde(rename = "g")]
-    pub group_id: i32,
+    group_id: i32,
     #[serde(rename = "e")]
-    pub groups: Vec<FxEventGroupRaw>,
+    groups: Vec<FxEventGroupRaw>,
 }
 
 impl Default for FxEventBox {
@@ -178,6 +186,8 @@ impl_timed!(FxEventBox::beat);
 impl_event_box!(FxEventBox, FxEventGroup, FxEventData);
 
 /// A collection of [`FxEventData`] that share the same [`Filter`] and distribution.
+///
+/// Does not implement [`Serialize`] nor [`Deserialize`]. For more info, see the [module docs](super::fx).
 #[derive(Debug, Clone, PartialEq)]
 #[cfg_attr(
     feature = "bevy_reflect",
@@ -199,27 +209,30 @@ pub struct FxEventGroup {
     /// Whether the first [`FxEventData`] of the group will be effected by brightness distribution.
     pub fx_dist_effect_first: LooseBool,
     pub fx_dist_easing: Option<Easing>,
+    /// In the actual JSON structure, this is a list of indexes to a separate list of event data.
+    /// For consistency, this is merged during parsing.
     pub data: Vec<FxEventData>,
 }
 
+/// The raw JSON structure that uses [data IDs](self::data_ids) rather than actual [event data](FxEventData).
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct FxEventGroupRaw {
+struct FxEventGroupRaw {
     #[serde(rename = "f")]
-    pub filter: Filter,
+    filter: Filter,
     #[serde(rename = "d")]
-    pub beat_dist_type: DistributionType,
+    beat_dist_type: DistributionType,
     #[serde(rename = "w")]
-    pub beat_dist_value: f32,
+    beat_dist_value: f32,
     #[serde(rename = "t")]
-    pub fx_dist_type: DistributionType,
+    fx_dist_type: DistributionType,
     #[serde(rename = "s")]
-    pub fx_dist_value: f32,
+    fx_dist_value: f32,
     #[serde(rename = "b")]
-    pub fx_dist_effect_first: LooseBool,
+    fx_dist_effect_first: LooseBool,
     #[serde(rename = "i")]
-    pub fx_dist_easing: Option<Easing>,
+    fx_dist_easing: Option<Easing>,
     #[serde(rename = "l")]
-    pub data_ids: Vec<usize>,
+    data_ids: Vec<usize>,
 }
 
 impl Default for FxEventGroup {
@@ -257,7 +270,7 @@ impl FxEventGroup {
     }
 }
 
-/// The lowest-level group event type, which determines the color of the event.
+/// The lowest-level group event type, which determines the base value of the event.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[cfg_attr(
     feature = "bevy_reflect",
@@ -446,6 +459,6 @@ mod tests {
 
         assert_eq!(container, roundtrip, "Round-trip did not match");
 
-        println!("Round-trip serialization succeeded:\n{}", out_json);
+        println!("Round-trip serialization succeeded.");
     }
 }
