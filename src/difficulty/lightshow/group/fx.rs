@@ -201,10 +201,10 @@ pub struct FxEventGroup {
     ///
     /// A value of zero will have no effect.
     pub beat_dist_value: f32,
-    /// The strength of the brightness distribution. Dependent on the [distribution type](Self::bright_dist_type).
+    pub fx_dist_type: DistributionType,
+    /// The strength of the brightness distribution. Dependent on the [distribution type](Self::fx_dist_type).
     ///
     /// A value of zero will have no effect.
-    pub fx_dist_type: DistributionType,
     pub fx_dist_value: f32,
     /// Whether the first [`FxEventData`] of the group will be effected by brightness distribution.
     pub fx_dist_effect_first: LooseBool,
