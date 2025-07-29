@@ -9,6 +9,8 @@ use crate::difficulty::lightshow::easing::Easing;
 use crate::difficulty::lightshow::filter::Filter;
 use crate::utils::LooseBool;
 use crate::{TransitionType, impl_event_box, impl_event_data, impl_event_group, impl_timed};
+use indexmap::IndexSet;
+use ordered_float::OrderedFloat;
 use serde::ser::SerializeStruct;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 
@@ -23,6 +25,7 @@ pub struct FxEventContainer {
     pub event_boxes: Vec<FxEventBox>,
 }
 
+/// The format that is actually stored in JSON.
 #[derive(Deserialize)]
 struct FxEventInput {
     #[serde(rename = "vfxEventBoxGroups")]
@@ -98,7 +101,7 @@ impl Serialize for FxEventContainer {
     where
         S: Serializer,
     {
-        let mut event_data: Vec<FxEventData> = Vec::new();
+        let mut event_data: IndexSet<FxEventDataKey> = IndexSet::new();
 
         // Todo Deduplicate.
         let event_boxes_raw: Vec<_> = self
@@ -111,8 +114,16 @@ impl Serialize for FxEventContainer {
                     .map(|g| {
                         let mut ids = Vec::new();
                         for data in &g.data {
-                            ids.push(event_data.len());
-                            event_data.push(data.clone());
+                            let data: FxEventDataKey = data.into();
+                            let index = match event_data.get_index_of(&data) {
+                                Some(index) => index,
+                                None => {
+                                    let index = event_data.len();
+                                    event_data.insert(data);
+                                    index
+                                }
+                            };
+                            ids.push(index);
                         }
 
                         FxEventGroupRaw {
@@ -136,10 +147,14 @@ impl Serialize for FxEventContainer {
             })
             .collect();
 
-        // Phase 2: Serialize both arrays as a struct
         let mut state = serializer.serialize_struct("FxEventContainer", 2)?;
         state.serialize_field("vfxEventBoxGroups", &event_boxes_raw)?;
-        state.serialize_field("_fxEventsCollection", &FxEventArrays { event_data })?;
+        state.serialize_field(
+            "_fxEventsCollection",
+            &FxEventArrays {
+                event_data: event_data.into_iter().map(FxEventData::from).collect(),
+            },
+        )?;
         state.end()
     }
 }
@@ -290,6 +305,37 @@ pub struct FxEventData {
     pub value: f32,
 }
 
+/// A `PartialEq` and `Hash` version of [`FxEventData`], allowing for deduplication.
+#[derive(Debug, Clone, Eq, PartialEq, Hash)]
+struct FxEventDataKey {
+    beat_offset: OrderedFloat<f32>,
+    transition_type: TransitionType,
+    easing: Easing,
+    value: OrderedFloat<f32>,
+}
+
+impl From<&FxEventData> for FxEventDataKey {
+    fn from(value: &FxEventData) -> Self {
+        Self {
+            beat_offset: value.beat_offset.into(),
+            transition_type: value.transition_type,
+            easing: value.easing,
+            value: value.value.into(),
+        }
+    }
+}
+
+impl From<FxEventDataKey> for FxEventData {
+    fn from(value: FxEventDataKey) -> Self {
+        Self {
+            beat_offset: value.beat_offset.into(),
+            transition_type: value.transition_type,
+            easing: value.easing,
+            value: value.value.into(),
+        }
+    }
+}
+
 impl Default for FxEventData {
     fn default() -> Self {
         Self {
@@ -306,10 +352,38 @@ impl_event_data!(FxEventData);
 #[cfg(test)]
 mod tests {
     use super::*;
+    use serde_json::{Value, json};
 
-    #[test]
-    fn test_deserialize() {
-        let json = r#"
+    fn get_test_container() -> FxEventContainer {
+        FxEventContainer {
+            event_boxes: vec![FxEventBox {
+                beat: 2.0,
+                group_id: 0,
+                groups: vec![get_test_group(), get_test_group()],
+            }],
+        }
+    }
+
+    fn get_test_group() -> FxEventGroup {
+        FxEventGroup {
+            filter: Default::default(),
+            beat_dist_type: DistributionType::Wave,
+            beat_dist_value: 1.0,
+            fx_dist_type: DistributionType::Wave,
+            fx_dist_value: 1.0,
+            fx_dist_effect_first: LooseBool::True,
+            fx_dist_easing: Some(Easing::None),
+            data: vec![FxEventData {
+                beat_offset: 0.0,
+                transition_type: TransitionType::Transition,
+                easing: Easing::Linear,
+                value: 100.0,
+            }],
+        }
+    }
+
+    fn get_test_json() -> Value {
+        json!(
             {
                 "vfxEventBoxGroups":
                 [
@@ -318,6 +392,30 @@ mod tests {
                         "g": 0,
                         "e":
                         [
+                            {
+                                "f":
+                                {
+                                    "c": 0,
+                                    "f": 1,
+                                    "p": 1,
+                                    "t": 0,
+                                    "r": 0,
+                                    "n": 0,
+                                    "s": 0,
+                                    "l": 1.0,
+                                    "d": 0
+                                },
+                                "w": 1.0,
+                                "d": 1,
+                                "s": 1.0,
+                                "t": 1,
+                                "b": 1,
+                                "i": -1,
+                                "l":
+                                [
+                                    0
+                                ]
+                            },
                             {
                                 "f":
                                 {
@@ -355,105 +453,34 @@ mod tests {
                             "i": 0,
                             "v": 100.0
                         }
-                    ],
-                    "_il":
-                    []
+                    ]
                 }
             }
-        "#;
+        )
+    }
 
+    #[test]
+    fn test_deserialize() {
         let container: FxEventContainer =
-            serde_json::from_str(json).expect("Failed to deserialize");
+            serde_json::from_value(get_test_json()).expect("Failed to deserialize");
 
-        assert_eq!(
-            container,
-            FxEventContainer {
-                event_boxes: vec![FxEventBox {
-                    beat: 2.0,
-                    group_id: 0,
-                    groups: vec![FxEventGroup {
-                        filter: Default::default(),
-                        beat_dist_type: DistributionType::Wave,
-                        beat_dist_value: 1.0,
-                        fx_dist_type: DistributionType::Wave,
-                        fx_dist_value: 1.0,
-                        fx_dist_effect_first: LooseBool::True,
-                        fx_dist_easing: Some(Easing::None),
-                        data: vec![FxEventData {
-                            beat_offset: 0.0,
-                            transition_type: TransitionType::Transition,
-                            easing: Easing::Linear,
-                            value: 100.0,
-                        }],
-                    }],
-                }],
-            }
-        );
+        assert_eq!(container, get_test_container());
+    }
+
+    #[test]
+    fn test_serialize() {
+        let out_json = serde_json::to_value(&get_test_container()).expect("Failed to serialize");
+
+        assert_eq!(out_json, get_test_json());
     }
 
     #[test]
     fn test_roundtrip() {
-        let json = r#"
-            {
-                "vfxEventBoxGroups":
-                [
-                    {
-                        "b": 2.0,
-                        "g": 0,
-                        "e":
-                        [
-                            {
-                                "f":
-                                {
-                                    "c": 0,
-                                    "f": 1,
-                                    "p": 1,
-                                    "t": 0,
-                                    "r": 0,
-                                    "n": 0,
-                                    "s": 0,
-                                    "l": 1.0,
-                                    "d": 0
-                                },
-                                "w": 1.0,
-                                "d": 1,
-                                "s": 1.0,
-                                "t": 1,
-                                "b": 1,
-                                "i": -1,
-                                "l":
-                                [
-                                    0
-                                ]
-                            }
-                        ]
-                    }
-                ],
-                "_fxEventsCollection":
-                {
-                    "_fl":
-                    [
-                        {
-                            "b": 0.0,
-                            "p": 0,
-                            "i": 0,
-                            "v": 100.0
-                        }
-                    ],
-                    "_il":
-                    []
-                }
-            }
-        "#;
-
-        // Deserialize into your parsed container
         let container: FxEventContainer =
-            serde_json::from_str(json).expect("Failed to deserialize");
+            serde_json::from_value(get_test_json()).expect("Failed to deserialize");
 
-        // Serialize it back
         let out_json = serde_json::to_string_pretty(&container).expect("Failed to serialize");
 
-        // Re-deserialize and compare
         let roundtrip: FxEventContainer =
             serde_json::from_str(&out_json).expect("Re-deserialization failed");
 
