@@ -115,9 +115,11 @@ impl Filter {
         }
     }
 
+    #[allow(deprecated)]
     /// Returns the number of light chunks effected by the filter, but before applying the limit.
-    ///
     /// This is required for distribution calculations.
+    ///
+    /// Also see [`count_filtered`](Self::count_filtered).
     /// # Unknown
     /// If the [`FilterType`] is `Unknown` then the result will be the same as `group_size`.
     #[must_use]
@@ -144,7 +146,10 @@ impl Filter {
         }
     }
 
+    #[allow(deprecated)]
     /// Returns the number of light chunks effected by the filter.
+    ///
+    /// Also see [`count_filtered_without_limit`](Self::count_filtered_without_limit).
     /// # Unknown
     /// If the [`FilterType`] is `Unknown` then the result will be the same as `group_size`.
     #[must_use]
