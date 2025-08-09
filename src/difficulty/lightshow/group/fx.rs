@@ -1,8 +1,8 @@
-//! Events that animations unique to each environment.
+//! Events that control animations unique to each environment.
 //!
 //! Unlike the other V3 group event types, FX events use a template-like JSON syntax.
 //! In order to have standardized structure across all V3 events, custom serialization has been written in [`FxEventContainer`].
-//! Because of this, neither [`FxEventBox`] nor [`FxEventGroup`] implement [`Serialize`] nor [`Deserialize`].
+//! Because of this, neither [`FxEventBox`] nor [`FxEventGroup`] implement [`Serialize`] nor [`Deserialize`] directly.
 
 use crate::difficulty::lightshow::DistributionType;
 use crate::difficulty::lightshow::easing::Easing;
@@ -13,6 +13,7 @@ use indexmap::IndexSet;
 use ordered_float::OrderedFloat;
 use serde::ser::SerializeStruct;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
+use std::ops::{Deref, DerefMut};
 
 /// Contains a list of [`FxEventBox`] as well as the [`Serialize`] and [`Deserialize`] implementations for FX events.
 #[derive(Debug, Clone, PartialEq, Default)]
@@ -23,6 +24,20 @@ use serde::{Deserialize, Deserializer, Serialize, Serializer};
 )]
 pub struct FxEventContainer {
     pub event_boxes: Vec<FxEventBox>,
+}
+
+impl Deref for FxEventContainer {
+    type Target = Vec<FxEventBox>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.event_boxes
+    }
+}
+
+impl DerefMut for FxEventContainer {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.event_boxes
+    }
 }
 
 /// The format that is actually stored in JSON.
@@ -176,7 +191,7 @@ pub struct FxEventBox {
     pub groups: Vec<FxEventGroup>,
 }
 
-/// The raw JSON structure that uses [data IDs](self::data_ids) rather than actual [event data](FxEventData).
+/// The raw JSON structure that uses [data IDs](FxEventGroupRaw::data_ids) rather than actual [event data](FxEventData).
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 struct FxEventBoxRaw {
     #[serde(rename = "b")]
@@ -461,31 +476,26 @@ mod tests {
 
     #[test]
     fn test_deserialize() {
-        let container: FxEventContainer =
-            serde_json::from_value(get_test_json()).expect("Failed to deserialize");
+        let container: FxEventContainer = serde_json::from_value(get_test_json()).unwrap();
 
         assert_eq!(container, get_test_container());
     }
 
     #[test]
     fn test_serialize() {
-        let out_json = serde_json::to_value(&get_test_container()).expect("Failed to serialize");
+        let out_json = serde_json::to_value(&get_test_container()).unwrap();
 
         assert_eq!(out_json, get_test_json());
     }
 
     #[test]
-    fn test_roundtrip() {
-        let container: FxEventContainer =
-            serde_json::from_value(get_test_json()).expect("Failed to deserialize");
+    fn test_round_trip() {
+        let container: FxEventContainer = serde_json::from_value(get_test_json()).unwrap();
 
-        let out_json = serde_json::to_string_pretty(&container).expect("Failed to serialize");
+        let out_json = serde_json::to_string_pretty(&container).unwrap();
 
-        let roundtrip: FxEventContainer =
-            serde_json::from_str(&out_json).expect("Re-deserialization failed");
+        let round_trip: FxEventContainer = serde_json::from_str(&out_json).unwrap();
 
-        assert_eq!(container, roundtrip, "Round-trip did not match");
-
-        println!("Round-trip serialization succeeded.");
+        assert_eq!(container, round_trip);
     }
 }
