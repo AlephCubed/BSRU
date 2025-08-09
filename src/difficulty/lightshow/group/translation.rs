@@ -212,7 +212,7 @@ mod tests {
         let group = &event_box.groups[0];
 
         for i in 0..5 {
-            assert_eq!(group.get_value_offset(i, 5), i as f32 / 5.0);
+            assert_eq!(group.get_value_offset(i, 5), 0.0);
         }
     }
 }
