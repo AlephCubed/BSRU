@@ -71,8 +71,8 @@ impl<'de> Deserialize<'de> for FxEventContainer {
                 let groups = raw_box
                     .groups
                     .into_iter()
-                    .map(|g| {
-                        let data = g
+                    .map(|raw_group| {
+                        let data = raw_group
                             .data_ids
                             .into_iter()
                             .map(|id| {
@@ -83,20 +83,20 @@ impl<'de> Deserialize<'de> for FxEventContainer {
                                     ))
                                 })
                             })
-                            .collect::<Result<Vec<_>, _>>()?;
+                            .collect::<Result<Vec<FxEventData>, _>>()?;
 
                         Ok(FxEventGroup {
-                            filter: g.filter,
-                            beat_dist_type: g.beat_dist_type,
-                            beat_dist_value: g.beat_dist_value,
-                            fx_dist_type: g.fx_dist_type,
-                            fx_dist_value: g.fx_dist_value,
-                            fx_dist_effect_first: g.fx_dist_effect_first,
-                            fx_dist_easing: g.fx_dist_easing,
+                            filter: raw_group.filter,
+                            beat_dist_type: raw_group.beat_dist_type,
+                            beat_dist_value: raw_group.beat_dist_value,
+                            fx_dist_type: raw_group.fx_dist_type,
+                            fx_dist_value: raw_group.fx_dist_value,
+                            fx_dist_effect_first: raw_group.fx_dist_effect_first,
+                            fx_dist_easing: raw_group.fx_dist_easing,
                             data,
                         })
                     })
-                    .collect::<Result<Vec<_>, _>>()?;
+                    .collect::<Result<Vec<FxEventGroup>, _>>()?;
 
                 Ok(FxEventBox {
                     beat: raw_box.beat,
@@ -104,7 +104,7 @@ impl<'de> Deserialize<'de> for FxEventContainer {
                     groups,
                 })
             })
-            .collect::<Result<Vec<_>, _>>()?;
+            .collect::<Result<Vec<FxEventBox>, _>>()?;
 
         Ok(FxEventContainer { event_boxes })
     }
@@ -119,51 +119,51 @@ impl Serialize for FxEventContainer {
         let mut event_data: IndexSet<FxEventDataKey> = IndexSet::new();
 
         // Todo Deduplicate.
-        let event_boxes_raw: Vec<_> = self
+        let raw_boxes = self
             .event_boxes
             .iter()
-            .map(|b| {
-                let groups_raw: Vec<_> = b
+            .map(|event_box| {
+                let groups_raw = event_box
                     .groups
                     .iter()
-                    .map(|g| {
+                    .map(|event_group| {
                         let mut ids = Vec::new();
-                        for data in &g.data {
-                            let data: FxEventDataKey = data.into();
-                            let index = match event_data.get_index_of(&data) {
-                                Some(index) => index,
-                                None => {
-                                    let index = event_data.len();
-                                    event_data.insert(data);
-                                    index
-                                }
-                            };
+
+                        for data in &event_group.data {
+                            let data_key: FxEventDataKey = data.into();
+
+                            let index = event_data.get_index_of(&data_key).unwrap_or_else(|| {
+                                let index = event_data.len();
+                                event_data.insert(data_key);
+                                index
+                            });
+
                             ids.push(index);
                         }
 
                         FxEventGroupRaw {
-                            filter: g.filter.clone(),
-                            beat_dist_type: g.beat_dist_type.clone(),
-                            beat_dist_value: g.beat_dist_value,
-                            fx_dist_type: g.fx_dist_type.clone(),
-                            fx_dist_value: g.fx_dist_value,
-                            fx_dist_effect_first: g.fx_dist_effect_first,
-                            fx_dist_easing: g.fx_dist_easing.clone(),
+                            filter: event_group.filter.clone(),
+                            beat_dist_type: event_group.beat_dist_type.clone(),
+                            beat_dist_value: event_group.beat_dist_value,
+                            fx_dist_type: event_group.fx_dist_type.clone(),
+                            fx_dist_value: event_group.fx_dist_value,
+                            fx_dist_effect_first: event_group.fx_dist_effect_first,
+                            fx_dist_easing: event_group.fx_dist_easing.clone(),
                             data_ids: ids,
                         }
                     })
-                    .collect();
+                    .collect::<Vec<FxEventGroupRaw>>();
 
                 FxEventBoxRaw {
-                    beat: b.beat,
-                    group_id: b.group_id,
+                    beat: event_box.beat,
+                    group_id: event_box.group_id,
                     groups: groups_raw,
                 }
             })
-            .collect();
+            .collect::<Vec<FxEventBoxRaw>>();
 
         let mut state = serializer.serialize_struct("FxEventContainer", 2)?;
-        state.serialize_field("vfxEventBoxGroups", &event_boxes_raw)?;
+        state.serialize_field("vfxEventBoxGroups", &raw_boxes)?;
         state.serialize_field(
             "_fxEventsCollection",
             &FxEventArrays {
