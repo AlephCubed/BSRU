@@ -551,4 +551,21 @@ mod tests {
             );
         }
     }
+
+    #[test]
+    fn wave_with_value_less_than_data_offset() {
+        for i in 0..12 {
+            assert_eq!(
+                DistributionType::Wave.compute_both(
+                    i,
+                    12,
+                    &Filter::default(),
+                    1.0,
+                    Some(2.0),
+                    None
+                ),
+                0.0
+            );
+        }
+    }
 }
