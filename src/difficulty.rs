@@ -46,6 +46,8 @@ pub struct Difficulty {
     pub color_event_boxes: Vec<ColorEventBox>,
     #[serde(rename = "lightRotationEventBoxGroups")]
     pub rotation_event_boxes: Vec<RotationEventBox>,
+    #[serde(flatten)]
+    pub fx_event_boxes: Option<FxEventContainer>,
     /// > Only present in difficulty file V3.2 or higher.
     #[serde(rename = "lightTranslationEventBoxGroups")]
     pub translation_event_boxes: Option<Vec<TranslationEventBox>>,

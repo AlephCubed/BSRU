@@ -55,11 +55,12 @@ pub struct ColorEventGroup {
     /// A value of zero will have no effect.
     #[serde(rename = "w")]
     pub beat_dist_value: f32,
+
+    #[serde(rename = "t")]
+    pub bright_dist_type: DistributionType,
     /// The strength of the brightness distribution. Dependent on the [distribution type](Self::bright_dist_type).
     ///
     /// A value of zero will have no effect.
-    #[serde(rename = "t")]
-    pub bright_dist_type: DistributionType,
     #[serde(rename = "r")]
     pub bright_dist_value: f32,
     /// Whether the first [`ColorEventData`] of the group will be effected by brightness distribution.

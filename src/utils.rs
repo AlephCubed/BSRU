@@ -13,7 +13,7 @@ macro_rules! loose_enum {
             ),+ $(,)?
         }
     ) => {
-        #[derive(Debug, Clone, Eq, PartialEq)]
+        #[derive(Debug, Clone, Eq, PartialEq, Hash)]
         #[cfg_attr(
             feature = "bevy_reflect",
             derive(bevy_reflect::Reflect),
@@ -82,7 +82,7 @@ macro_rules! loose_enum {
             ),+ $(,)?
         }
     ) => {
-        #[derive(Debug, Clone, Eq, PartialEq)]
+        #[derive(Debug, Clone, Eq, PartialEq, Hash)]
         #[cfg_attr(
             feature = "bevy_reflect",
             derive(bevy_reflect::Reflect),
