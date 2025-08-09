@@ -111,7 +111,7 @@ impl DistributionType {
             DistributionType::Wave => {
                 let mut modified_value = dist_value;
                 if let Some(offset) = last_data_offset {
-                    modified_value -= offset;
+                    modified_value = (modified_value - offset).max(0.0);
                 }
 
                 let mut fraction = filtered_id / filtered_size;
@@ -548,6 +548,23 @@ mod tests {
             assert_eq!(
                 DistributionType::Step.compute_both(i, 12, &filter, 1.0, None, None),
                 i as f32
+            );
+        }
+    }
+
+    #[test]
+    fn wave_with_value_less_than_data_offset() {
+        for i in 0..12 {
+            assert_eq!(
+                DistributionType::Wave.compute_both(
+                    i,
+                    12,
+                    &Filter::default(),
+                    1.0,
+                    Some(2.0),
+                    None
+                ),
+                0.0
             );
         }
     }
