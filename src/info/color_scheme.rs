@@ -163,4 +163,16 @@ mod color_conversions {
             }
         }
     }
+
+    impl From<bevy_color::Color> for Color {
+        fn from(value: bevy_color::Color) -> Self {
+            Srgba::from(value).into()
+        }
+    }
+
+    impl From<Color> for bevy_color::Color {
+        fn from(value: Color) -> Self {
+            Self::Srgba(value.into())
+        }
+    }
 }
