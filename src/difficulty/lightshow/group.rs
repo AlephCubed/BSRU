@@ -58,6 +58,12 @@ pub trait EventGroup {
     /// Will panic if the light ID is greater than or equal to the group size.
     #[deprecated(note = "Experimental. Does not consider random in filter calculations.")]
     fn get_value_offset(&self, light_id: i32, group_size: i32) -> f32;
+
+    /// Returns the duration of the group in beats.
+    /// # Unknown
+    /// If the [`FilterType`] is `Unknown` then the result will be zero.
+    #[deprecated(note = "Experimental. Does not consider random in filter calculations.")]
+    fn get_duration(&self, group_size: i32) -> f32;
 }
 
 #[macro_export]
@@ -91,6 +97,37 @@ macro_rules! impl_event_group {
             fn get_value_offset(&self, light_id: i32, group_size: i32) -> f32 {
                 self.$value_offset(light_id, group_size)
             }
+
+            #[allow(deprecated)]
+            fn get_duration(&self, group_size: i32) -> f32 {
+                let filtered_size = self.filter.count_filtered_without_limit(group_size);
+
+                if filtered_size == 0 {
+                    return 0.0;
+                }
+
+                let Some(data) = self.get_data().last() else {
+                    return 0.0;
+                };
+
+                data.beat_offset
+                    + match self.beat_dist_type {
+                        DistributionType::Wave => {
+                            let base = self.beat_dist_value / filtered_size as f32;
+
+                            if let Some(limit_behaviour) = self.filter.limit_behaviour
+                                && let Some(limit_percent) = self.filter.limit_percent
+                                && !limit_behaviour.beat_enabled()
+                            {
+                                base * limit_percent
+                            } else {
+                                base
+                            }
+                        }
+                        DistributionType::Step => self.beat_dist_value * filtered_size as f32,
+                        DistributionType::Unknown(_) => 0.0,
+                    }
+            }
         }
     };
 }
@@ -111,4 +148,102 @@ macro_rules! impl_event_data {
             }
         }
     };
+}
+
+#[allow(deprecated)]
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::{DistributionType, LimitBehaviour};
+
+    #[test]
+    fn get_duration_no_distribution() {
+        assert_eq!(ColorEventGroup::default().get_duration(12), 0.0);
+    }
+
+    #[test]
+    fn get_duration_wave() {
+        let group = ColorEventGroup {
+            beat_dist_type: DistributionType::Wave,
+            beat_dist_value: 12.0,
+            ..Default::default()
+        };
+
+        assert_eq!(group.get_duration(12), 1.0);
+    }
+
+    #[test]
+    fn get_duration_step() {
+        let group = ColorEventGroup {
+            beat_dist_type: DistributionType::Step,
+            beat_dist_value: 1.0,
+            ..Default::default()
+        };
+
+        assert_eq!(group.get_duration(12), 12.0);
+    }
+
+    #[test]
+    fn get_duration_wave_with_limit() {
+        let group = ColorEventGroup {
+            filter: Filter {
+                limit_behaviour: Some(LimitBehaviour::None),
+                limit_percent: Some(0.5),
+                ..Default::default()
+            },
+            beat_dist_type: DistributionType::Wave,
+            beat_dist_value: 12.0,
+            ..Default::default()
+        };
+
+        assert_eq!(group.get_duration(12), 0.5);
+    }
+
+    #[test]
+    fn get_duration_step_with_limit() {
+        let group = ColorEventGroup {
+            filter: Filter {
+                limit_behaviour: Some(LimitBehaviour::None),
+                limit_percent: Some(0.5),
+                ..Default::default()
+            },
+            beat_dist_type: DistributionType::Step,
+            beat_dist_value: 1.0,
+            ..Default::default()
+        };
+
+        assert_eq!(group.get_duration(12), 12.0);
+    }
+
+    #[test]
+    fn get_duration_wave_with_limit_adjusted() {
+        let group = ColorEventGroup {
+            filter: Filter {
+                limit_behaviour: Some(LimitBehaviour::Beat),
+                limit_percent: Some(0.5),
+                ..Default::default()
+            },
+            beat_dist_type: DistributionType::Wave,
+            beat_dist_value: 12.0,
+            ..Default::default()
+        };
+
+        assert_eq!(group.get_duration(12), 1.0);
+    }
+
+    #[test]
+    fn get_duration_step_with_limit_adjusted() {
+        let group = ColorEventGroup {
+            filter: Filter {
+                limit_behaviour: Some(LimitBehaviour::Beat),
+                limit_percent: Some(0.5),
+                ..Default::default()
+            },
+            beat_dist_type: DistributionType::Step,
+            beat_dist_value: 1.0,
+            ..Default::default()
+        };
+
+        assert_eq!(group.get_duration(12), 12.0);
+    }
 }
