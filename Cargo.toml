@@ -14,10 +14,10 @@ bevy_color = ["dep:bevy_color"]
 bevy_reflect = ["dep:bevy_reflect"]
 
 [dependencies]
-bevy_color = { version = "0.16.2", optional = true, default-features = false, features = [
+bevy_color = { version = "0.17.0-rc.1", optional = true, default-features = false, features = [
   "std",
 ] }
-bevy_reflect = { version = "0.16.1", optional = true, default-features = false }
+bevy_reflect = { version = "0.17.0-rc.1", optional = true, default-features = false }
 indexmap = "2.10.0"
 ordered-float = "5.0.0"
 serde = { version = "1.0.219", features = ["derive"] }
