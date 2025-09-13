@@ -20,3 +20,10 @@ These do not currently support all features and are marked as depreciated.
 |----------------|--------------------------------------------------------------------------|
 | `bevy_color`   | Adds `From` implementations for converting color schemes to Bevy colors. |
 | `bevy_reflect` | Adds `Reflect` derives for all types.                                    |
+
+### Bevy Version Compatibility
+
+| Bevy   | BSRU          |
+|--------|---------------|
+| `0.17` | `0.4`         |
+| `0.16` | `0.1` - `0.3` |
