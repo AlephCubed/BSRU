@@ -1,6 +1,7 @@
 //! The interactable objects of a difficulty.
 
-use crate::{impl_duration, impl_timed, loose_enum};
+use crate::{impl_duration, impl_timed};
+use loose_enum::loose_enum;
 use serde::{Deserialize, Serialize};
 
 /// The standard block/note that a player cuts.
@@ -38,8 +39,13 @@ impl_timed!(Note::beat);
 
 loose_enum! {
     /// The color of a note, which determines which saber should be used to cut it.
-    #[derive(Default, Copy)]
-    NoteColor: i32 {
+    #[derive(Default, Debug, Clone, Copy, Eq, PartialEq, Hash)]
+    #[cfg_attr(
+        feature = "bevy_reflect",
+        derive(bevy_reflect::Reflect),
+        reflect(Debug, Clone, PartialEq)
+    )]
+    pub enum NoteColor: i32 {
         #[default]
         Left = 0,
         Right = 1,
@@ -48,8 +54,13 @@ loose_enum! {
 
 loose_enum! {
     /// The direction a note should be cut.
-    #[derive(Default, Copy)]
-    CutDirection: i32 {
+    #[derive(Default, Debug, Clone, Copy, Eq, PartialEq, Hash)]
+    #[cfg_attr(
+        feature = "bevy_reflect",
+        derive(bevy_reflect::Reflect),
+        reflect(Debug, Clone, PartialEq)
+    )]
+    pub enum CutDirection: i32 {
         #[default]
         Up = 0,
         Down = 1,
@@ -231,8 +242,13 @@ impl_duration!(Arc::beat, end: tail_beat);
 
 loose_enum! {
     /// Controls how an arc curves from its head to its tail.
-    #[derive(Default, Copy)]
-    MidAnchorMode: i32 {
+    #[derive(Default, Debug, Clone, Copy, Eq, PartialEq, Hash)]
+    #[cfg_attr(
+        feature = "bevy_reflect",
+        derive(bevy_reflect::Reflect),
+        reflect(Debug, Clone, PartialEq)
+    )]
+    pub enum MidAnchorMode: i32 {
         #[default]
         Straight = 0,
         Clockwise = 1,

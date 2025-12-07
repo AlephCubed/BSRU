@@ -1,12 +1,17 @@
 //! The easing that a [transition](crate::lightshow::TransitionType::Transition) event will use.
 
-use crate::loose_enum;
+use loose_enum::loose_enum;
 use simple_easing::*;
 
 loose_enum! {
     /// The easing that a [transition](crate::lightshow::TransitionType::Transition) event will use.
-    #[derive(Default, Copy)]
-    Easing: i32 {
+    #[derive(Default, Debug, Clone, Copy, Eq, PartialEq, Hash)]
+    #[cfg_attr(
+        feature = "bevy_reflect",
+        derive(bevy_reflect::Reflect),
+        reflect(Debug, Clone, PartialEq)
+    )]
+    pub enum Easing: i32 {
         #[default]
         None = -1,
 

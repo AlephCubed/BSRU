@@ -3,8 +3,8 @@
 use crate::difficulty::lightshow::DistributionType;
 use crate::difficulty::lightshow::easing::Easing;
 use crate::difficulty::lightshow::filter::Filter;
-use crate::utils::LooseBool;
-use crate::{impl_event_box, impl_event_data, impl_event_group, impl_timed, loose_enum};
+use crate::{impl_event_box, impl_event_data, impl_event_group, impl_timed};
+use loose_enum::{LooseBool, loose_enum};
 use serde::{Deserialize, Serialize};
 
 /// A collection of [`ColorEventGroup`]s that share the same group ID and beat.
@@ -65,7 +65,7 @@ pub struct ColorEventGroup {
     pub bright_dist_value: f32,
     /// Whether the first [`ColorEventData`] of the group will be effected by brightness distribution.
     #[serde(rename = "b")]
-    pub bright_dist_effect_first: LooseBool,
+    pub bright_dist_effect_first: LooseBool<i32>,
     /// > Only present in difficulty file V3.2 or higher.
     #[serde(rename = "i")]
     pub bright_dist_easing: Option<Easing>,
@@ -140,7 +140,7 @@ pub struct ColorEventData {
     ///
     /// Whether to fade between strobe states or not.
     #[serde(rename = "sf")]
-    pub strobe_fade: Option<LooseBool>,
+    pub strobe_fade: Option<LooseBool<i32>>,
 }
 
 impl Default for ColorEventData {
@@ -161,8 +161,13 @@ impl_event_data!(ColorEventData);
 
 loose_enum! {
     /// Controls how the state is changed relative to the previous event.
-    #[derive(Default, Copy)]
-    ColorTransitionType: i32 {
+    #[derive(Default, Debug, Clone, Copy, Eq, PartialEq, Hash)]
+    #[cfg_attr(
+        feature = "bevy_reflect",
+        derive(bevy_reflect::Reflect),
+        reflect(Debug, Clone, PartialEq)
+    )]
+    pub enum ColorTransitionType: i32 {
         /// Unique to color events.
         /// Has the same effect as using [`TransitionType::Transition`](crate::lightshow::TransitionType::Transition)
         /// and [`Easing::None`] in rotation/translation events.
@@ -177,8 +182,13 @@ loose_enum! {
 
 loose_enum! {
     /// Controls which color to display, based on a map or environment's [color scheme](crate::info::color_scheme::ColorScheme).
-    #[derive(Default, Copy)]
-    LightColor: i32 {
+    #[derive(Default, Debug, Clone, Copy, Eq, PartialEq, Hash)]
+    #[cfg_attr(
+        feature = "bevy_reflect",
+        derive(bevy_reflect::Reflect),
+        reflect(Debug, Clone, PartialEq)
+    )]
+    pub enum LightColor: i32 {
         #[default]
         Primary = 0,
         Secondary = 1,

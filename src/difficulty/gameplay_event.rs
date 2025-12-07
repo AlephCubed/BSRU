@@ -1,6 +1,7 @@
 //! Events that effect gameplay and aren't purely visual.
 
-use crate::{impl_timed, loose_enum};
+use crate::impl_timed;
+use loose_enum::loose_enum;
 use serde::{Deserialize, Serialize};
 
 /// Controls the rotation that interactable objects spawn in 90/360 degree difficulties.
@@ -25,8 +26,13 @@ impl_timed!(LaneRotationEvent::beat);
 
 loose_enum!(
     /// Determines when a [`LaneRotationEvent`] will be applied to objects.
-    #[derive(Default, Copy)]
-    ExecutionTime: i32 {
+    #[derive(Default, Debug, Clone, Copy, Eq, PartialEq, Hash)]
+    #[cfg_attr(
+        feature = "bevy_reflect",
+        derive(bevy_reflect::Reflect),
+        reflect(Debug, Clone, PartialEq)
+    )]
+    pub enum ExecutionTime: i32 {
         /// The [`LaneRotationEvent`] will affect objects with a beat *greater than or equal to* the event's beat.
         #[default]
         Early = 0,

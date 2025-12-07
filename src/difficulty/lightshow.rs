@@ -14,12 +14,17 @@ pub use filter::*;
 #[doc(hidden)]
 pub use group::*;
 
-use crate::loose_enum;
+use loose_enum::loose_enum;
 
 loose_enum! {
     /// The way that the distribution value is used.
-    #[derive(Default, Copy)]
-    DistributionType: i32 {
+    #[derive(Default, Debug, Clone, Copy, Eq, PartialEq, Hash)]
+        #[cfg_attr(
+            feature = "bevy_reflect",
+            derive(bevy_reflect::Reflect),
+            reflect(Debug, Clone, PartialEq)
+        )]
+    pub enum DistributionType: i32 {
         /// The distribution value represents the difference between *the last and first step*.
         #[default]
         Wave = 1,
@@ -171,8 +176,13 @@ impl DistributionType {
 
 loose_enum! {
     /// Controls how the state is changed relative to the previous event.
-    #[derive(Default, Copy)]
-    TransitionType: i32 {
+    #[derive(Default, Debug, Clone, Copy, Eq, PartialEq, Hash)]
+    #[cfg_attr(
+        feature = "bevy_reflect",
+        derive(bevy_reflect::Reflect),
+        reflect(Debug, Clone, PartialEq)
+    )]
+    pub enum TransitionType: i32 {
         /// The state will blend from the previous event's state, using the events [easing](Easing).
         #[default]
         Transition = 0,
@@ -183,8 +193,13 @@ loose_enum! {
 
 loose_enum! {
     /// The axis that a rotation/translation event effects.
-    #[derive(Default, Copy)]
-    EventAxis: i32 {
+    #[derive(Default, Debug, Clone, Copy, Eq, PartialEq, Hash)]
+    #[cfg_attr(
+        feature = "bevy_reflect",
+        derive(bevy_reflect::Reflect),
+        reflect(Debug, Clone, PartialEq)
+    )]
+    pub enum EventAxis: i32 {
         #[default]
         X = 0,
         Y = 1,
@@ -198,7 +213,7 @@ loose_enum! {
 mod tests {
     use super::*;
     use crate::difficulty::lightshow::filter::FilterType;
-    use crate::utils::LooseBool;
+    use loose_enum::LooseBool;
 
     #[test]
     fn wave() {

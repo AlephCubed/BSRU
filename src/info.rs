@@ -4,8 +4,8 @@ pub mod color_scheme;
 
 #[doc(hidden)]
 pub use color_scheme::*;
+use loose_enum::loose_enum;
 
-use crate::loose_enum;
 use serde::{Deserialize, Serialize};
 
 /// A map's `Info.dat` file.
@@ -67,8 +67,13 @@ loose_enum! {
     /// The world that surrounds the player and defines which lights are available.
     ///
     /// For 90/360 degree mode, see [`AllDirectionEnvironment`].
-    #[derive(Default)]
-    Environment: String {
+    #[derive(Default, Debug, Clone, Eq, PartialEq, Hash)]
+    #[cfg_attr(
+        feature = "bevy_reflect",
+        derive(bevy_reflect::Reflect),
+        reflect(Debug, Clone, PartialEq)
+    )]
+    pub enum Environment: String {
         #[default]
         #[doc(alias = "Default")]
         TheFirst = "DefaultEnvironment",
@@ -124,8 +129,13 @@ loose_enum! {
     /// The world that surrounds the player while playing 90/360 degree mode.
     ///
     /// For standard mode, see [`Environment`].
-    #[derive(Default)]
-    AllDirectionEnvironment: String {
+    #[derive(Default, Debug, Clone, Eq, PartialEq, Hash)]
+        #[cfg_attr(
+            feature = "bevy_reflect",
+            derive(bevy_reflect::Reflect),
+            reflect(Debug, Clone, PartialEq)
+        )]
+    pub enum AllDirectionEnvironment: String {
         #[default]
         GlassDesert = "GlassDesertEnvironment",
     }
@@ -150,8 +160,13 @@ loose_enum! {
     ///
     /// Note that [`Lawless`](Self::Lawless) and [`Lightshow`](Self::Lightshow) are modded characteristics,
     /// and may cause problems in un-modded versions of the game.
-    #[derive(Default)]
-    Characteristic: String {
+    #[derive(Default, Debug, Clone, Eq, PartialEq, Hash)]
+    #[cfg_attr(
+        feature = "bevy_reflect",
+        derive(bevy_reflect::Reflect),
+        reflect(Debug, Clone, PartialEq)
+    )]
+    pub enum Characteristic: String {
         #[default]
         Standard = "Standard",
         NoArrows = "NoArrows",
@@ -202,8 +217,13 @@ pub struct DifficultyInfo {
 }
 
 loose_enum! {
-    #[derive(Default, Copy)]
-    DifficultyRank: i32 {
+    #[derive(Default, Debug, Clone, Copy, Eq, PartialEq, Hash)]
+    #[cfg_attr(
+        feature = "bevy_reflect",
+        derive(bevy_reflect::Reflect),
+        reflect(Debug, Clone, PartialEq)
+    )]
+    pub enum DifficultyRank: i32 {
         Easy = 1,
         Normal = 3,
         Hard = 5,

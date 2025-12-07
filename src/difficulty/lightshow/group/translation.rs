@@ -4,8 +4,8 @@ use crate::difficulty::lightshow::easing::Easing;
 use crate::difficulty::lightshow::filter::Filter;
 use crate::difficulty::lightshow::group::EventData;
 use crate::difficulty::lightshow::{DistributionType, EventAxis, TransitionType};
-use crate::utils::LooseBool;
 use crate::{impl_event_box, impl_event_group, impl_timed};
+use loose_enum::LooseBool;
 use serde::{Deserialize, Serialize};
 
 /// A collection of [`TranslationEventGroup`]s that share the same group ID and beat.
@@ -69,14 +69,14 @@ pub struct TranslationEventGroup {
     pub translation_dist_value: f32,
     /// Whether the first [`TranslationEventData`] of the group will be effected by translation distribution.
     #[serde(rename = "b")]
-    pub translation_dist_effect_first: LooseBool,
+    pub translation_dist_effect_first: LooseBool<i32>,
     #[serde(rename = "i")]
     pub translation_dist_easing: Easing,
     #[serde(rename = "a")]
     pub axis: EventAxis,
     /// If true, the translation will be mirrored.
     #[serde(rename = "r")]
-    pub invert_axis: LooseBool,
+    pub invert_axis: LooseBool<i32>,
     #[serde(rename = "l")]
     pub data: Vec<TranslationEventData>,
 }

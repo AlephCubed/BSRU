@@ -1,7 +1,6 @@
 //! Controls which light IDs are affected by an event.
 
-use crate::loose_enum;
-use crate::utils::LooseBool;
+use loose_enum::{LooseBool, loose_enum};
 use serde::{Deserialize, Serialize};
 
 /// Controls which light IDs are affected by an event.
@@ -24,7 +23,7 @@ pub struct Filter {
     pub parameter2: i32,
     /// If true, the filter will start at the end of a group and work backwards.
     #[serde(rename = "r")]
-    pub reverse: LooseBool,
+    pub reverse: LooseBool<i32>,
     // V3.1:
     /// > Only present in difficulty file V3.1 or higher.
     ///
@@ -208,8 +207,13 @@ impl Filter {
 loose_enum! {
     /// Controls how a [`Filter`]'s [`parameter1`](Filter::parameter1)
     /// and [`parameter2`](Filter::parameter2) values are used.
-    #[derive(Default, Copy)]
-    FilterType: i32 {
+    #[derive(Default, Debug, Clone, Copy, Eq, PartialEq, Hash)]
+    #[cfg_attr(
+        feature = "bevy_reflect",
+        derive(bevy_reflect::Reflect),
+        reflect(Debug, Clone, PartialEq)
+    )]
+    pub enum FilterType: i32 {
         /// Splits the group up into equal sections and selects one.
         /// - [`parameter1`](Filter::parameter1) determines the number of sections.
         ///   It will be rounded up to the nearest multiple of the group size.
@@ -224,8 +228,13 @@ loose_enum! {
 }
 
 loose_enum!(
-    #[derive(Default, Copy)]
-    RandomBehaviour: i32 {
+    #[derive(Default, Debug, Clone, Copy, Eq, PartialEq, Hash)]
+    #[cfg_attr(
+        feature = "bevy_reflect",
+        derive(bevy_reflect::Reflect),
+        reflect(Debug, Clone, PartialEq)
+    )]
+    pub enum RandomBehaviour: i32 {
         #[default]
         None = 0,
         KeepOrder = 1,
@@ -239,8 +248,13 @@ loose_enum!(
     /// To see this in practice, check out [this video](https://youtube.com/watch?v=NJPPBvyHJjg&t=338).
     ///
     /// Includes the option to only enable for beat distribution and not value distribution, and vice versa.
-    #[derive(Default, Copy)]
-    LimitBehaviour: i32 {
+    #[derive(Default, Debug, Clone, Copy, Eq, PartialEq, Hash)]
+    #[cfg_attr(
+        feature = "bevy_reflect",
+        derive(bevy_reflect::Reflect),
+        reflect(Debug, Clone, PartialEq)
+    )]
+    pub enum LimitBehaviour: i32 {
         #[default]
         None = 0,
         Beat = 1,
