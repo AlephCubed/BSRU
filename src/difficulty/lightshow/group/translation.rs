@@ -4,7 +4,7 @@ use crate::difficulty::lightshow::easing::Easing;
 use crate::difficulty::lightshow::filter::Filter;
 use crate::difficulty::lightshow::group::EventData;
 use crate::difficulty::lightshow::{DistributionType, EventAxis, TransitionType};
-use crate::utils::LooseBool;
+use crate::loose_bool::LooseBool;
 use crate::{impl_event_box, impl_event_group, impl_timed};
 use serde::{Deserialize, Serialize};
 

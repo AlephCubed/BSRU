@@ -7,7 +7,7 @@
 use crate::difficulty::lightshow::DistributionType;
 use crate::difficulty::lightshow::easing::Easing;
 use crate::difficulty::lightshow::filter::Filter;
-use crate::utils::LooseBool;
+use crate::loose_bool::LooseBool;
 use crate::{TransitionType, impl_event_box, impl_event_data, impl_event_group, impl_timed};
 use indexmap::IndexSet;
 use ordered_float::OrderedFloat;
@@ -367,6 +367,7 @@ impl_event_data!(FxEventData);
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::loose_bool::LooseBool;
     use serde_json::{Value, json};
 
     fn get_test_container() -> FxEventContainer {

@@ -1,12 +1,17 @@
 //! The easing that a [transition](crate::lightshow::TransitionType::Transition) event will use.
 
-use crate::loose_enum;
+use loose_enum::loose_enum;
 use simple_easing::*;
 
 loose_enum! {
     /// The easing that a [transition](crate::lightshow::TransitionType::Transition) event will use.
-    #[derive(Default, Copy)]
-    Easing: i32 {
+    #[derive(Default, Debug, Clone, Copy, Eq, PartialEq, Hash)]
+    #[cfg_attr(
+        feature = "bevy_reflect",
+        derive(bevy_reflect::Reflect),
+        reflect(Debug, Clone, PartialEq)
+    )]
+    pub enum Easing: i32 {
         #[default]
         None = -1,
 
@@ -55,7 +60,7 @@ impl Easing {
     /// Applies the relevant easing function.
     ///
     /// The Beatsaber specific easing use the standard equivalent instead.
-    /// If the easing is [`None`](Self::None) or [`Unknown`](Self::Unknown), then the result will be zero.
+    /// If the easing is [`None`](Self::None) or [`Undefined`](Self::Undefined), then the result will be zero.
     pub fn ease(&self, num: f32) -> f32 {
         match self {
             Easing::None => 0.0,
@@ -95,7 +100,7 @@ impl Easing {
             Easing::BeatSaberInOutBack => back_in_out(num),
             Easing::BeatSaberInOutElastic => elastic_in_out(num),
             Easing::BeatSaberInOutBounce => bounce_in_out(num),
-            Easing::Unknown(_) => 0.0,
+            Easing::Undefined(_) => 0.0,
         }
     }
 }

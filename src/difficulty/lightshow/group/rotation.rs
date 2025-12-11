@@ -4,8 +4,9 @@ use crate::difficulty::lightshow::easing::Easing;
 use crate::difficulty::lightshow::filter::Filter;
 use crate::difficulty::lightshow::group::EventData;
 use crate::difficulty::lightshow::{DistributionType, EventAxis, TransitionType};
-use crate::utils::LooseBool;
-use crate::{impl_event_box, impl_event_group, impl_timed, loose_enum};
+use crate::loose_bool::LooseBool;
+use crate::{impl_event_box, impl_event_group, impl_timed};
+use loose_enum::loose_enum;
 use serde::{Deserialize, Serialize};
 
 /// A collection of [`RotationEventGroup`]s that share the same group ID and beat.
@@ -149,8 +150,13 @@ impl EventData for RotationEventData {
 loose_enum! {
     /// Determines the direction that the rotation event will rotate.
     /// Automatic will choose the shortest distance.
-    #[derive(Default, Copy)]
-    RotationDirection: i32 {
+    #[derive(Default, Debug, Clone, Copy, Eq, PartialEq, Hash)]
+    #[cfg_attr(
+        feature = "bevy_reflect",
+        derive(bevy_reflect::Reflect),
+        reflect(Debug, Clone, PartialEq)
+    )]
+    pub enum RotationDirection: i32 {
         #[default]
         Automatic = 0,
         Clockwise = 1,
