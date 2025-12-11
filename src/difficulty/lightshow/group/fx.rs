@@ -7,9 +7,9 @@
 use crate::difficulty::lightshow::DistributionType;
 use crate::difficulty::lightshow::easing::Easing;
 use crate::difficulty::lightshow::filter::Filter;
+use crate::loose_bool::LooseBool;
 use crate::{TransitionType, impl_event_box, impl_event_data, impl_event_group, impl_timed};
 use indexmap::IndexSet;
-use loose_enum::LooseBool;
 use ordered_float::OrderedFloat;
 use serde::ser::SerializeStruct;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
@@ -237,7 +237,7 @@ pub struct FxEventGroup {
     /// A value of zero will have no effect.
     pub fx_dist_value: f32,
     /// Whether the first [`FxEventData`] of the group will be effected by brightness distribution.
-    pub fx_dist_effect_first: LooseBool<i32>,
+    pub fx_dist_effect_first: LooseBool,
     pub fx_dist_easing: Option<Easing>,
     /// In the actual JSON structure, this is a list of indexes to a separate list of event data.
     /// For consistency, this is merged during parsing.
@@ -258,7 +258,7 @@ struct FxEventGroupRaw {
     #[serde(rename = "s")]
     fx_dist_value: f32,
     #[serde(rename = "b")]
-    fx_dist_effect_first: LooseBool<i32>,
+    fx_dist_effect_first: LooseBool,
     #[serde(rename = "i")]
     fx_dist_easing: Option<Easing>,
     #[serde(rename = "l")]
@@ -367,7 +367,7 @@ impl_event_data!(FxEventData);
 #[cfg(test)]
 mod tests {
     use super::*;
-    use loose_enum::LooseBool;
+    use crate::loose_bool::LooseBool;
     use serde_json::{Value, json};
 
     fn get_test_container() -> FxEventContainer {

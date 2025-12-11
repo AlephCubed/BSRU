@@ -1,6 +1,7 @@
 //! Controls which light IDs are affected by an event.
 
-use loose_enum::{LooseBool, loose_enum};
+use crate::loose_bool::LooseBool;
+use loose_enum::loose_enum;
 use serde::{Deserialize, Serialize};
 
 /// Controls which light IDs are affected by an event.
@@ -23,7 +24,7 @@ pub struct Filter {
     pub parameter2: i32,
     /// If true, the filter will start at the end of a group and work backwards.
     #[serde(rename = "r")]
-    pub reverse: LooseBool<i32>,
+    pub reverse: LooseBool,
     // V3.1:
     /// > Only present in difficulty file V3.1 or higher.
     ///
@@ -71,8 +72,8 @@ impl Default for Filter {
 
 impl Filter {
     /// Returns true if the light ID is in the filter.
-    /// # Unknown
-    /// If the [`FilterType`] is `Unknown` then the result will be `true`.
+    /// # Undefined
+    /// If the [`FilterType`] is `Undefined` then the result will be `true`.
     /// # Panics
     /// Will panic if the light ID is greater than or equal to the group size.
     #[must_use]
@@ -110,7 +111,7 @@ impl Filter {
                 let offset_light_id = light_id - self.parameter1;
                 offset_light_id % self.parameter2.max(1) == 0 && offset_light_id >= 0
             }
-            FilterType::Unknown(_) => true,
+            FilterType::Undefined(_) => true,
         }
     }
 
@@ -119,8 +120,8 @@ impl Filter {
     /// This is required for distribution calculations.
     ///
     /// Also see [`count_filtered`](Self::count_filtered).
-    /// # Unknown
-    /// If the [`FilterType`] is `Unknown` then the result will be the same as `group_size`.
+    /// # Undefined
+    /// If the [`FilterType`] is `Undefined` then the result will be the same as `group_size`.
     #[must_use]
     #[inline]
     #[deprecated(note = "Experimental. Does not consider random in calculations.")]
@@ -141,7 +142,7 @@ impl Filter {
             FilterType::StepAndOffset => {
                 group_size / self.parameter2.max(1) - self.parameter1 / self.parameter2.max(1)
             }
-            FilterType::Unknown(_) => group_size,
+            FilterType::Undefined(_) => group_size,
         }
     }
 
@@ -149,8 +150,8 @@ impl Filter {
     /// Returns the number of light chunks effected by the filter.
     ///
     /// Also see [`count_filtered_without_limit`](Self::count_filtered_without_limit).
-    /// # Unknown
-    /// If the [`FilterType`] is `Unknown` then the result will be the same as `group_size`.
+    /// # Undefined
+    /// If the [`FilterType`] is `Undefined` then the result will be the same as `group_size`.
     #[must_use]
     #[inline]
     #[deprecated(note = "Experimental. Does not consider random in calculations.")]
@@ -167,8 +168,8 @@ impl Filter {
 
     #[allow(deprecated)]
     /// Returns the light chunk ID relative to the [filtered count](Self::count_filtered).
-    /// # Unknown
-    /// If the [`FilterType`] is `Unknown` then the result will be the same as `light_id`.
+    /// # Undefined
+    /// If the [`FilterType`] is `Undefined` then the result will be the same as `light_id`.
     /// # Panics
     /// Will panic if the light ID is greater than or equal to the group size.
     // Todo what is the behaviour when the light ID is not in the filter?
@@ -199,7 +200,7 @@ impl Filter {
                 let offset_light_id = light_id - self.parameter1;
                 offset_light_id / self.parameter2.max(1)
             }
-            FilterType::Unknown(_) => group_size,
+            FilterType::Undefined(_) => group_size,
         }
     }
 }

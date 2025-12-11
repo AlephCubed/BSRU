@@ -384,9 +384,10 @@ checksum = "5e5032e24019045c762d3c0f28f5b6b8bbf38563a65908389bf7978758920897"
 
 [[package]]
 name = "loose_enum"
-version = "0.1.0-beta.1"
+version = "0.1.0-beta.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "243534cb7234245d5c56c85bdcd1fcebc690688a2098b9b5935555160c0e471f"
 dependencies = [
- "num-traits",
  "serde_core",
 ]
 

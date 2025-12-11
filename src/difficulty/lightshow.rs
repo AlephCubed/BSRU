@@ -127,7 +127,7 @@ impl DistributionType {
                 fraction * modified_value
             }
             DistributionType::Step => dist_value * filtered_id,
-            DistributionType::Unknown(_) => 0.0,
+            DistributionType::Undefined(_) => 0.0,
         }
     }
 
@@ -213,7 +213,7 @@ loose_enum! {
 mod tests {
     use super::*;
     use crate::difficulty::lightshow::filter::FilterType;
-    use loose_enum::LooseBool;
+    use crate::loose_bool::LooseBool;
 
     #[test]
     fn wave() {

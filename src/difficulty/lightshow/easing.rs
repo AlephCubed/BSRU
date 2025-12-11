@@ -60,7 +60,7 @@ impl Easing {
     /// Applies the relevant easing function.
     ///
     /// The Beatsaber specific easing use the standard equivalent instead.
-    /// If the easing is [`None`](Self::None) or [`Unknown`](Self::Unknown), then the result will be zero.
+    /// If the easing is [`None`](Self::None) or [`Undefined`](Self::Undefined), then the result will be zero.
     pub fn ease(&self, num: f32) -> f32 {
         match self {
             Easing::None => 0.0,
@@ -100,7 +100,7 @@ impl Easing {
             Easing::BeatSaberInOutBack => back_in_out(num),
             Easing::BeatSaberInOutElastic => elastic_in_out(num),
             Easing::BeatSaberInOutBounce => bounce_in_out(num),
-            Easing::Unknown(_) => 0.0,
+            Easing::Undefined(_) => 0.0,
         }
     }
 }

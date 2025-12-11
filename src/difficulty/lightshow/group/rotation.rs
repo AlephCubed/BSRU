@@ -4,8 +4,9 @@ use crate::difficulty::lightshow::easing::Easing;
 use crate::difficulty::lightshow::filter::Filter;
 use crate::difficulty::lightshow::group::EventData;
 use crate::difficulty::lightshow::{DistributionType, EventAxis, TransitionType};
+use crate::loose_bool::LooseBool;
 use crate::{impl_event_box, impl_event_group, impl_timed};
-use loose_enum::{LooseBool, loose_enum};
+use loose_enum::loose_enum;
 use serde::{Deserialize, Serialize};
 
 /// A collection of [`RotationEventGroup`]s that share the same group ID and beat.
@@ -65,7 +66,7 @@ pub struct RotationEventGroup {
     pub rotation_dist_value: f32,
     /// Whether the first [`RotationEventData`] of the group will be effected by rotation distribution.
     #[serde(rename = "b")]
-    pub rotation_dist_effect_first: LooseBool<i32>,
+    pub rotation_dist_effect_first: LooseBool,
     /// > Only present in difficulty file V3.2 or higher.
     #[serde(rename = "i")]
     pub rotation_dist_easing: Option<Easing>,
@@ -73,7 +74,7 @@ pub struct RotationEventGroup {
     pub axis: EventAxis,
     /// If true, the rotation will be mirrored.
     #[serde(rename = "r")]
-    pub invert_axis: LooseBool<i32>,
+    pub invert_axis: LooseBool,
     #[serde(rename = "l")]
     pub data: Vec<RotationEventData>,
 }

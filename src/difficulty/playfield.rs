@@ -78,7 +78,7 @@ loose_enum! {
 impl CutDirection {
     /// Returns the number of degrees a note is rotated, with zero degrees being a downward note.
     ///
-    /// Returns zero if the cut direction is unknown/any.
+    /// Returns zero if the cut direction is undefined/any.
     pub fn get_degrees(&self) -> f32 {
         match self {
             CutDirection::Up => 180.0,
@@ -90,7 +90,7 @@ impl CutDirection {
             CutDirection::DownLeft => -45.0,
             CutDirection::DownRight => 45.0,
             CutDirection::Any => 0.0,
-            CutDirection::Unknown(_) => 0.0,
+            CutDirection::Undefined(_) => 0.0,
         }
     }
 }

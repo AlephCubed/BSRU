@@ -2,6 +2,7 @@
 
 pub mod difficulty;
 pub mod info;
+mod loose_bool;
 pub mod timing_traits;
 
 #[doc(hidden)]
