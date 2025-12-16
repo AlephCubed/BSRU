@@ -2,9 +2,8 @@
 
 pub mod difficulty;
 pub mod info;
+mod loose_bool;
 pub mod timing_traits;
-
-mod utils;
 
 #[doc(hidden)]
 pub use difficulty::*;
@@ -12,5 +11,3 @@ pub use difficulty::*;
 pub use info::*;
 #[doc(hidden)]
 pub use timing_traits::*;
-/// An integer repr bool, with 0 being false and 1 being true. Any other value will be saved as `Unknown`.
-pub use utils::LooseBool;

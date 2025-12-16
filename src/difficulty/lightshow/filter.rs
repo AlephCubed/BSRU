@@ -1,7 +1,7 @@
 //! Controls which light IDs are affected by an event.
 
-use crate::loose_enum;
-use crate::utils::LooseBool;
+use crate::loose_bool::LooseBool;
+use loose_enum::loose_enum;
 use serde::{Deserialize, Serialize};
 
 /// Controls which light IDs are affected by an event.
@@ -72,8 +72,8 @@ impl Default for Filter {
 
 impl Filter {
     /// Returns true if the light ID is in the filter.
-    /// # Unknown
-    /// If the [`FilterType`] is `Unknown` then the result will be `true`.
+    /// # Undefined
+    /// If the [`FilterType`] is `Undefined` then the result will be `true`.
     /// # Panics
     /// Will panic if the light ID is greater than or equal to the group size.
     #[must_use]
@@ -111,7 +111,7 @@ impl Filter {
                 let offset_light_id = light_id - self.parameter1;
                 offset_light_id % self.parameter2.max(1) == 0 && offset_light_id >= 0
             }
-            FilterType::Unknown(_) => true,
+            FilterType::Undefined(_) => true,
         }
     }
 
@@ -120,8 +120,8 @@ impl Filter {
     /// This is required for distribution calculations.
     ///
     /// Also see [`count_filtered`](Self::count_filtered).
-    /// # Unknown
-    /// If the [`FilterType`] is `Unknown` then the result will be the same as `group_size`.
+    /// # Undefined
+    /// If the [`FilterType`] is `Undefined` then the result will be the same as `group_size`.
     #[must_use]
     #[inline]
     #[deprecated(note = "Experimental. Does not consider random in calculations.")]
@@ -142,7 +142,7 @@ impl Filter {
             FilterType::StepAndOffset => {
                 group_size / self.parameter2.max(1) - self.parameter1 / self.parameter2.max(1)
             }
-            FilterType::Unknown(_) => group_size,
+            FilterType::Undefined(_) => group_size,
         }
     }
 
@@ -150,8 +150,8 @@ impl Filter {
     /// Returns the number of light chunks effected by the filter.
     ///
     /// Also see [`count_filtered_without_limit`](Self::count_filtered_without_limit).
-    /// # Unknown
-    /// If the [`FilterType`] is `Unknown` then the result will be the same as `group_size`.
+    /// # Undefined
+    /// If the [`FilterType`] is `Undefined` then the result will be the same as `group_size`.
     #[must_use]
     #[inline]
     #[deprecated(note = "Experimental. Does not consider random in calculations.")]
@@ -168,8 +168,8 @@ impl Filter {
 
     #[allow(deprecated)]
     /// Returns the light chunk ID relative to the [filtered count](Self::count_filtered).
-    /// # Unknown
-    /// If the [`FilterType`] is `Unknown` then the result will be the same as `light_id`.
+    /// # Undefined
+    /// If the [`FilterType`] is `Undefined` then the result will be the same as `light_id`.
     /// # Panics
     /// Will panic if the light ID is greater than or equal to the group size.
     // Todo what is the behaviour when the light ID is not in the filter?
@@ -200,7 +200,7 @@ impl Filter {
                 let offset_light_id = light_id - self.parameter1;
                 offset_light_id / self.parameter2.max(1)
             }
-            FilterType::Unknown(_) => group_size,
+            FilterType::Undefined(_) => group_size,
         }
     }
 }
@@ -208,8 +208,13 @@ impl Filter {
 loose_enum! {
     /// Controls how a [`Filter`]'s [`parameter1`](Filter::parameter1)
     /// and [`parameter2`](Filter::parameter2) values are used.
-    #[derive(Default, Copy)]
-    FilterType: i32 {
+    #[derive(Default, Debug, Clone, Copy, Eq, PartialEq, Hash)]
+    #[cfg_attr(
+        feature = "bevy_reflect",
+        derive(bevy_reflect::Reflect),
+        reflect(Debug, Clone, PartialEq)
+    )]
+    pub enum FilterType: i32 {
         /// Splits the group up into equal sections and selects one.
         /// - [`parameter1`](Filter::parameter1) determines the number of sections.
         ///   It will be rounded up to the nearest multiple of the group size.
@@ -224,8 +229,13 @@ loose_enum! {
 }
 
 loose_enum!(
-    #[derive(Default, Copy)]
-    RandomBehaviour: i32 {
+    #[derive(Default, Debug, Clone, Copy, Eq, PartialEq, Hash)]
+    #[cfg_attr(
+        feature = "bevy_reflect",
+        derive(bevy_reflect::Reflect),
+        reflect(Debug, Clone, PartialEq)
+    )]
+    pub enum RandomBehaviour: i32 {
         #[default]
         None = 0,
         KeepOrder = 1,
@@ -239,8 +249,13 @@ loose_enum!(
     /// To see this in practice, check out [this video](https://youtube.com/watch?v=NJPPBvyHJjg&t=338).
     ///
     /// Includes the option to only enable for beat distribution and not value distribution, and vice versa.
-    #[derive(Default, Copy)]
-    LimitBehaviour: i32 {
+    #[derive(Default, Debug, Clone, Copy, Eq, PartialEq, Hash)]
+    #[cfg_attr(
+        feature = "bevy_reflect",
+        derive(bevy_reflect::Reflect),
+        reflect(Debug, Clone, PartialEq)
+    )]
+    pub enum LimitBehaviour: i32 {
         #[default]
         None = 0,
         Beat = 1,

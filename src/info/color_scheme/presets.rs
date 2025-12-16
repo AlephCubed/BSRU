@@ -69,7 +69,7 @@ impl Environment {
     /// White light colors are not currently supported, and are therefor ignored.
     pub fn get_color_scheme(&self) -> ColorScheme {
         match self {
-            Environment::Unknown(_)
+            Environment::Undefined(_)
             | Environment::TheFirst
             | Environment::Triangle
             | Environment::Nice
@@ -423,7 +423,7 @@ impl AllDirectionEnvironment {
                 rgb!(0.32222217, 0.6111111, 0.75),
                 rgb!(0.03844783, 0.62239975, 0.90566039)
             ),
-            AllDirectionEnvironment::Unknown(_) => ColorScheme::default(),
+            AllDirectionEnvironment::Undefined(_) => ColorScheme::default(),
         }
     }
 }
