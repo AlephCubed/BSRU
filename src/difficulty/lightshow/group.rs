@@ -113,7 +113,7 @@ macro_rules! impl_event_group {
                         if let Some(limit_behaviour) = self.filter.limit_behaviour
                             && !limit_behaviour.beat_enabled()
                             && let Some(limit_percent) = self.filter.limit_percent
-                            && limit_percent != 0.0
+                            && limit_percent > 0.0
                         {
                             (self.beat_dist_value * limit_percent).max(data.beat_offset)
                         } else {
