@@ -60,8 +60,8 @@ pub trait EventGroup {
     fn get_value_offset(&self, light_id: i32, group_size: i32) -> f32;
 
     /// Returns the duration of the group in beats.
-    /// # Unknown
-    /// If the [`FilterType`] is `Unknown` then the result will be zero.
+    /// # Undefined
+    /// If the [`FilterType`] is `Undefined` then the result will be zero.
     #[deprecated(note = "Experimental. Does not consider random in filter calculations.")]
     fn get_duration(&self, group_size: i32) -> f32;
 }
@@ -125,7 +125,7 @@ macro_rules! impl_event_group {
                             }
                         }
                         DistributionType::Step => self.beat_dist_value * filtered_size as f32,
-                        DistributionType::Unknown(_) => 0.0,
+                        DistributionType::Undefined(_) => 0.0,
                     }
             }
         }
