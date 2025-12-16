@@ -110,23 +110,23 @@ macro_rules! impl_event_group {
                     return 0.0;
                 };
 
-                data.beat_offset
-                    + match self.beat_dist_type {
-                        DistributionType::Wave => {
-                            let base = self.beat_dist_value / filtered_size as f32;
-
-                            if let Some(limit_behaviour) = self.filter.limit_behaviour
-                                && let Some(limit_percent) = self.filter.limit_percent
-                                && !limit_behaviour.beat_enabled()
-                            {
-                                base * limit_percent
-                            } else {
-                                base
-                            }
+                match self.beat_dist_type {
+                    DistributionType::Wave => {
+                        if let Some(limit_behaviour) = self.filter.limit_behaviour
+                            && !limit_behaviour.beat_enabled()
+                            && let Some(limit_percent) = self.filter.limit_percent
+                            && limit_percent != 0.0
+                        {
+                            (self.beat_dist_value * limit_percent).max(data.beat_offset)
+                        } else {
+                            self.beat_dist_value.max(data.beat_offset)
                         }
-                        DistributionType::Step => self.beat_dist_value * filtered_size as f32,
-                        DistributionType::Undefined(_) => 0.0,
                     }
+                    DistributionType::Step => {
+                        data.beat_offset + self.beat_dist_value * filtered_size as f32
+                    }
+                    DistributionType::Undefined(_) => 0.0,
+                }
             }
         }
     };
@@ -169,7 +169,7 @@ mod tests {
             ..Default::default()
         };
 
-        assert_eq!(group.get_duration(12), 1.0);
+        assert_eq!(group.get_duration(12), 12.0);
     }
 
     #[test]
@@ -196,7 +196,7 @@ mod tests {
             ..Default::default()
         };
 
-        assert_eq!(group.get_duration(12), 0.5);
+        assert_eq!(group.get_duration(12), 6.0);
     }
 
     #[test]
@@ -228,7 +228,7 @@ mod tests {
             ..Default::default()
         };
 
-        assert_eq!(group.get_duration(12), 1.0);
+        assert_eq!(group.get_duration(12), 12.0);
     }
 
     #[test]
