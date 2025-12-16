@@ -159,7 +159,9 @@ impl Filter {
     pub fn count_filtered(&self, group_size: i32) -> i32 {
         let filtered = self.count_filtered_without_limit(group_size);
 
-        if let Some(limit) = self.limit_percent {
+        if let Some(limit) = self.limit_percent
+            && limit > 0.0
+        {
             (filtered as f32 * limit) as i32
         } else {
             filtered
@@ -555,5 +557,18 @@ mod tests {
         assert_eq!(filter.count_filtered(8), 7);
         assert_eq!(filter.count_filtered_without_limit(8), 8);
         assert!((0..7).all(|i| filter.get_relative_index(i, 8) == i));
+    }
+
+    #[test]
+    fn limit_zero() {
+        let filter = Filter {
+            limit_percent: Some(0.0),
+            ..Default::default()
+        };
+
+        assert!((0..12).all(|i| filter.is_in_filter(i, 12)));
+        assert_eq!(filter.count_filtered(12), 12);
+        assert_eq!(filter.count_filtered_without_limit(12), 12);
+        assert!((0..12).all(|i| filter.get_relative_index(i, 12) == i));
     }
 }

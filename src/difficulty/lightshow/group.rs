@@ -246,4 +246,19 @@ mod tests {
 
         assert_eq!(group.get_duration(12), 12.0);
     }
+
+    #[test]
+    fn get_duration_step_with_limit_zero() {
+        let group = ColorEventGroup {
+            filter: Filter {
+                limit_percent: Some(0.0),
+                ..Default::default()
+            },
+            beat_dist_type: DistributionType::Step,
+            beat_dist_value: 1.0,
+            ..Default::default()
+        };
+
+        assert_eq!(group.get_duration(12), 12.0);
+    }
 }
