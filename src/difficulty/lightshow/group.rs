@@ -98,7 +98,7 @@ macro_rules! impl_event_group {
 
             #[allow(deprecated)]
             fn get_duration(&self, group_size: i32) -> f32 {
-                let filtered_size = self.filter.count_filtered_without_limit(group_size);
+                let filtered_size = self.filter.count_filtered(group_size);
 
                 if filtered_size == 0 {
                     return 0.0;
@@ -210,7 +210,7 @@ mod tests {
             ..Default::default()
         };
 
-        assert_eq!(group.get_duration(12), 12.0);
+        assert_eq!(group.get_duration(12), 6.0);
     }
 
     #[test]
@@ -242,7 +242,7 @@ mod tests {
             ..Default::default()
         };
 
-        assert_eq!(group.get_duration(12), 12.0);
+        assert_eq!(group.get_duration(12), 6.0);
     }
 
     #[test]
