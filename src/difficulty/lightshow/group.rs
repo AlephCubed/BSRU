@@ -64,6 +64,7 @@ pub trait EventGroup {
     fn get_duration(&self, group_size: i32) -> f32;
 }
 
+// Todo This macro could be a default trait implementation if other getters are added.
 #[macro_export]
 #[doc(hidden)]
 macro_rules! impl_event_group {
