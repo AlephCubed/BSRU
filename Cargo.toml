@@ -5,7 +5,7 @@ edition = "2024"
 description = "Beatsaber Rust Utilities: A Beatsaber V3 parsing library."
 categories = ["game-development", "data-structures", "parser-implementations"]
 keywords = ["beatsaber", "beatmap"]
-repository = "https://github.com/AlephCubed/bsru"
+repository = "https://tangled.org/alephcubed.com/BSRU"
 license = "MIT OR Apache-2.0"
 authors = ["AlephCubed"]
 
