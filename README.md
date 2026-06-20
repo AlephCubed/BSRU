@@ -25,6 +25,7 @@ These do not currently support all features and are marked as depreciated.
 
 | Bevy   | BSRU          |
 |--------|---------------|
-| `0.18` | `0.7`+        |
+| `0.19` | `0.8`         |
+| `0.18` | `0.7`         |
 | `0.17` | `0.4` - `0.6` |
 | `0.16` | `0.1` - `0.3` |
